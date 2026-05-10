@@ -1,7 +1,0 @@
-tier,rows,proposed_tokens,accepted_tokens,rejected_tokens_est,reject_events,accept_rate_pct,pattern_s,decode_s,verify_s
-syntax_for_in,2,3,2,1,1,66.67,0.000333,0.062738,0.000353
-strong_ctx5,2,2,0,2,2,0.0,0.000185,0.052289,0.000262
-syntax_minus_one,2,2,0,2,2,0.0,0.000342,0.05598,0.000323
-syntax_range_paren,1,1,0,1,1,0.0,0.000116,0.027817,0.000122
-syntax_indent,1,1,1,0,0,100.0,0.000104,0.027064,0.000155
-none,51,0,0,0,0,0.0,0.003228,1.302875,0.004472
