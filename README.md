@@ -4,17 +4,31 @@ Zero-VRAM speculative decoding tooling for local LLM workflows.
 
 Structspec is shaped as an API-first bypass: run a local OpenAI-compatible proxy, then point existing tools at it.
 
+## Install
+
 ```bash
 pip install -e .
-structspec detect
-structspec serve --backend vllm --target-base-url http://localhost:8000/v1
 ```
 
-Then reuse normal OpenAI SDK clients:
+Optional extras:
+```bash
+pip install -e ".[tui]"      # Textual status dashboard
+pip install -e ".[vllm]"     # vLLM helpers
+pip install -e ".[dev]"      # Tests
+```
+
+## Quickstart
 
 ```bash
-set OPENAI_BASE_URL=http://localhost:8080/v1
-set OPENAI_API_KEY=dummy
+# 1. Scan your local LLM environment
+structspec detect
+
+# 2. Start the proxy (auto-detects vLLM, LM Studio, Ollama, llama.cpp)
+structspec serve --backend auto
+
+# 3. Point any OpenAI-compatible client at it
+export OPENAI_BASE_URL=http://localhost:8080/v1
+export OPENAI_API_KEY=dummy
 ```
 
 ## Commands
@@ -36,11 +50,11 @@ Structspec integrates with vLLM through the supported `--speculative-config` sur
 Example:
 
 ```bash
-structspec vllm-command ^
-  --model Qwen/Qwen2.5-7B-Instruct ^
-  --method ngram ^
-  --num-speculative-tokens 4 ^
-  --prompt-lookup-min 2 ^
+structspec vllm-command \
+  --model Qwen/Qwen2.5-7B-Instruct \
+  --method ngram \
+  --num-speculative-tokens 4 \
+  --prompt-lookup-min 2 \
   --prompt-lookup-max 5
 ```
 
@@ -52,11 +66,23 @@ structspec serve --backend vllm --target-base-url http://localhost:8000/v1
 
 ## Benchmarks
 
-Add side-by-side benchmark screenshots, video links, and tables here.
+HumanEval (first 20 tasks, 128 tokens, Qwen2.5-7B-Instruct Q4_K_M, RTX 4050 laptop, live mining on):
 
 | Backend | Model | Dataset | Baseline tok/s | Structspec tok/s | Speedup | Notes |
 |---|---|---:|---:|---:|---:|---|
-| TODO | TODO | TODO | TODO | TODO | TODO | TODO |
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.37x** | 1.37x | Fresh run (82.64% accept, 19.07% fire) |
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.33x** | 1.33x | Adaptive K conservative |
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.27x** | 1.27x | Adaptive K balanced |
+
+Key metrics (fresh run):
+- Wall speedup: **1.37x**
+- Pass speedup: **1.35x**
+- Draft token acceptance: **82.64%** (671 / 812)
+- Pattern fire rate: **19.07%**
+- Greedy-identical outputs: **15 / 20**
+- Total greedy time: **75.2s** → speculative: **54.7s**
+
+For full per-tier traces and rejection diffs, see `humaneval_results_fresh/humaneval_report.md`.
 
 ## Safety
 
@@ -78,3 +104,21 @@ Current package includes:
 - vLLM command generation for supported speculative methods.
 - Status dashboard fallback, with optional Textual TUI path.
 - Prompt domain detection for Python, JSON, HTML, SQL, Go, and generic modes.
+- Structural speculative decoding research tools and HumanEval benchmarking harness.
+
+## Development
+
+```bash
+# Install dev deps
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Lint
+ruff check structspec tests
+```
+
+## License
+
+MIT

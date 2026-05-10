@@ -6,3 +6,9 @@ __pycache__/
 .env
 .env.local
 .structspec.env
+*.egg-info/
+*.egg
+build/
+dist/
+.venv/
+venv/

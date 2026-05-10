@@ -5,6 +5,7 @@ import csv
 import gzip
 import importlib.util
 import json
+import os
 import sys
 import time
 import urllib.request
@@ -14,8 +15,19 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
 HUMANEVAL_URL = "https://raw.githubusercontent.com/openai/human-eval/master/data/HumanEval.jsonl.gz"
-DEFAULT_MODEL = r"C:\Users\neera\.lmstudio\models\Qwen\Qwen2.5-7B-Instruct-GGUF\qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
-DEFAULT_CORPUS = r"C:\Users\neera\OneDrive\Desktop\sep\engineering_dsa_tokens.json"
+DEFAULT_MODEL = os.environ.get("STRUCTSPEC_MODEL")
+DEFAULT_CORPUS = os.environ.get("STRUCTSPEC_TOKEN_JSON")
+
+
+def resolve_default(value: str | None, env_key: str, fallback: str | None) -> str | None:
+    if value:
+        return value
+    env = os.environ.get(env_key)
+    if env:
+        return env
+    if fallback and Path(fallback).exists():
+        return fallback
+    return None
 
 
 def load_structspec():
@@ -121,8 +133,8 @@ def write_csv(path: Path, rows: list[dict], fields: list[str] | None = None) -> 
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", default=DEFAULT_MODEL)
-    ap.add_argument("--token-json", default=DEFAULT_CORPUS)
+    ap.add_argument("--model", default=DEFAULT_MODEL, help="Path to GGUF model (or set STRUCTSPEC_MODEL).")
+    ap.add_argument("--token-json", default=DEFAULT_CORPUS, help="Path to token corpus JSON (or set STRUCTSPEC_TOKEN_JSON).")
     ap.add_argument("--tasks", type=int, default=20)
     ap.add_argument("--tokens", type=int, default=128)
     ap.add_argument("--k", type=int, default=12)
@@ -144,6 +156,15 @@ def main() -> None:
     ap.add_argument("--dataset", default=str(ROOT / "HumanEval.jsonl.gz"))
     ap.add_argument("--out-dir", default=str(ROOT / "humaneval_results"))
     args = ap.parse_args()
+
+    if not args.model:
+        ap.error("--model is required (or set STRUCTSPEC_MODEL env var).")
+    if not args.token_json:
+        ap.error("--token-json is required (or set STRUCTSPEC_TOKEN_JSON env var).")
+    if not Path(args.model).exists():
+        ap.error(f"Model file not found: {args.model}")
+    if not Path(args.token_json).exists():
+        ap.error(f"Token JSON not found: {args.token_json}")
 
     out_dir = Path(args.out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

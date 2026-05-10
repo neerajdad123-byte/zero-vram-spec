@@ -9,6 +9,7 @@ description = "Zero-VRAM speculative decoding proxy and tooling for local LLM ba
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Structspec contributors" }]
+license = { text = "MIT" }
 dependencies = [
   "fastapi>=0.110",
   "httpx>=0.27",
@@ -18,10 +19,27 @@ dependencies = [
 [project.optional-dependencies]
 tui = ["textual>=0.80"]
 vllm = ["vllm>=0.6"]
-dev = ["pytest>=8"]
+dev = ["pytest>=8", "pytest-asyncio>=0.23"]
 
 [project.scripts]
 structspec = "structspec.cli:main"
 
+[project.urls]
+Repository = "https://github.com/neerajcodes8888/Zero_vram_spec"
+Issues = "https://github.com/neerajcodes8888/Zero_vram_spec/issues"
+
 [tool.setuptools.packages.find]
 include = ["structspec*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+pythonpath = ["."]
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "W", "I"]
+ignore = ["E501"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["structspec"]
