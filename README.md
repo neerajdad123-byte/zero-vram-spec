@@ -31,6 +31,23 @@ export OPENAI_BASE_URL=http://localhost:8080/v1
 export OPENAI_API_KEY=dummy
 ```
 
+### Terminal walkthrough
+
+```text
+$ structspec detect
+Structspec detection report
+Selected backend: lm-studio
+GPU(s): NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB
+LM Studio: running
+
+$ structspec serve --backend lm-studio
+Structspec proxy listening on http://127.0.0.1:8080/v1
+Forwarding to http://localhost:1234/v1 | backend=lm-studio | safety=strict
+
+$ structspec status --once
+Structspec ok | backend=lm-studio | active=0 | requests=12 | est=1.37x | accept=82.6%
+```
+
 ## Commands
 
 ```bash
