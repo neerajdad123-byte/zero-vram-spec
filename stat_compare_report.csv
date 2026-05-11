@@ -1,0 +1,14 @@
+metric,old,new,delta
+Total steps,1875,1018,-857
+Draft tokens proposed,884,355,-529
+Draft tokens accepted,673,252,-421
+Draft tokens rejected,211,103,-108
+Accept rate (%),76.1,71.0,-5.1
+Fire rate (%),19.4,13.8,-5.6
+No-pattern steps,1512,878,-634
+Pattern time total (s),0.1712,0.0847,-0.0865
+Pattern time median (ms),0.071,0.072,+0.001
+Decode time total (s),52.230,34.985,-17.244
+Decode time median (ms),26.6,31.7,+5.1
+Verify time total (s),0.2036,0.1304,-0.0732
+Verify time median (ms),0.080,0.096,+0.017

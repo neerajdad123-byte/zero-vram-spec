@@ -1489,6 +1489,7 @@ def run_speculative(
             "why": why,
             "rule_strikes": sum(rule_strikes.values()),
             "draft_mistakes": sum(draft_mistakes.values()),
+            "pattern_s": pattern_dt,
             "decode_s": decode_dt,
             "verify_s": verify_dt,
         })
@@ -1541,7 +1542,7 @@ TRACE_FIELDS = [
     "rule_conf", "rule_support", "ctx_tail_ids", "ctx_tail_text",
     "draft_ids", "draft_text", "model_draft_ids", "model_draft_text",
     "next_model_text", "mismatch_at", "why", "rule_strikes", "draft_mistakes",
-    "decode_s", "verify_s",
+    "pattern_s", "decode_s", "verify_s",
 ]
 
 
