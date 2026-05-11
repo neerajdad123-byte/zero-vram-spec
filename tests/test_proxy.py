@@ -6,7 +6,9 @@ from fastapi.testclient import TestClient
 from structspec.proxy import create_app, infer_target_base_url
 
 
-def test_infer_target_base_url_defaults():
+def test_infer_target_base_url_defaults(monkeypatch):
+    monkeypatch.delenv("OPENAI_BASE_URL", raising=False)
+    monkeypatch.delenv("STRUCTSPEC_TARGET_BASE_URL", raising=False)
     assert infer_target_base_url("vllm") == "http://localhost:8000/v1"
     assert infer_target_base_url("ollama") == "http://localhost:11434/v1"
     assert infer_target_base_url("lm-studio") == "http://localhost:1234/v1"

@@ -52,7 +52,8 @@ def test_format_report_includes_backend():
     assert "Selected backend: vllm" in text
 
 
-def test_load_env_keys_reads_from_file(tmp_path):
+def test_load_env_keys_reads_from_file(tmp_path, monkeypatch):
+    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
     env_file = tmp_path / ".env"
     env_file.write_text("OPENAI_API_KEY=sk-test\n")
     keys = load_env_keys([env_file])

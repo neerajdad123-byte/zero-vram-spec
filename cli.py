@@ -49,24 +49,24 @@ if hasattr(sys.stderr, "reconfigure"):
 
 
 PROMPTS = [
-    "implement linked lsit in python only code no comments",
-    "implement fibbanoci in python, no comments, only code:",
-    "implement BST in python ,only code,no comments ",
-    "reverse a list in python,only code,no comments",
-    "reverse linked list in python ,no coemmnts ,only code",
-    "write function in python to check given number primr or not only code no comments",
-    "implement merge sort in python only code no comments ",
+    "implement linked list in python only code no comments",
+    "implement fibonacci in python, no comments, only code:",
+    "implement BST in python, only code, no comments",
+    "reverse a list in python, only code, no comments",
+    "reverse linked list in python, no comments, only code",
+    "write function in python to check given number prime or not only code no comments",
+    "implement merge sort in python only code no comments",
     "implement quick sort in python only code no comments",
-    "write fun to check given string palindrome or not in python only code no comments",
+    "write function to check given string palindrome or not in python only code no comments",
     "implement deletion at end in linked list in python only code no comments",
-    "impleemnt insertion at begining in linked list in python only code no comments ",
-    "implement deletion of node at begining in linked list in python only code no comments",
-    "implement Min heap in python only code no comments",
-    "implement max heap in python only code no comments ",
-    "implement Binart Tree in python only code no comments",
+    "implement insertion at beginning in linked list in python only code no comments",
+    "implement deletion of node at beginning in linked list in python only code no comments",
+    "implement min heap in python only code no comments",
+    "implement max heap in python only code no comments",
+    "implement binary tree in python only code no comments",
     "implement BST in python only code no comments",
     "write function for reversing linked list in python only code no comments",
-    "write function for checking wheather given number is prime or not only code no comments",
+    "write function for checking whether given number is prime or not only code no comments",
     "implement stack using list in python only code no comments",
     "implement queue using list in python only code no comments",
 ]
@@ -257,7 +257,7 @@ class PatternMiner:
     def rule_key(rule: Rule) -> tuple[tuple[int, ...], int, str]:
         return (rule.ctx, rule.token, rule.tier)
 
-    def find_rule(self, tokens: list[int], banned: set[tuple[tuple[int, ...], int, str]] | None = None) -> Rule | None:
+    def find_rule(self, tokens: list[int], banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None) -> Rule | None:
         upto = min(self.max_ctx, len(tokens))
         for n in range(upto, 0, -1):
             rule = self.rules_by_len.get(n, {}).get(tuple(tokens[-n:]))
@@ -374,6 +374,29 @@ class PatternMiner:
             )
 
 
+class IndentStack:
+    def __init__(self):
+        self._stack: list[int] = [0]
+
+    def reset(self) -> None:
+        self._stack[:] = [0]
+
+    def current(self) -> int:
+        return self._stack[-1]
+
+    def push(self, level: int) -> None:
+        self._stack.append(level)
+
+    def pop(self) -> int:
+        if len(self._stack) > 1:
+            return self._stack.pop()
+        return self._stack[-1]
+
+    def dedent_to(self, target: int) -> None:
+        while len(self._stack) > 1 and self._stack[-1] > target:
+            self._stack.pop()
+
+
 class PythonSyntaxProposer:
     """Tiny Qwen-token syntax backoff for common Python code moves."""
 
@@ -416,12 +439,40 @@ class PythonSyntaxProposer:
             ids = model.tokenize(" " * n)
             if len(ids) == 1:
                 self.space_tokens[n] = ids[0]
+        self._running_text = ""
+        self._indent_stack = IndentStack()
+
+    def reset_cache(self) -> None:
+        self._running_text = ""
+        self._indent_stack.reset()
+
+    def feed_token(self, piece: str) -> None:
+        self._running_text += piece
 
     def _single(self, text: str) -> int | None:
         ids = self.model.tokenize(text)
         return ids[0] if len(ids) == 1 else None
 
+    def _sync_indent_stack(self, text: str) -> None:
+        lines = text.split("\n")
+        if len(lines) < 2:
+            return
+        prev = lines[-2].rstrip()
+        prev_indent = len(lines[-2]) - len(lines[-2].lstrip(" "))
+        curr_indent = len(lines[-1]) - len(lines[-1].lstrip(" "))
+
+        if prev.endswith(":") and lines[-2].strip():
+            expected = prev_indent + 4
+            if expected != self._indent_stack.current():
+                self._indent_stack.push(expected)
+        elif prev_indent > 0 and prev.strip().startswith(
+            ("return", "raise", "break", "continue", "pass")
+        ):
+            self._indent_stack.dedent_to(max(0, prev_indent - 4))
+
     def _text_tail(self, tokens: list[int], n: int = 64) -> str:
+        if self._running_text:
+            return self._running_text[-min(n, len(self._running_text)):]
         return "".join(self.model.token_piece(t) for t in tokens[-n:])
 
     @staticmethod
@@ -472,6 +523,7 @@ class PythonSyntaxProposer:
     def _indent_after_plain_newline(self, text: str) -> tuple[int | None, float, str]:
         if not text.endswith("\n") or text.endswith(("\n\n", ":\n", "):\n", "]:\n")):
             return None, 0.0, ""
+        self._sync_indent_stack(text)
         lines = text.split("\n")
         if len(lines) < 2 or lines[-1] != "":
             return None, 0.0, ""
@@ -481,10 +533,11 @@ class PythonSyntaxProposer:
             return None, 0.0, ""
         indent = len(prev) - len(prev.lstrip(" "))
 
-        # After a terminal control statement inside a nested block, Python
-        # usually dedents one level for the next sibling statement.
-        if indent >= 8 and stripped.startswith(("return", "raise", "break", "continue", "pass")):
-            return self._space_token_for_visual_indent(indent - 4), 0.94, "syntax_dedent_after_terminal"
+        # After a terminal control statement, use the indent stack to handle
+        # multi-level dedent (e.g. return inside nested if/for).
+        if stripped.startswith(("return", "raise", "break", "continue", "pass")) and indent > 0:
+            dedent_to = self._indent_stack.current()
+            return self._space_token_for_visual_indent(dedent_to), 0.94, "syntax_dedent_after_terminal"
 
         # In constructors Qwen often emits several self-field assignments in a
         # row. The next token is just the same indentation before " self".
@@ -501,11 +554,12 @@ class PythonSyntaxProposer:
     def find_rule(
         self,
         tokens: list[int],
-        banned: set[tuple[tuple[int, ...], int, str]] | None = None,
+        banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None,
     ) -> Rule | None:
         if not tokens:
             return None
         text = self._text_tail(tokens)
+        self._sync_indent_stack(text)
         if text.rstrip().endswith("```"):
             return None
 
@@ -650,7 +704,7 @@ def propose_draft(
     syntax: PythonSyntaxProposer | None,
     tokens: list[int],
     max_k: int,
-    banned: set[tuple[tuple[int, ...], int, str]] | None = None,
+    banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None,
     adaptive_k: bool = False,
 ) -> tuple[list[int], list[Rule]]:
     draft: list[int] = []
@@ -920,9 +974,13 @@ def run_speculative(
     proposed = accepted = draft_starts = greedy_emitted = 0
     reject_count = 0
     accept_hist = Counter()
-    banned_rules: set[tuple[tuple[int, ...], int, str]] = set()
+    banned_rules: dict[tuple[tuple[int, ...], int, str], int] = {}
     rule_strikes: Counter[tuple[tuple[int, ...], int, str]] = Counter()
     draft_mistakes = draft_mistakes if draft_mistakes is not None else Counter()
+    BAN_DECAY = 50  # unban rules after this many generated tokens
+    if syntax is not None:
+        syntax.reset_cache()
+        syntax.feed_token(prompt)
     start = now()
 
     while len(gen) < target:
@@ -935,13 +993,33 @@ def run_speculative(
 
         pending = gen[kv_len:]
         if len(pending) > 1:
-            raise RuntimeError(f"internal error: pending={pending}")
+            print(
+                f"\n[warn] pending={pending} > 1 (position {len(gen)}), "
+                f"falling back to greedy for this step",
+                file=sys.stderr,
+                flush=True,
+            )
+            gen = gen[:kv_len]
+            pending = []
+            model.truncate_kv(kv_len)
+            if gen:
+                t_recover = now()
+                recover_logits = model.decode_logits(gen[-1:], logits_all=False)[0]
+                times["decode"] += now() - t_recover
+                passes += 1
+                prev_pred = model.argmax(recover_logits)
 
         # If there is no pending token and no useful draft, emit the model's
         # already-known greedy token as pending. Next loop can draft after it.
         max_draft = max(0, min(k, remaining - 1))
         ctx_tail_ids = gen[max(0, len(gen) - 12):]
         pos = len(gen) - len(prompt_ids)
+
+        # Decay banned rules that are older than BAN_DECAY tokens
+        expired = [key for key, ban_pos in banned_rules.items() if pos - ban_pos > BAN_DECAY]
+        for key in expired:
+            del banned_rules[key]
+
         t0 = now()
         draft, rules = propose_draft(
             miner,
@@ -961,6 +1039,8 @@ def run_speculative(
         if not pending and not draft:
             gen.append(prev_pred)
             greedy_emitted += 1
+            if syntax is not None:
+                syntax.feed_token(model.token_piece(prev_pred))
             if prev_pred == model.eos or len(gen) >= target:
                 break
             continue
@@ -969,6 +1049,8 @@ def run_speculative(
         if not batch:
             gen.append(prev_pred)
             greedy_emitted += 1
+            if syntax is not None:
+                syntax.feed_token(model.token_piece(prev_pred))
             continue
 
         old_kv = kv_len
@@ -1015,7 +1097,7 @@ def run_speculative(
                         key = PatternMiner.rule_key(rules[j])
                         rule_strikes[key] += 1
                         if rule_strikes[key] >= strike_limit:
-                            banned_rules.add(key)
+                            banned_rules[key] = pos
                         if rules[j].tier == "draft_model":
                             draft_mistakes[(rules[j].ctx, rules[j].token)] += 1
                     break
@@ -1027,6 +1109,11 @@ def run_speculative(
             accepted_draft = 0
             clean_prefix = gen[:old_kv] + batch[:accepted_batch]
             model.reset()
+            if syntax is not None:
+                syntax.reset_cache()
+                syntax.feed_token(prompt)
+                for tok in clean_prefix[len(prompt_ids):]:
+                    syntax.feed_token(model.token_piece(tok))
             t1 = now()
             clean_logits = model.decode_logits(prompt_ids, logits_all=False)[0]
             rebuild_passes = 1
@@ -1065,6 +1152,11 @@ def run_speculative(
         kv_len = old_kv + accepted_batch
         model.truncate_kv(kv_len)
         prev_pred = bonus
+
+        if syntax is not None:
+            for tok in batch[:accepted_batch]:
+                syntax.feed_token(model.token_piece(tok))
+            syntax.feed_token(model.token_piece(bonus))
 
         tokens_generated = len(gen) - len(prompt_ids)
 

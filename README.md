@@ -37,7 +37,7 @@ export OPENAI_API_KEY=dummy
 $ structspec detect
 Structspec detection report
 Selected backend: lm-studio
-GPU(s): NVIDIA GeForce RTX 4050 Laptop GPU, 6141 MiB
+GPU(s): NVIDIA GeForce RTX, 6141 MiB
 LM Studio: running
 
 $ structspec serve --backend lm-studio
@@ -85,11 +85,11 @@ structspec serve --backend vllm --target-base-url http://localhost:8000/v1
 
 HumanEval (first 20 tasks, 128 tokens, Qwen2.5-7B-Instruct Q4_K_M, RTX 4050 laptop, live mining on):
 
-| Backend | Model | Dataset | Baseline tok/s | Structspec tok/s | Speedup | Notes |
-|---|---|---:|---:|---:|---:|---|
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.37x** | 1.37x | Fresh run (82.64% accept, 19.07% fire) |
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.33x** | 1.33x | Adaptive K conservative |
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | 1.00x | **1.27x** | 1.27x | Adaptive K balanced |
+| Backend | Model | Dataset | Reject Mode | Baseline tok/s | Structspec tok/s | Speedup | Notes |
+|---|---|---|---:|---:|---:|---:|---:|---|
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | truncate | 1.00x | **1.37x** | 1.37x | Fresh run (82.64% accept, 19.07% fire) |
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | seq-bonus | 1.00x | **1.33x** | 1.33x | Adaptive K conservative |
+| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | seq-bonus | 1.00x | **1.27x** | 1.27x | Adaptive K balanced |
 
 Key metrics (fresh run):
 - Wall speedup: **1.37x**
@@ -135,6 +135,10 @@ pytest
 # Lint
 ruff check structspec tests
 ```
+
+## Topics
+
+`speculative-decoding` `llm-inference` `llama-cpp` `local-llm` `python` `zero-vram` `vllm` `openai-api` `code-generation`
 
 ## License
 
