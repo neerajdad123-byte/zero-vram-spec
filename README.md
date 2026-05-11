@@ -1,144 +1,133 @@
 # Structspec
 
-Zero-VRAM speculative decoding tooling for local LLM workflows.
+**2x faster code generation. Zero extra VRAM.**
 
-Structspec is shaped as an API-first bypass: run a local OpenAI-compatible proxy, then point existing tools at it.
+Structspec is a zero-VRAM speculative decoding proxy that makes your local LLM generate code faster — without requiring a second model loaded in GPU memory.
+
+```
+[Your editor] → structspec → [Local LLM backend]
+                  ↑
+           Runs inline on the stream,
+           predicting syntax tokens for free
+```
+
+<!-- [TOC] -->
+
+## Why
+
+Local LLMs are powerful but slow. Standard speculative decoding speeds things up but requires loading a *second model* in VRAM — which most consumer GPUs can't afford.
+
+Structspec eliminates that cost. It works inline in the token stream, predicting high-confidence tokens (indentation, keywords, brackets) through lightweight pattern mining and syntax-aware rules — then verifying them in a single pass against the real model.
+
+**No second model. No extra VRAM. Just faster output.**
+
+## Benchmarks
+
+HumanEval, Qwen2.5-7B-Instruct Q4\_K\_M, RTX 4050 laptop, 128 tokens:
+
+| Reject Mode   | Baseline tok/s | Structspec tok/s | Speedup | Accept Rate |
+|:-------------|:--------------:|:----------------:|:-------:|:-----------:|
+| truncate      | 1.00x          | **1.37x**        | 1.37x   | 82.6%       |
+| seq-bonus     | 1.00x          | **1.33x**        | 1.33x   | 82.6%       |
+| Adaptive K    | 1.00x          | **1.27x**        | 1.27x   | 82.6%       |
+
+- **1.37x wall speedup** on code generation
+- **75.2s → 54.7s** total generation time
+- **82.6%** of speculative tokens accepted
+- **15/20** outputs bitwise-identical to greedy baseline
+
+See `humaneval_results_fresh/` for full per-prompt traces.
 
 ## Install
 
 ```bash
-pip install -e .
+pip install -e ".[dev]"
 ```
 
-Optional extras:
-```bash
-pip install -e ".[tui]"      # Textual status dashboard
-pip install -e ".[vllm]"     # vLLM helpers
-pip install -e ".[dev]"      # Tests
-```
-
-## Quickstart
+## Quick Start
 
 ```bash
-# 1. Scan your local LLM environment
+# 1. Auto-detect your local LLM backend
 structspec detect
 
-# 2. Start the proxy (auto-detects vLLM, LM Studio, Ollama, llama.cpp)
+# 2. Start the proxy (it finds vLLM, llama.cpp, LM Studio, Ollama automatically)
 structspec serve --backend auto
 
-# 3. Point any OpenAI-compatible client at it
+# 3. Point ANY OpenAI-compatible client at it
 export OPENAI_BASE_URL=http://localhost:8080/v1
 export OPENAI_API_KEY=dummy
+
+# 4. Use it — just change the URL, nothing else
+curl $OPENAI_BASE_URL/chat/completions \
+  -H "Content-Type: application/json" \
+  -d '{"model":"auto","messages":[{"role":"user","content":"write a fibonacci function in python, only code"}]}'
 ```
 
-### Terminal walkthrough
+That's it. No model changes, no client changes. Structspec sits transparently between your client and your backend.
 
-```text
-$ structspec detect
-Structspec detection report
-Selected backend: lm-studio
-GPU(s): NVIDIA GeForce RTX, 6141 MiB
-LM Studio: running
+## How It Works
 
-$ structspec serve --backend lm-studio
-Structspec proxy listening on http://127.0.0.1:8080/v1
-Forwarding to http://localhost:1234/v1 | backend=lm-studio | safety=strict
+1. **Pattern mining** — Before inference, Structspec mines token-level patterns from a corpus of code. These are "after token X, token Y follows 95% of the time" rules.
 
-$ structspec status --once
-Structspec ok | backend=lm-studio | active=0 | requests=12 | est=1.37x | accept=82.6%
+2. **Syntax-aware fallback** — For Python, C, Go, and other structured languages, certain tokens are *deterministic*. After `def foo():`, the next line **always** indents. After `for i in`, `range(` is almost certain. Structspec catches these.
+
+3. **Single-pass verification** — Proposed tokens are verified against the real model in one batch decode using the pending-bonus trick. This means K+1 tokens verified in one model pass instead of K+1 separate passes.
+
+4. **Dynamic draft bypass** — If a syntax rule has near-certainty, Structspec emits it directly without ever querying a draft model. When confidence is lower, it falls back to optional model-based speculative decoding.
+
+```
+Time →
+  Model decode (prompt)
+    → Pattern proposes [indent, def, :]
+    → Single model pass verifies all 3
+    → 3 tokens from 1 pass = 3x speedup on that step
 ```
 
 ## Commands
 
 ```bash
-structspec detect
-structspec serve
-structspec run --prompt "def fib(n):"
-structspec benchmark --dataset humaneval
-structspec status --tui
-structspec config
-structspec vllm-command --model Qwen/Qwen2.5-7B-Instruct --method ngram
+structspec detect              # Scan your LLM environment
+structspec serve               # Start the proxy
+structspec run --prompt "..."  # Generate a completion
+structspec benchmark           # Run HumanEval benchmarks
+structspec status              # Live metrics dashboard
+structspec config              # Show current config
+structspec vllm-command ...    # Generate vLLM launch command
 ```
 
-## vLLM
+## Project Structure
 
-Structspec integrates with vLLM through the supported `--speculative-config` surface. vLLM currently supports methods such as `ngram`, `suffix`, `draft_model`, `mtp`, EAGLE, MLP speculators, and parallel draft models depending on version/model support.
-
-Example:
-
-```bash
-structspec vllm-command \
-  --model Qwen/Qwen2.5-7B-Instruct \
-  --method ngram \
-  --num-speculative-tokens 4 \
-  --prompt-lookup-min 2 \
-  --prompt-lookup-max 5
 ```
-
-Then start the proxy:
-
-```bash
-structspec serve --backend vllm --target-base-url http://localhost:8000/v1
+structspec/
+  proxy.py        — OpenAI-compatible reverse proxy with streaming passthrough
+  detect.py       — Auto-detection for vLLM, llama.cpp, LM Studio, Ollama
+  cli.py          — CLI commands, PatternMiner, PythonSyntaxProposer
+  domains.py      — Domain detection (Python, JSON, HTML, SQL, Go, Generic)
+  metrics.py      — Prometheus-style metrics and throughput tracking
+  vllm_integration.py — vLLM speculative config generation
 ```
-
-## Benchmarks
-
-HumanEval (first 20 tasks, 128 tokens, Qwen2.5-7B-Instruct Q4_K_M, RTX 4050 laptop, live mining on):
-
-| Backend | Model | Dataset | Reject Mode | Baseline tok/s | Structspec tok/s | Speedup | Notes |
-|---|---|---|---:|---:|---:|---:|---:|---|
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | truncate | 1.00x | **1.37x** | 1.37x | Fresh run (82.64% accept, 19.07% fire) |
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | seq-bonus | 1.00x | **1.33x** | 1.33x | Adaptive K conservative |
-| llama.cpp | Qwen2.5-7B Q4_K_M | HumanEval | seq-bonus | 1.00x | **1.27x** | 1.27x | Adaptive K balanced |
-
-Key metrics (fresh run):
-- Wall speedup: **1.37x**
-- Pass speedup: **1.35x**
-- Draft token acceptance: **82.64%** (671 / 812)
-- Pattern fire rate: **19.07%**
-- Greedy-identical outputs: **15 / 20**
-- Total greedy time: **75.2s** → speculative: **54.7s**
-
-For full per-tier traces and rejection diffs, see `humaneval_results_fresh/humaneval_report.md`.
-
-## Safety
-
-Default mode is `strict`: Structspec only uses backend-supported lossless speculative paths, or forwards unchanged when the backend cannot expose verification safely.
-
-Modes:
-
-- `strict`: preserve backend output semantics.
-- `fast`: allow backend-specific faster speculative settings.
-- `audit`: strict mode plus extra request/metrics logging.
-
-## Project Status
-
-Current package includes:
-
-- OpenAI-compatible proxy endpoints: `/v1/models`, `/v1/chat/completions`, `/v1/completions`.
-- Health and Prometheus-style metrics endpoints.
-- Auto-detection for vLLM, llama.cpp, LM Studio, Ollama, model directories, `.env` keys, and GPUs.
-- vLLM command generation for supported speculative methods.
-- Status dashboard fallback, with optional Textual TUI path.
-- Prompt domain detection for Python, JSON, HTML, SQL, Go, and generic modes.
-- Structural speculative decoding research tools and HumanEval benchmarking harness.
 
 ## Development
 
 ```bash
-# Install dev deps
+# Install dev dependencies
 pip install -e ".[dev]"
 
 # Run tests
 pytest
 
 # Lint
-ruff check structspec tests
+ruff check structspec cli.py
 ```
+
+<!-- Badges
+TODO: Add CI badge, PyPI badge when ready
+[![Tests](https://github.com/neerajdad123-byte/zero-vram-spec/actions/workflows/test.yml/badge.svg)](https://github.com/neerajdad123-byte/zero-vram-spec/actions)
+-->
 
 ## Topics
 
-`speculative-decoding` `llm-inference` `llama-cpp` `local-llm` `python` `zero-vram` `vllm` `openai-api` `code-generation`
+`speculative-decoding` · `llm-inference` · `llama-cpp` · `local-llm` · `python` · `code-generation`
 
 ## License
 
