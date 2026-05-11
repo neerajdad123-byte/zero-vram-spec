@@ -327,14 +327,16 @@ class PythonAstProposer:
                 )
 
         # 2. Colon after a compound-statement header with balanced parens.
+        # Qwen often tokenizes ":\n" as a single token; predict that.
         if (
             not state.bracket_stack
             and state.line_is_header_keyword
             and state.line_ends_with_balanced_paren_close
             and not state.expects_indent
+            and not state.line_buffer.rstrip().endswith(":")
         ):
             return Prediction(
-                text=":",
+                text=":\n",
                 confidence=Confidence.HARD,
                 reason="colon_after_header_paren",
             )

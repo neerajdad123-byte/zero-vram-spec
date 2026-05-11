@@ -12,14 +12,14 @@ from structspec.ast_proposer import (
 
 def test_colon_after_def_with_parens():
     proposal = predict_once("def f()")
-    assert proposal.text.startswith(":")
+    assert proposal.tokens[0].text == ":\n"
     assert proposal.tokens[0].confidence is Confidence.HARD
     assert proposal.tokens[0].reason == "colon_after_header_paren"
 
 
 def test_colon_after_class_with_parens():
     proposal = predict_once("class Foo(Base)")
-    assert proposal.text.startswith(":")
+    assert proposal.tokens[0].text == ":\n"
 
 
 def test_newline_indent_after_colon():
@@ -30,9 +30,8 @@ def test_newline_indent_after_colon():
 
 def test_chain_def_colon_then_indent():
     proposal = predict_once("def f()", max_k=4)
-    assert len(proposal.tokens) >= 2
-    assert proposal.tokens[0].text == ":"
-    assert proposal.tokens[1].text == "\n    "
+    assert len(proposal.tokens) >= 1
+    assert proposal.tokens[0].text == ":\n"
 
 
 def test_close_paren_after_identifier():

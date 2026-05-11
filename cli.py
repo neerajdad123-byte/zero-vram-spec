@@ -720,29 +720,7 @@ def propose_draft(
     draft: list[int] = []
     used: list[Rule] = []
     tmp = list(tokens)
-    ctx_tail = tuple(tmp[-8:])
     chain_limit = max_k
-
-    # Try AST proposer first for HARD/MEDIUM grammar-guaranteed tokens
-    if ast_proposer is not None and tokenize_fn is not None:
-        ast_proposal = ast_proposer.propose(max_k=max_k)
-        for pred in ast_proposal.tokens:
-            if len(draft) >= max_k:
-                break
-            tok_ids = tokenize_fn(pred.text)
-            if not tok_ids:
-                continue
-            for tid in tok_ids:
-                if len(draft) >= max_k:
-                    break
-                draft.append(tid)
-                used.append(Rule(ctx_tail, tid, 0.99, 999, 1000, "ast_" + pred.reason))
-            # MEDIUM predictions stop the chain after one token
-            if pred.confidence == Confidence.MEDIUM:
-                break
-        if draft:
-            return draft, used
-
     for step in range(max_k):
         mined = miner.find_rule(tmp, banned=banned)
         syntactic = syntax.find_rule(tmp, banned=banned) if syntax is not None else None
@@ -754,6 +732,20 @@ def propose_draft(
             rule = syntactic
         else:
             rule = mined
+
+        # If neither miner nor syntax fired, try AST proposer as fallback
+        if rule is None and ast_proposer is not None and tokenize_fn is not None:
+            ast_proposal = ast_proposer.propose(max_k=1)
+            for pred in ast_proposal.tokens:
+                if pred.confidence != Confidence.HARD:
+                    continue
+                tok_ids = tokenize_fn(pred.text)
+                if not tok_ids:
+                    continue
+                ctx = tuple(tmp[-8:])
+                rule = Rule(ctx, tok_ids[0], 0.99, 999, 1000, "ast_" + pred.reason)
+                break
+
         if rule is None:
             break
         if adaptive_k:
