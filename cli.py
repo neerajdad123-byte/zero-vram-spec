@@ -762,6 +762,22 @@ def propose_draft(
             )
             if not is_high_trust and (rule.confidence < miner.det_conf or rule.support < 3):
                 break
+        # Stop chaining after one indent/structural prediction.
+        # These tokens signal new blocks; the model rarely needs multiple in sequence.
+        if step > 0 and rule.tier in {
+            "syntax_indent",
+            "syntax_dunder_init",
+            "syntax_dunder_paren",
+            "syntax_dunder_self",
+            "syntax_def_colon",
+            "syntax_block_colon",
+            "syntax_code_fence_class",
+            "syntax_code_fence_def",
+            "syntax_class_next_method",
+        }:
+            draft.append(rule.token)
+            used.append(rule)
+            break
         draft.append(rule.token)
         used.append(rule)
         tmp.append(rule.token)
@@ -793,11 +809,14 @@ def adaptive_rule_k(rule: Rule, max_k: int) -> int:
         "syntax_block_colon",
         "syntax_none_guard_colon",
         "syntax_def_colon",
+    }:
+        return min(max_k, 4)
+    if tier in {
         "syntax_dunder_init",
         "syntax_dunder_paren",
         "syntax_dunder_self",
     }:
-        return min(max_k, 8)
+        return min(max_k, 2)
     if tier in {"syntax_return_terminal", "syntax_minus_one", "syntax_for_in"}:
         return min(max_k, 2)
     if tier.startswith("syntax_"):
