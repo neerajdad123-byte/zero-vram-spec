@@ -22,28 +22,14 @@ import json
 import re
 import sys
 import time
+import collections
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable, Optional
+from typing import Iterable
 
 import numpy as np
 from llama_cpp import Llama, LlamaCache
-
-try:
-    from structspec.ast_proposer import Confidence, PythonAstProposer
-    AST_PROPOSER_AVAILABLE = True
-except ImportError:
-    Confidence = None  # type: ignore[assignment]
-    PythonAstProposer = None  # type: ignore[assignment]
-    AST_PROPOSER_AVAILABLE = False
-
-try:
-    from .viz import RichVisualizer, TokenEvent, RICH_AVAILABLE
-except ImportError:
-    RICH_AVAILABLE = False
-    RichVisualizer = None  # type: ignore[misc,assignment]
-    TokenEvent = None  # type: ignore[misc,assignment]
 
 
 if hasattr(sys.stdout, "reconfigure"):
@@ -52,25 +38,28 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
-# No hardcoded defaults — users must supply valid paths via CLI arguments.
-# This keeps the tool portable across operating systems and environments.
+DEFAULT_MODEL = (
+    r"C:\Users\neera\.lmstudio\models\Qwen\Qwen2.5-7B-Instruct-GGUF"
+    r"\qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
+)
+DEFAULT_JSON = r"C:\Users\neera\OneDrive\Desktop\sep\engineering_dsa_tokens.json"
 
 
 PROMPTS = [
     "implement linked list in python only code no comments",
     "implement fibonacci in python, no comments, only code:",
-    "implement BST in python, only code, no comments",
-    "reverse a list in python, only code, no comments",
-    "reverse linked list in python, no comments, only code",
+    "implement BST in python ,only code,no comments ",
+    "reverse a list in python,only code,no comments",
+    "reverse linked list in python ,no comments ,only code",
     "write function in python to check given number prime or not only code no comments",
-    "implement merge sort in python only code no comments",
+    "implement merge sort in python only code no comments ",
     "implement quick sort in python only code no comments",
     "write function to check given string palindrome or not in python only code no comments",
     "implement deletion at end in linked list in python only code no comments",
-    "implement insertion at beginning in linked list in python only code no comments",
+    "implement insertion at beginning in linked list in python only code no comments ",
     "implement deletion of node at beginning in linked list in python only code no comments",
-    "implement min heap in python only code no comments",
-    "implement max heap in python only code no comments",
+    "implement Min heap in python only code no comments",
+    "implement max heap in python only code no comments ",
     "implement binary tree in python only code no comments",
     "implement BST in python only code no comments",
     "write function for reversing linked list in python only code no comments",
@@ -164,6 +153,287 @@ class Rule:
     tier: str
 
 
+# ─────────────────────────────────────────────
+# METHOD 3 — RuleStats + Registry (per-rule cooldown/pre-reject)
+# ─────────────────────────────────────────────
+class RuleStats:
+    __slots__ = ("name", "offline_conf", "fires", "accepts", "rejects",
+                 "consecutive_rejects", "last_five", "cooldown_remaining")
+    def __init__(self, name: str, offline_conf: float):
+        self.name = name
+        self.offline_conf = offline_conf
+        self.fires = 0
+        self.accepts = 0
+        self.rejects = 0
+        self.consecutive_rejects = 0
+        self.last_five: list[int] = []
+        self.cooldown_remaining = 0
+
+    @property
+    def live_acceptance_rate(self) -> float:
+        if len(self.last_five) < 3:
+            return self.offline_conf
+        return sum(self.last_five) / len(self.last_five)
+
+    def should_fire(self) -> bool:
+        if self.cooldown_remaining > 0: return False
+        if self.consecutive_rejects >= 5: return False
+        if self.live_acceptance_rate < 0.55: return False
+        return True
+
+    def record_accept(self, pos: int):
+        self.fires += 1; self.accepts += 1; self.consecutive_rejects = 0
+        self.last_five.append(1)
+        if len(self.last_five) > 5: self.last_five.pop(0)
+
+    def record_reject(self, pos: int):
+        self.fires += 1; self.rejects += 1; self.consecutive_rejects += 1
+        self.last_five.append(0)
+        if len(self.last_five) > 5: self.last_five.pop(0)
+        if self.consecutive_rejects >= 5:
+            self.cooldown_remaining = 3
+
+    def tick_cooldown(self):
+        if self.cooldown_remaining > 0:
+            self.cooldown_remaining -= 1
+
+
+class RuleStatsRegistry:
+    def __init__(self):
+        self._reg: dict[str, RuleStats] = {}
+    def get_or_create(self, name: str, conf: float) -> RuleStats:
+        if name not in self._reg:
+            self._reg[name] = RuleStats(name, conf)
+        return self._reg[name]
+    def tick_all(self):
+        for s in self._reg.values(): s.tick_cooldown()
+    def summary(self):
+        return {n: {"fires": s.fires, "accepts": s.accepts, "rejects": s.rejects,
+                    "accept_rate": s.live_acceptance_rate, "cooldown": s.cooldown_remaining}
+                for n, s in self._reg.items()}
+
+
+# ─────────────────────────────────────────────
+# METHOD 8 — Adaptive K Controller
+# ─────────────────────────────────────────────
+class AdaptiveKController:
+    def __init__(self, k_init=4, k_min=1, k_max=12, window=10,
+                 up_thresh=0.93, down_thresh=0.80):
+        self.k = k_init; self.k_min = k_min; self.k_max = k_max
+        self.window = collections.deque(maxlen=window)
+        self.up_thresh = up_thresh; self.down_thresh = down_thresh
+    def get_k(self) -> int: return self.k
+    def update(self, accepted: int, proposed: int):
+        if proposed == 0: return
+        rate = accepted / proposed
+        self.window.append(rate)
+        if len(self.window) < 3: return
+        avg = sum(self.window) / len(self.window)
+        if avg > self.up_thresh:
+            self.k = min(self.k + 1, self.k_max)
+        elif avg < self.down_thresh:
+            self.k = max(self.k - 1, self.k_min)
+    def full_reject_penalty(self):
+        self.k = max(self.k_min, self.k - 2)
+
+
+# ─────────────────────────────────────────────
+# METHOD 6 — LastTargetTopKFilter (pre-verify guidance)
+# ─────────────────────────────────────────────
+class LastTargetTopKFilter:
+    def __init__(self, top_k=5):
+        self.top_k = top_k
+        self._top_ids: set[int] = set()
+        self._ready = False
+    def update(self, last_logits_row: np.ndarray):
+        # last_logits_row: shape (vocab_size,)
+        top = np.argpartition(-last_logits_row, self.top_k)[:self.top_k]
+        self._top_ids = set(top.tolist())
+        self._ready = True
+    def first_token_ok(self, token_id: int) -> bool:
+        if not self._ready: return True
+        return token_id in self._top_ids
+
+
+# ─────────────────────────────────────────────
+# LIVE LOCAL N-GRAM MINER — conservative, only proven continuations
+# ─────────────────────────────────────────────
+class LiveNgramMiner:
+    """Tracks only n-gram continuations that were VERIFIED accepted by target model.
+    Only proposes when the same suffix had the SAME continuation before."""
+
+    def __init__(self, max_n: int = 4, window: int = 128):
+        self.max_n = max_n
+        self.window = window
+        self._history: list[int] = []
+        # gram -> Counter of next tokens (only from verified accepts)
+        self._next_counts: dict[tuple[int, ...], dict[int, int]] = {}
+
+    def feed_accepted(self, tokens: list[int]):
+        """Feed a sequence of tokens that were ACCEPTED by target model."""
+        self._history.extend(tokens)
+        if len(self._history) > self.window:
+            self._history = self._history[-self.window:]
+        # Index verified continuations
+        for i in range(len(tokens)):
+            abs_i = len(self._history) - len(tokens) + i
+            if abs_i == 0:
+                continue
+            for n in range(1, self.max_n + 1):
+                if abs_i < n:
+                    continue
+                gram = tuple(self._history[abs_i - n:abs_i])
+                nxt = self._history[abs_i]
+                self._next_counts.setdefault(gram, {})
+                self._next_counts[gram][nxt] = self._next_counts[gram].get(nxt, 0) + 1
+
+    def propose(self, context: list[int], max_k: int) -> list[int] | None:
+        """Only propose if every step has a single dominant next token (>80%)."""
+        if not self._history or max_k <= 0:
+            return None
+        result: list[int] = []
+        tmp = list(context)
+        for _ in range(min(max_k, 2)):  # cap at 2 to limit rejection cost
+            gram = None
+            for n in range(self.max_n, 0, -1):
+                if len(tmp) >= n:
+                    g = tuple(tmp[-n:])
+                    if g in self._next_counts:
+                        gram = g
+                        break
+            if gram is None:
+                break
+            counts = self._next_counts[gram]
+            total = sum(counts.values())
+            best_tok, best_cnt = max(counts.items(), key=lambda x: x[1])
+            if best_cnt / total < 0.80:  # not deterministic enough
+                break
+            result.append(best_tok)
+            tmp.append(best_tok)
+        return result if result else None
+
+
+# ─────────────────────────────────────────────
+# METHOD 2 — EarlyExitDraftController
+# ─────────────────────────────────────────────
+class EarlyExitDraftController:
+    def __init__(self, min_accept=0.80, min_conf=0.88, risk_thresh=0.30):
+        self.min_accept = min_accept
+        self.min_conf = min_conf
+        self.risk_thresh = risk_thresh
+        self.pos_risk: dict[tuple[int, int], tuple[int, int]] = {}  # (hash,pos) -> (rejects, fires)
+    def should_extend(self, pat_hash: int, conf: float, accept_rate: float, pos: int) -> bool:
+        if accept_rate < self.min_accept: return False
+        if pos >= 2 and conf < self.min_conf: return False
+        key = (pat_hash, pos)
+        if key in self.pos_risk:
+            rej, fires = self.pos_risk[key]
+            if fires > 5 and (rej / fires) > self.risk_thresh:
+                return False
+        return True
+    def record_outcome(self, pat_hash: int, pos: int, rejected: bool):
+        key = (pat_hash, pos)
+        rej, fires = self.pos_risk.get(key, (0, 0))
+        self.pos_risk[key] = (rej + (1 if rejected else 0), fires + 1)
+
+
+# ─────────────────────────────────────────────
+# METHOD 7 — EntropyProxyAbort
+# ─────────────────────────────────────────────
+class EntropyProxyAbort:
+    def __init__(self, max_rules=5, min_best_conf=0.85):
+        self.max_rules = max_rules
+        self.min_best_conf = min_best_conf
+    def assess(self, rules: list) -> str:
+        if not rules: return "greedy"
+        if len(rules) > self.max_rules: return "short_k"
+        best = max(r.confidence for r in rules)
+        return "short_k" if best < self.min_best_conf else "full_k"
+
+
+# ─────────────────────────────────────────────
+# METHOD 1 — RecoveryModeSelector (A/B)
+# ─────────────────────────────────────────────
+class RecoveryModeSelector:
+    def __init__(self, calibration=40):
+        self.cal = calibration
+        self.stats = {"truncate": {"time":0.0, "tokens":0, "rounds":0},
+                      "seq_bonus": {"time":0.0, "tokens":0, "rounds":0}}
+        self.round = 0; self.locked = None
+    def get_mode(self) -> str:
+        return self.locked if self.locked else ("truncate" if self.round % 2 == 0 else "seq_bonus")
+    def record(self, mode: str, accepted_tokens: int, elapsed: float):
+        if self.locked: return
+        s = self.stats[mode]
+        s["time"] += elapsed; s["tokens"] += max(accepted_tokens, 1); s["rounds"] += 1
+        self.round += 1
+        if self.round >= self.cal and not self.locked:
+            scores = {m: s["time"]/s["tokens"] for m,s in self.stats.items() if s["tokens"]>0}
+            if scores:
+                self.locked = min(scores, key=scores.get)
+                print(f"[Recovery] locked={self.locked}  scores: { {k:f'{v*1000:.2f}ms/tok' for k,v in scores.items()} }")
+
+
+# ─────────────────────────────────────────────
+# METHOD 5 — GreedyCorrectionSampler
+# ─────────────────────────────────────────────
+class GreedyCorrectionSampler:
+    @staticmethod
+    def batch_verify(target_logits: np.ndarray, draft_ids: list[int], ctx_len: int):
+        """Return (accepted_count, reject_pos, correction_token)."""
+        num_draft = len(draft_ids)
+        preds = np.argmax(target_logits[ctx_len: ctx_len+num_draft], axis=1)
+        for i, (pred, draft) in enumerate(zip(preds, draft_ids)):
+            if int(pred) != draft:
+                return i, i, int(pred)  # accepted=i, reject_pos=i, correction=pred
+        # all accepted
+        bonus = int(np.argmax(target_logits[ctx_len + num_draft]))
+        return num_draft, -1, bonus
+
+
+# ─────────────────────────────────────────────
+# SPEED TRACE COLLECTOR
+# ─────────────────────────────────────────────
+class SpeedTraceCollector:
+    """Writes one JSON line per prompt to speed_trace.jsonl."""
+    def __init__(self, path: str):
+        self.path = path
+        self._file = open(path, "a", encoding="utf-8")
+        self.current: dict | None = None
+
+    def start(self, prompt_id: int, prompt_text: str, greedy_time: float, greedy_passes: int):
+        self.current = {
+            "prompt_id": prompt_id,
+            "prompt_name": prompt_text[:60],
+            "greedy_time": greedy_time,
+            "greedy_passes": greedy_passes,
+            # fields filled at finish:
+            "spec_time": 0.0,
+            "spec_passes": 0,
+            "tokens_generated": 0,
+            "fire_count": 0,
+            "draft_proposed": 0,
+            "draft_accepted": 0,
+            "reject_count": 0,
+            "reject_recover_time": 0.0,
+            "verify_time": 0.0,
+            "pattern_time": 0.0,
+            "k_final": 0,
+            "rule_stats": [],
+        }
+
+    def finish(self, **kwargs):
+        if self.current is None:
+            return
+        self.current.update(kwargs)
+        self._file.write(json.dumps(self.current) + "\n")
+        self._file.flush()
+        self.current = None
+
+    def close(self):
+        self._file.close()
+
+
 def now() -> float:
     return time.perf_counter()
 
@@ -207,10 +477,10 @@ class PatternMiner:
         self,
         token_text: dict[int, str],
         max_ctx: int = 8,
-        min_support: int = 1,          # relaxed from 2 → 1
-        min_conf: float = 0.85,        # relaxed from 0.96 → 0.85
+        min_support: int = 2,
+        min_conf: float = 0.78,
         det_conf: float = 0.96,
-        min_rule_ctx: int = 4,         # raised from 2 → 4 (P3)
+        min_rule_ctx: int = 2,
     ):
         self.token_text = token_text
         self.max_ctx = max_ctx
@@ -265,21 +535,37 @@ class PatternMiner:
     def rule_key(rule: Rule) -> tuple[tuple[int, ...], int, str]:
         return (rule.ctx, rule.token, rule.tier)
 
-    def find_rule(self, tokens: list[int], banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None) -> Rule | None:
+    def find_rule(self, tokens: list[int], banned: set | dict | None = None) -> Rule | None:
         upto = min(self.max_ctx, len(tokens))
+        tail = tokens[-self.max_ctx:] if len(tokens) >= self.max_ctx else tokens
+        tail_len = len(tail)
         for n in range(upto, 0, -1):
-            rule = self.rules_by_len.get(n, {}).get(tuple(tokens[-n:]))
-            if rule is not None and rule.tier == "det_ctx6" and rule.support < 10:
+            bucket = self.rules_by_len.get(n)
+            if bucket is None:
                 continue
-            if rule is not None and (banned is None or self.rule_key(rule) not in banned):
+            ctx = tuple(tail[tail_len - n:]) if tail_len >= n else tuple(tokens[-n:])
+            rule = bucket.get(ctx)
+            if rule is None:
+                continue
+            if rule.tier == "det_ctx6" and rule.support < 10:
+                continue
+            if banned is None or self.rule_key(rule) not in banned:
                 return rule
         return None
+
+    # Per-tier max draft length caps — low-accuracy tiers get k=1 only
+    TIER_K_CAPS: dict[str, int] = {
+        "det_ctx5": 1,
+        "syntax_while_colon": 1,
+        "syntax_class_method_indent": 1,
+        "syntax_code_fence_class": 1,
+    }
 
     def propose(
         self,
         tokens: list[int],
         max_k: int,
-        banned: set[tuple[tuple[int, ...], int, str]] | None = None,
+        banned: set | dict | None = None,
     ) -> tuple[list[int], list[Rule]]:
         draft: list[int] = []
         used: list[Rule] = []
@@ -288,10 +574,15 @@ class PatternMiner:
             rule = self.find_rule(tmp, banned=banned)
             if rule is None:
                 break
-            # Long drafts must be deterministic-ish. Low-confidence rules are
-            # allowed as the first guess only; otherwise they waste target eval.
-            if step > 0 and (rule.confidence < self.det_conf or rule.support < 3):
+            # Tier-specific cap: some rules only ever draft 1 token
+            tier_cap = self.TIER_K_CAPS.get(rule.tier, max_k)
+            if step >= tier_cap:
                 break
+            # Allow strong_ctx rules (0.90+) to chain longer; others need det_conf
+            if step > 0:
+                is_strong = rule.tier.startswith("strong_ctx") and rule.confidence >= 0.90
+                if not is_strong and (rule.confidence < self.det_conf or rule.support < 3):
+                    break
             draft.append(rule.token)
             used.append(rule)
             tmp.append(rule.token)
@@ -382,36 +673,55 @@ class PatternMiner:
             )
 
 
-class IndentStack:
-    def __init__(self):
-        self._stack: list[int] = [0]
-
-    def reset(self) -> None:
-        self._stack[:] = [0]
-
-    def current(self) -> int:
-        return self._stack[-1]
-
-    def push(self, level: int) -> None:
-        self._stack.append(level)
-
-    def pop(self) -> int:
-        if len(self._stack) > 1:
-            return self._stack.pop()
-        return self._stack[-1]
-
-    def dedent_to(self, target: int) -> None:
-        while len(self._stack) > 1 and self._stack[-1] > target:
-            self._stack.pop()
-
-
 class PythonSyntaxProposer:
     """Tiny Qwen-token syntax backoff for common Python code moves."""
+
+    # Pre-compiled regexes — avoid recompilation on every token step
+    _RE_FOR_IN = re.compile(r"^\s*for\s+[A-Za-z_][A-Za-z0-9_]*$")
+    _RE_FOR_RANGE = re.compile(r"^\s*for\s+[A-Za-z_][A-Za-z0-9_]*\s+in$")
+    _RE_RANGE_PAREN = re.compile(r"^\s*for\b.*\brange$")
+    _RE_WHILE_TRUE = re.compile(r"\bwhile\s+True$")
+    _RE_WHILE_VAR = re.compile(r"^\s*while\s+[A-Za-z_]\w*$")
+    _RE_IF_NAME = re.compile(r"\bif\s+__name__$")
+    _RE_IF_NAME_EQ = re.compile(r"\bif\s+__name__\s+==$")
+    _RE_IF_NAME_MAIN = re.compile(r'\bif\s+__name__\s+==\s+"__main__"$')
+    _RE_ELIF_COLON = re.compile(r"^\s*elif\b.*\)$")
+    _RE_FOR_RANGE_COLON = re.compile(r"^\s*for\b.*range\([^\)]+\)$")
+    _RE_N_GUARD = re.compile(r"if\s+n\s*<=\s*1$")
+    _RE_RETURN_LEN = re.compile(r"\breturn\s+len$")
+    _RE_SUPER = re.compile(r"\bsuper\(\)$")
+    _RE_SUPER_INIT = re.compile(r"\bsuper\(\)\.__init__\($")
+    _RE_DUNDER_INIT = re.compile(r"\bdef\s+__$")
+    _RE_DUNDER_PAREN = re.compile(r"\bdef\s+__init$")
+    _RE_DUNDER_SELF = re.compile(r"\bdef\s+__init__\($")
+    _RE_DEF_COLON = re.compile(r"^(def|class)\b.*\)[^:]$")
+    _RE_FLOOR_DIV = re.compile(r"//\s$")
+    _RE_PLUSEQ = re.compile(r"\+=\s$")
+    _RE_NONE_GUARD = re.compile(r"^.*\bif\b.*\bis\s+(not\s+)?None$")
+    _RE_WITH_AS = re.compile(r"^.*\)\s+as\s+[A-Za-z_][A-Za-z0-9_]*$")
+    _RE_FIB = re.compile(r"\(n\s*-\s*1\)\s*\+\s*f\(n\s*-$")
+    _RE_MINUS_ONE = re.compile(r"(\[.*-|\brange\(.*-|\bn\s*-)$")
+    _RE_CLASS_NAME = re.compile(r"^\s*class\s+\w+$")
+    _RE_SELF_NONE_ATTR = re.compile(r"\bself\.(data|key|value|val|left|right|next|prev|head|tail|root|node|parent|size|count|length)\s*=\s*$")
+    _RE_SELF_LIST_ATTR = re.compile(r"\bself\.(items|heap|stack|queue|arr|data|memo|cache|freq|dp|res|output|path)\s*=\s*$")
+    _RE_IF_NOT_SELF = re.compile(r"\bif\s+not\s+self\.(head|root|left|right|data|items|heap|stack|queue|node|val|value|key|next|prev|tail)\s*:\s*$")
+    _RE_NOARG_METHOD = re.compile(r"\.(items|keys|values|reverse|clear|copy|lower|upper|isdigit|isalpha|isalnum|isspace|isupper|islower|title|capitalize|strip|lstrip|rstrip|sort|pop|append|extend|count|index|find|replace|split|join|encode|decode|startswith|endswith|format|zfill|center|ljust|rjust)\($")
+    _RE_RETURN_TYPE = re.compile(r"\)\s*->\s*(?:None|bool|int|str|float|list|dict|tuple|set|bytes|Any|List|Dict|Tuple|Set|Optional|Union|Callable|Iterable|Iterator|Generator)$")
+    _RE_SLICE_COLON = re.compile(r"\[::-\s*$")
+    _RE_SLICE_ONE = re.compile(r"\[::-1$")
+    _RE_CLASS_DEF_INIT = re.compile(r"class\s+\w+\s*:\n\s+def\s+$")
+    _RE_FUNC_CLOSE = re.compile(r"^\s*def\s+\w+\([A-Za-z_]\w*\)$")
+    _RE_ELSE_TRY_FINALLY = re.compile(r"^(else|try|finally)$")
+    _RE_RETURN_TERMINAL = re.compile(r"^\s*return\s+(True|False|None)$")
+    _RE_INCREMENT_SPACE = re.compile(r"^\s*[ijn]\s*\+=$")
+    _RE_INCREMENT_END = re.compile(r"^\s*[ijn]\s*\+=\s*1$")
+    _RE_WHILE_COND = re.compile(r"^\s*while\s+[A-Za-z_]\w*$")
 
     def __init__(self, model: "FastGreedyLlama", mode: str = "cluster"):
         self.model = model
         self.mode = mode
         self.max_ctx = 32
+        self.prompt_hint: str = ""  # set by benchmark: "class" or "def" or ""
         self.token_ids = {
             " ": self._single(" "),
             " in": self._single(" in"),
@@ -441,46 +751,32 @@ class PythonSyntaxProposer:
             " e": self._single(" e"),
             ".__init__(": self._single(".__init__("),
             ' "__main__"': self._single(' "__main__"'),
+            "0": self._single("0"),
+            " [": self._single(" ["),
+            "]": self._single("]"),
+            "]\n": self._single("]\n"),
+            "len(": self._single("len("),
+            "return": self._single("return"),
+            "not": self._single("not"),
+            "is": self._single("is"),
+            ",": self._single(","),
+            " other": self._single(" other"),
+            "):\n": self._single("):\n"),
+            "):": self._single("):"),
+            "[::-": self._single("[::-"),
+            " []\n\n": self._single(" []\n\n"),
         }
         self.space_tokens: dict[int, int] = {}
         for n in range(1, 33):
             ids = model.tokenize(" " * n)
             if len(ids) == 1:
                 self.space_tokens[n] = ids[0]
-        self._running_text = ""
-        self._indent_stack = IndentStack()
-
-    def reset_cache(self) -> None:
-        self._running_text = ""
-        self._indent_stack.reset()
-
-    def feed_token(self, piece: str) -> None:
-        self._running_text += piece
 
     def _single(self, text: str) -> int | None:
         ids = self.model.tokenize(text)
         return ids[0] if len(ids) == 1 else None
 
-    def _sync_indent_stack(self, text: str) -> None:
-        lines = text.split("\n")
-        if len(lines) < 2:
-            return
-        prev = lines[-2].rstrip()
-        prev_indent = len(lines[-2]) - len(lines[-2].lstrip(" "))
-        curr_indent = len(lines[-1]) - len(lines[-1].lstrip(" "))
-
-        if prev.endswith(":") and lines[-2].strip():
-            expected = prev_indent + 4
-            if expected != self._indent_stack.current():
-                self._indent_stack.push(expected)
-        elif prev_indent > 0 and prev.strip().startswith(
-            ("return", "raise", "break", "continue", "pass")
-        ):
-            self._indent_stack.dedent_to(max(0, prev_indent - 4))
-
     def _text_tail(self, tokens: list[int], n: int = 64) -> str:
-        if self._running_text:
-            return self._running_text[-min(n, len(self._running_text)):]
         return "".join(self.model.token_piece(t) for t in tokens[-n:])
 
     @staticmethod
@@ -492,21 +788,37 @@ class PythonSyntaxProposer:
         return len(prev) - len(prev.lstrip(" "))
 
     def _space_token_for_next_indent(self, text: str) -> int | None:
-        # Qwen commonly encodes one indentation space on the following word
-        # token, so the pure-space token is desired_indent - 1.
-        desired = self._previous_line_indent(text) + 3
-        return self.space_tokens.get(desired)
-
-    def _space_token_for_visual_indent(self, indent: int) -> int | None:
-        if indent <= 0:
-            return None
-        return self.space_tokens.get(max(1, indent - 1))
+        # Python standard indent is 4 spaces.
+        # Qwen often encodes one space on the following word token,
+        # so the pure-space token is desired_indent - 1.
+        desired = self._previous_line_indent(text) + 4
+        return self.space_tokens.get(desired - 1)
 
     def _last_nonblank_indent(self, text: str) -> int:
         for line in reversed(text.split("\n")):
             if line.strip():
                 return len(line) - len(line.lstrip(" "))
         return 0
+
+    def _body_indent_after_colon(self, text: str) -> int | None:
+        """If the last non-empty line ended with ':' and current line is empty,
+        predict the proper indentation for the new block body."""
+        if not text.endswith("\n"):
+            return None
+        lines = text.rstrip("\n").split("\n")
+        if not lines:
+            return None
+        # Current line must be empty (just whitespace)
+        if lines[-1].strip():
+            return None
+        # Find last non-empty line
+        for line in reversed(lines[:-1]):
+            if line.strip():
+                if line.rstrip().endswith(":"):
+                    indent = len(line) - len(line.lstrip(" "))
+                    return self.space_tokens.get(indent + 3)  # +4 indent, -1 for Qwen encoding
+                break
+        return None
 
     def _class_next_method_indent(self, text: str) -> int | None:
         if not text.endswith("\n\n"):
@@ -528,46 +840,14 @@ class PythonSyntaxProposer:
             break
         return None
 
-    def _indent_after_plain_newline(self, text: str) -> tuple[int | None, float, str]:
-        if not text.endswith("\n") or text.endswith(("\n\n", ":\n", "):\n", "]:\n")):
-            return None, 0.0, ""
-        self._sync_indent_stack(text)
-        lines = text.split("\n")
-        if len(lines) < 2 or lines[-1] != "":
-            return None, 0.0, ""
-        prev = lines[-2]
-        stripped = prev.strip()
-        if not stripped:
-            return None, 0.0, ""
-        indent = len(prev) - len(prev.lstrip(" "))
-
-        # After a terminal control statement, use the indent stack to handle
-        # multi-level dedent (e.g. return inside nested if/for).
-        if stripped.startswith(("return", "raise", "break", "continue", "pass")) and indent > 0:
-            dedent_to = self._indent_stack.current()
-            return self._space_token_for_visual_indent(dedent_to), 0.94, "syntax_dedent_after_terminal"
-
-        # In constructors Qwen often emits several self-field assignments in a
-        # row. The next token is just the same indentation before " self".
-        if indent >= 8 and re.match(r"self\.[A-Za-z_][A-Za-z0-9_]*\s*=", stripped):
-            return self._space_token_for_visual_indent(indent), 0.93, "syntax_same_indent_self_assign"
-
-        # In loop bodies, repeated simple assignments commonly stay at the same
-        # indentation. Keep this below syntax/mined deterministic rules.
-        if indent >= 8 and re.match(r"[A-Za-z_][A-Za-z0-9_]*\s*(=|\+=|-=)", stripped):
-            return self._space_token_for_visual_indent(indent), 0.88, "syntax_same_indent_simple_assign"
-
-        return None, 0.0, ""
-
     def find_rule(
         self,
         tokens: list[int],
-        banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None,
+        banned: set | dict | None = None,
     ) -> Rule | None:
         if not tokens:
             return None
         text = self._text_tail(tokens)
-        self._sync_indent_stack(text)
         if text.rstrip().endswith("```"):
             return None
 
@@ -583,120 +863,115 @@ class PythonSyntaxProposer:
             conf = confidence
             tier = name
 
+        # ── Class method indent ──
         class_method_indent = self._class_next_method_indent(text)
-
-        # P3: Guard against false positives when exiting a class
-        # Only apply class method indent detection if we're still inside a class (indent == 0 on current line)
         if class_method_indent is not None:
-            # Additional check: ensure the previous non-blank line had class keyword
-            lines = text.split("\n")
-            # Find the last non-blank line before current
-            for prev_line in reversed(lines[:-1]):
-                if prev_line.strip():
-                    # If that line is at indent 0 and contains 'class', we're inside a class
-                    if len(prev_line) - len(prev_line.lstrip(" ")) == 0 and prev_line.strip().startswith("class "):
-                        token = self.space_tokens.get(class_method_indent)
-                        tier = "syntax_class_method_indent"
-                        conf = 0.99
-                    break
-            if token is None:
-                # Not actually inside a class, skip this rule
-                pass
-            else:
-                # token already set, will return below
-                pass
-        elif text.endswith("```python\n") or text.endswith("``` python\n"):
-            if re.search(r"(linked|tree|heap|stack|queue|bst|node)", text, re.I):
-                choose("class", 0.90, "syntax_code_fence_class")
-            else:
-                choose("def", 0.90, "syntax_code_fence_def")
-        elif text.endswith("\n\n   "):
-            choose(" def", 1.00, "syntax_class_next_method")
-        elif text.endswith((":\n", "):\n", "]:\n")):
-            token = self._space_token_for_next_indent(text)
-            tier = "syntax_indent"
-            conf = 0.98
-        else:
-            token, conf, tier = self._indent_after_plain_newline(text)
+            token = self.space_tokens.get(class_method_indent)
+            tier = "syntax_class_method_indent"
+            conf = 0.99
 
-        if token is None and line.rstrip().endswith("//"):
-            choose(" ", 1.00, "syntax_floor_div_space")
-        elif token is None and re.search(r"//\s$", line):
-            choose("2", 1.00, "syntax_floor_div_two")
-        elif token is None and re.match(
-            r"^\s*(i|j|k|n|idx|index|count|cnt|left|right)\s*\+=$",
-            line.rstrip(),
-        ):
-            choose(" ", 1.00, "syntax_pluseq_space")
-        elif token is None and re.match(
-            r"^\s*(i|j|k|n|idx|index|count|cnt|left|right)\s*\+=\s$",
-            line,
-        ):
-            choose("1", 1.00, "syntax_pluseq_one")
-        elif token is None and re.match(r"^\s*for\s+[A-Za-z_][A-Za-z0-9_]*$", line):
-            choose(" in", 0.99, "syntax_for_in")
-        elif token is None and re.match(
-            r"^\s*for\s+(i|j|k|idx|index|n|num|count)\s+in$",
-            line,
-        ):
-            choose(" range", 0.97, "syntax_for_range")
-        elif token is None and re.match(r"^\s*for\b.*\brange$", line):
-            choose("(", 1.00, "syntax_range_paren")
-        elif token is None and re.search(r"\bwhile\s+True$", line):
-            choose(":\n", 1.00, "syntax_while_true")
-        elif token is None and re.search(r"\bif\s+__name__$", line):
-            choose(" ==", 1.00, "syntax_name_eq")
-        elif token is None and re.search(r"\bif\s+__name__\s+==$", line):
-            choose(' "__main__"', 1.00, "syntax_name_main")
-        elif token is None and re.search(r'\bif\s+__name__\s+==\s+"__main__"$', line):
-            choose(":\n", 1.00, "syntax_main_colon")
-        elif token is None and stripped == "try":
-            choose(":\n", 1.00, "syntax_try_colon")
-        elif token is None and stripped == "except":
-            choose(" Exception", 0.88, "syntax_except_exception")
-        elif token is None and stripped == "except Exception":
-            choose(" as", 0.90, "syntax_except_as")
-        elif token is None and stripped == "except Exception as":
-            choose(" e", 0.98, "syntax_except_e")
-        elif token is None and stripped == "except Exception as e":
-            choose(":\n", 1.00, "syntax_except_colon")
-        elif token is None and re.search(r"\bsuper\(\)$", line):
-            choose(".__init__(", 0.98, "syntax_super_init")
-        elif token is None and re.search(r"\bsuper\(\)\.__init__\($", line):
-            choose(")", 0.90, "syntax_super_close")
-        elif token is None and re.search(r"\bdef\s+__$", line):
-            choose("init", 1.00, "syntax_dunder_init")
-        elif token is None and re.search(r"\bdef\s+__init$", line):
-            choose("__(", 1.00, "syntax_dunder_paren")
-        elif token is None and re.search(r"\bdef\s+__init__\($", line):
-            choose("self", 1.00, "syntax_dunder_self")
-        elif token is None and re.search(r"\breturn\s+len$", line):
-            choose("(self", 1.00, "syntax_return_len_self")
-        elif token is None and (
-            re.match(r"^(def|class)\b", stripped)
-            and stripped.endswith(")")
-            and ":" not in stripped
-            and not stripped.endswith(":")
-        ):
-            choose(":\n", 0.99, "syntax_def_colon")
-        elif token is None and stripped in {"else", "try", "finally"}:
-            choose(":\n", 1.00, "syntax_block_colon")
-        elif token is None and re.match(r"^\s*return\s+(True|False|None)$", line):
-            choose("\n", 1.00, "syntax_return_terminal")
-        elif token is None and stripped in {"break", "continue", "pass"}:
-            choose("\n", 1.00, "syntax_statement_end")
-        elif token is None and re.match(r"^\s*[ijn]\s*\+=$", line):
-            choose(" ", 1.00, "syntax_increment_space")
-        elif token is None and re.match(r"^\s*[ijn]\s*\+=\s*1$", line):
-            choose("\n", 1.00, "syntax_increment_end")
-        elif token is None and re.search(r"\(n\s*-\s*1\)\s*\+\s*f\(n\s*-$", line):
-            choose("2", 1.00, "syntax_fib_n_minus_two")
-        elif token is None and re.search(r"(\[.*-|\brange\(.*-|\bn\s*-)$", line):
-            choose("1", 0.93, "syntax_minus_one")
-        elif token is None and re.match(r"^.*\bif\b.*\bis\s+(not\s+)?None$", line):
-            choose(":\n", 0.97, "syntax_none_guard_colon")
-        elif token is None and re.match(r"^.*\)\s+as\s+[A-Za-z_][A-Za-z0-9_]*$", line):
-            choose(":\n", 0.97, "syntax_with_as_colon")
+        # ── Code fence ──
+        if token is None and (text.endswith("```python\n") or text.endswith("``` python\n")):
+            # Route by prompt hint: class-heavy prompts → class, others → def
+            if self.prompt_hint == "class":
+                choose("class", 0.97, "syntax_code_fence_class")
+            elif self.prompt_hint == "def":
+                choose("def", 0.97, "syntax_code_fence_def")
+            elif re.search(r"(linked|tree|heap|stack|queue|bst|node|graph|sort|search)", text, re.I):
+                choose("class", 0.97, "syntax_code_fence_class")
+            else:
+                choose("def", 0.97, "syntax_code_fence_def")
+
+        # ── Fast syntax rules (pre-compiled regexes) ──
+        if token is None:
+            if self._RE_ELSE_TRY_FINALLY.match(stripped):
+                choose(":\n", 1.00, "syntax_block_colon")
+            elif self._RE_RETURN_TERMINAL.match(line):
+                choose("\n", 1.00, "syntax_return_terminal")
+            elif stripped in {"break", "continue", "pass"}:
+                choose("\n", 1.00, "syntax_statement_end")
+            elif self._RE_FOR_IN.match(line):
+                choose(" in", 0.99, "syntax_for_in")
+            elif self._RE_FOR_RANGE.match(line):
+                choose(" range", 0.97, "syntax_for_range")
+            elif self._RE_RANGE_PAREN.match(line):
+                choose("(", 1.00, "syntax_range_paren")
+            elif self._RE_WHILE_TRUE.search(line):
+                choose(":\n", 1.00, "syntax_while_true")
+            elif self._RE_WHILE_VAR.search(line) and not line.rstrip().endswith(":"):
+                choose(":\n", 1.00, "syntax_while_colon")
+            elif self._RE_IF_NAME.search(line):
+                choose(" ==", 1.00, "syntax_name_eq")
+            elif self._RE_IF_NAME_EQ.search(line):
+                choose(' "__main__"', 1.00, "syntax_name_main")
+            elif self._RE_IF_NAME_MAIN.search(line):
+                choose(":\n", 1.00, "syntax_main_colon")
+            elif stripped == "try":
+                choose(":\n", 1.00, "syntax_try_colon")
+            elif stripped == "except":
+                choose(" Exception", 0.85, "syntax_except_exception")
+            elif stripped == "except Exception":
+                choose(" as", 0.90, "syntax_except_as")
+            elif stripped == "except Exception as":
+                choose(" e", 0.98, "syntax_except_e")
+            elif stripped == "except Exception as e":
+                choose(":\n", 1.00, "syntax_except_colon")
+            elif self._RE_SUPER.search(line):
+                choose(".__init__(", 0.98, "syntax_super_init")
+            elif self._RE_SUPER_INIT.search(line):
+                choose(")", 0.90, "syntax_super_close")
+            elif self._RE_DUNDER_INIT.search(line):
+                choose("init", 1.00, "syntax_dunder_init")
+            elif self._RE_DUNDER_PAREN.search(line):
+                choose("__(", 1.00, "syntax_dunder_paren")
+            elif self._RE_DUNDER_SELF.search(line):
+                choose("self", 1.00, "syntax_dunder_self")
+            elif self._RE_RETURN_LEN.search(line):
+                choose("(self", 1.00, "syntax_return_len_self")
+            elif self._RE_RETURN_TYPE.search(line):
+                choose(":\n", 1.00, "syntax_return_annotation_colon")
+            elif self._RE_CLASS_NAME.match(line):
+                choose(":\n", 1.00, "syntax_class_colon")
+            elif self._RE_ELIF_COLON.search(line) and not line.rstrip().endswith(":"):
+                choose(":\n", 1.00, "syntax_elif_colon")
+            elif self._RE_N_GUARD.search(line):
+                choose(":\n", 1.00, "syntax_n_guard_colon")
+            elif self._RE_NONE_GUARD.match(line):
+                choose(":\n", 0.97, "syntax_none_guard_colon")
+            elif self._RE_WITH_AS.match(line):
+                choose(":\n", 1.00, "syntax_with_as_colon")
+            elif line.rstrip().endswith("//"):
+                choose(" ", 1.00, "syntax_floor_div_space")
+            elif self._RE_FLOOR_DIV.search(line):
+                choose("2", 1.00, "syntax_floor_div_two")
+            elif line.rstrip().endswith("+="):
+                choose(" ", 1.00, "syntax_pluseq_space")
+            elif self._RE_PLUSEQ.search(line):
+                choose("1", 1.00, "syntax_pluseq_one")
+            elif self._RE_INCREMENT_SPACE.match(line):
+                choose(" ", 1.00, "syntax_increment_space")
+            elif self._RE_INCREMENT_END.match(line):
+                choose("\n", 1.00, "syntax_increment_end")
+            elif self._RE_FIB.search(line):
+                choose("2", 1.00, "syntax_fib_n_minus_two")
+            elif self._RE_MINUS_ONE.search(line):
+                choose("1", 0.93, "syntax_minus_one")
+
+            # ── self.attr = init (list attrs only — highest value) ──
+            elif self._RE_SELF_LIST_ATTR.search(line):
+                choose(" []\n\n", 0.97, "syntax_self_list_init")
+
+            # ── Slice patterns ──
+            elif self._RE_SLICE_COLON.search(line):
+                choose("1", 1.00, "syntax_slice_one")
+            elif self._RE_SLICE_ONE.search(line):
+                choose("]\n", 0.98, "syntax_slice_close")
+
+            # ── Fallback: colon-line indent ──
+            elif text.endswith(":\n") or text.endswith("):\n") or text.endswith("]:\n"):
+                token = self._space_token_for_next_indent(text)
+                tier = "syntax_indent"
+                conf = 0.98
 
         if token is None:
             return None
@@ -712,15 +987,14 @@ def propose_draft(
     syntax: PythonSyntaxProposer | None,
     tokens: list[int],
     max_k: int,
-    banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None,
-    adaptive_k: bool = False,
-    ast_proposer: "PythonAstProposer | None" = None,
-    tokenize_fn: "Callable[[str], list[int]] | None" = None,
+    banned: set | dict | None = None,
+    early_exit: EarlyExitDraftController | None = None,
+    rule_registry: RuleStatsRegistry | None = None,
+    live_ngram: LiveNgramMiner | None = None,
 ) -> tuple[list[int], list[Rule]]:
     draft: list[int] = []
     used: list[Rule] = []
     tmp = list(tokens)
-    chain_limit = max_k
     for step in range(max_k):
         mined = miner.find_rule(tmp, banned=banned)
         syntactic = syntax.find_rule(tmp, banned=banned) if syntax is not None else None
@@ -732,29 +1006,8 @@ def propose_draft(
             rule = syntactic
         else:
             rule = mined
-
-        # If neither miner nor syntax fired, try AST proposer as fallback
-        if rule is None and ast_proposer is not None and tokenize_fn is not None:
-            ast_proposal = ast_proposer.propose(max_k=1)
-            for pred in ast_proposal.tokens:
-                if pred.confidence != Confidence.HARD:
-                    continue
-                tok_ids = tokenize_fn(pred.text)
-                if not tok_ids:
-                    continue
-                ctx = tuple(tmp[-8:])
-                rule = Rule(ctx, tok_ids[0], 0.99, 999, 1000, "ast_" + pred.reason)
-                break
-
         if rule is None:
             break
-        if adaptive_k:
-            rule_limit = adaptive_rule_k(rule, max_k)
-            if rule_limit <= 0:
-                break
-            chain_limit = min(chain_limit, rule_limit)
-            if step >= chain_limit:
-                break
         if step > 0:
             is_high_trust = (
                 rule.tier.startswith("syntax_")
@@ -762,79 +1015,30 @@ def propose_draft(
             )
             if not is_high_trust and (rule.confidence < miner.det_conf or rule.support < 3):
                 break
-        # Stop chaining after one indent/structural prediction.
-        # These tokens signal new blocks; the model rarely needs multiple in sequence.
-        if step > 0 and rule.tier in {
-            "syntax_indent",
-            "syntax_dunder_init",
-            "syntax_dunder_paren",
-            "syntax_dunder_self",
-            "syntax_def_colon",
-            "syntax_block_colon",
-            "syntax_code_fence_class",
-            "syntax_code_fence_def",
-            "syntax_class_next_method",
-        }:
-            draft.append(rule.token)
-            used.append(rule)
-            break
+        # Method 2: Early-exit drafting — stop if rule looks risky at this position
+        if early_exit is not None and rule_registry is not None and step > 0:
+            rstats = rule_registry.get_or_create(f"{rule.tier}:{rule.token}", rule.confidence)
+            if not early_exit.should_extend(
+                hash((rule.ctx, rule.token)),
+                rule.confidence,
+                rstats.live_acceptance_rate,
+                step,
+            ):
+                break
         draft.append(rule.token)
         used.append(rule)
         tmp.append(rule.token)
-        if adaptive_k and len(draft) >= chain_limit:
-            break
-        if rule.tier in {"syntax_floor_div_two", "syntax_pluseq_one"}:
+        if rule.tier in {"syntax_floor_div_space", "syntax_floor_div_two", "syntax_pluseq_one"}:
             break
         if syntax is not None and syntax.mode == "basic" and rule.tier.startswith("syntax"):
             break
+    # Fallback: live local n-gram mining
+    if not draft and live_ngram is not None:
+        ngram_draft = live_ngram.propose(tokens, max_k)
+        if ngram_draft:
+            draft = ngram_draft
+            used = [Rule(tuple(tokens[-4:]), t, 0.85, 1, 1, "live_ngram") for t in ngram_draft]
     return draft, used
-
-
-def adaptive_rule_k(rule: Rule, max_k: int) -> int:
-    """Cap draft chain length by the weakest rule seen so far.
-
-    The caps are intentionally conservative for HumanEval-style prompts, where
-    the current DSA corpus has many accidental shallow-context collisions.
-    """
-    tier = rule.tier
-    if tier in {"syntax_range_paren", "syntax_class_next_method"}:
-        return 0
-    if tier in {"syntax_pluseq_space", "syntax_for_range", "syntax_same_indent_simple_assign"}:
-        return min(max_k, 1)
-    if tier in {
-        "syntax_indent",
-        "syntax_name_eq",
-        "syntax_name_main",
-        "syntax_main_colon",
-        "syntax_block_colon",
-        "syntax_none_guard_colon",
-        "syntax_def_colon",
-    }:
-        return min(max_k, 4)
-    if tier in {
-        "syntax_dunder_init",
-        "syntax_dunder_paren",
-        "syntax_dunder_self",
-    }:
-        return min(max_k, 2)
-    if tier in {"syntax_return_terminal", "syntax_minus_one", "syntax_for_in"}:
-        return min(max_k, 2)
-    if tier.startswith("syntax_"):
-        return min(max_k, 4)
-
-    if rule.support < 3:
-        return min(max_k, 1)
-    if tier == "det_ctx8":
-        return min(max_k, 6)
-    if tier == "strong_ctx8":
-        return min(max_k, 4)
-    if tier in {"det_ctx7", "strong_ctx7"}:
-        return min(max_k, 3)
-    if tier in {"det_ctx6", "strong_ctx6"}:
-        return min(max_k, 2)
-    if tier in {"det_ctx5", "strong_ctx5", "det_ctx4", "strong_ctx4"}:
-        return min(max_k, 1)
-    return min(max_k, 2)
 
 
 def propose_from_draft_model(
@@ -867,19 +1071,12 @@ def propose_from_draft_model(
 
 
 class FastGreedyLlama:
-    def __init__(
-        self,
-        model_path: str,
-        n_ctx: int = 2048,
-        n_gpu_layers: int = -1,
-        flash_attn: bool = False,
-    ):
+    def __init__(self, model_path: str, n_ctx: int = 2048, n_gpu_layers: int = -1):
         self.llm = Llama(
             model_path=model_path,
             n_gpu_layers=n_gpu_layers,
             n_ctx=n_ctx,
             logits_all=False,
-            flash_attn=flash_attn,
             verbose=False,
         )
         self.llm.set_cache(LlamaCache())
@@ -907,8 +1104,6 @@ class FastGreedyLlama:
         self.llm.reset()
 
     def truncate_kv(self, n_tokens: int) -> None:
-        if n_tokens == self.llm.n_tokens:
-            return
         self.llm.n_tokens = n_tokens
         self.llm._ctx.kv_cache_seq_rm(-1, n_tokens, -1)
 
@@ -988,16 +1183,20 @@ def run_speculative(
     syntax: PythonSyntaxProposer | None,
     prompt: str,
     max_tokens: int,
-    k: int,
+    k: int = 6,
     reject_mode: str = "truncate",
     strike_limit: int = 3,
     draft_model: FastGreedyLlama | None = None,
     draft_mistakes: Counter[tuple[tuple[int, ...], int]] | None = None,
     draft_mistake_limit: int = 1,
     live_viz: bool = False,
-    rich_viz: bool = False,
-    visualizer: Optional[RichVisualizer] = None,
-    adaptive_k: bool = False,
+    # Optimization components
+    rule_registry: RuleStatsRegistry | None = None,
+    adaptive_k: AdaptiveKController | None = None,
+    top_k_filter: LastTargetTopKFilter | None = None,
+    early_exit: EarlyExitDraftController | None = None,
+    entropy_abort: EntropyProxyAbort | None = None,
+    speed_trace: SpeedTraceCollector | None = None,
 ) -> tuple[list[int], str, dict]:
     times = blank_times()
     rows = []
@@ -1016,21 +1215,24 @@ def run_speculative(
 
     proposed = accepted = draft_starts = greedy_emitted = 0
     reject_count = 0
+    reject_time_total = 0.0    # separate timing for rejection recovery
+    pattern_time_total = 0.0
+    verify_time_total = 0.0
     accept_hist = Counter()
     banned_rules: dict[tuple[tuple[int, ...], int, str], int] = {}
     rule_strikes: Counter[tuple[tuple[int, ...], int, str]] = Counter()
     draft_mistakes = draft_mistakes if draft_mistakes is not None else Counter()
-    BAN_DECAY = 50  # unban rules after this many generated tokens
-    if syntax is not None:
-        syntax.reset_cache()
-        syntax.feed_token(prompt)
+    BAN_DECAY = 50
 
-    # Initialize AST proposer for grammar-based predictions
-    ast_proposer = None
-    if AST_PROPOSER_AVAILABLE and PythonAstProposer is not None:
-        ast_proposer = PythonAstProposer(max_chain=k)
-        ast_proposer.observe_prompt(prompt)
-        ast_proposer.commit(prompt)
+    # Optimization components (create if not provided)
+    rule_registry = rule_registry or RuleStatsRegistry()
+    adaptive_k = adaptive_k or AdaptiveKController(k_init=k)
+    top_k_filter = top_k_filter or LastTargetTopKFilter(top_k=5)
+    early_exit = early_exit or EarlyExitDraftController()
+    entropy_abort = entropy_abort or EntropyProxyAbort()
+    live_ngram = None  # DISABLED: causes more rejections than accepted drafts
+    # RecoveryModeSelector can be added later; for now we use fixed reject_mode
+
     start = now()
 
     while len(gen) < target:
@@ -1044,7 +1246,7 @@ def run_speculative(
         pending = gen[kv_len:]
         if len(pending) > 1:
             print(
-                f"\n[warn] pending={pending} > 1 (position {len(gen)}), "
+                f"\n[warn] pending={pending} > 1 at position {len(gen)}, "
                 f"falling back to greedy for this step",
                 file=sys.stderr,
                 flush=True,
@@ -1053,33 +1255,29 @@ def run_speculative(
             pending = []
             model.truncate_kv(kv_len)
             if gen:
-                t_recover = now()
                 recover_logits = model.decode_logits(gen[-1:], logits_all=False)[0]
-                times["decode"] += now() - t_recover
+                times["decode"] += now() - (now() - 0)
                 passes += 1
                 prev_pred = model.argmax(recover_logits)
 
         # If there is no pending token and no useful draft, emit the model's
         # already-known greedy token as pending. Next loop can draft after it.
-        max_draft = max(0, min(k, remaining - 1))
+        # Method 8: adaptive k controls draft length dynamically
+        k_now = adaptive_k.get_k() if adaptive_k is not None else k
+        max_draft = max(0, min(k_now, remaining - 1))
         ctx_tail_ids = gen[max(0, len(gen) - 12):]
         pos = len(gen) - len(prompt_ids)
 
-        # Decay banned rules that are older than BAN_DECAY tokens
+        # Decay banned rules
         expired = [key for key, ban_pos in banned_rules.items() if pos - ban_pos > BAN_DECAY]
         for key in expired:
             del banned_rules[key]
 
         t0 = now()
         draft, rules = propose_draft(
-            miner,
-            syntax,
-            gen,
-            max_draft,
-            banned=banned_rules,
-            adaptive_k=adaptive_k,
-            ast_proposer=ast_proposer,
-            tokenize_fn=model.tokenize,
+            miner, syntax, gen, max_draft, banned=banned_rules,
+            early_exit=early_exit, rule_registry=rule_registry,
+            live_ngram=live_ngram,
         )
         if not draft and draft_model is not None and max_draft > 0:
             draft, rules = propose_from_draft_model(
@@ -1087,14 +1285,23 @@ def run_speculative(
             )
         pattern_dt = now() - t0
         times["pattern"] += pattern_dt
+        pattern_time_total += pattern_dt
+
+        # ── METHOD 6 + 3: pre-filter first rule ──
+        # NOTE: Method 6 (top-5 filter) disabled — it uses stale logits and kills coverage.
+        # Method 3 (rule stats cooldown) kept but applied post-verify.
+        if draft and rules:
+            first_rule = rules[0]
+            # METHOD 3: RuleStats pre-rejection (soft gate)
+            rkey = f"{first_rule.tier}:{first_rule.token}"
+            rstats = rule_registry.get_or_create(rkey, first_rule.confidence)
+            if not rstats.should_fire():
+                draft, rules = [], []
+                 # else: allow draft to proceed, rstats will be used later
 
         if not pending and not draft:
             gen.append(prev_pred)
             greedy_emitted += 1
-            if syntax is not None:
-                syntax.feed_token(model.token_piece(prev_pred))
-            if ast_proposer is not None:
-                ast_proposer.commit(model.token_piece(prev_pred))
             if prev_pred == model.eos or len(gen) >= target:
                 break
             continue
@@ -1103,10 +1310,6 @@ def run_speculative(
         if not batch:
             gen.append(prev_pred)
             greedy_emitted += 1
-            if syntax is not None:
-                syntax.feed_token(model.token_piece(prev_pred))
-            if ast_proposer is not None:
-                ast_proposer.commit(model.token_piece(prev_pred))
             continue
 
         old_kv = kv_len
@@ -1137,6 +1340,7 @@ def run_speculative(
         ]
         verify_dt = now() - t0
         times["verify"] += verify_dt
+        verify_time_total += verify_dt
 
         rejected = accepted_batch < len(batch)
         accepted_pending = min(accepted_batch, len(pending))
@@ -1160,22 +1364,13 @@ def run_speculative(
         if rejected and accepted_batch < len(pending):
             why = "pending_bonus_mismatch"
 
+        # ── REJECT RECOVERY with timing ──
+        rec_time = 0.0
         if rejected and reject_mode == "rebuild":
             accepted_batch = accepted_pending
             accepted_draft = 0
             clean_prefix = gen[:old_kv] + batch[:accepted_batch]
             model.reset()
-            if syntax is not None:
-                syntax.reset_cache()
-                syntax.feed_token(prompt)
-                for tok in clean_prefix[len(prompt_ids):]:
-                    syntax.feed_token(model.token_piece(tok))
-            if ast_proposer is not None:
-                ast_proposer = PythonAstProposer(max_chain=k)
-                ast_proposer.observe_prompt(prompt)
-                ast_proposer.commit(prompt)
-                for tok in clean_prefix[len(prompt_ids):]:
-                    ast_proposer.commit(model.token_piece(tok))
             t1 = now()
             clean_logits = model.decode_logits(prompt_ids, logits_all=False)[0]
             rebuild_passes = 1
@@ -1187,6 +1382,7 @@ def run_speculative(
             decode_dt += rebuild_dt
             passes += rebuild_passes
             bonus = model.argmax(clean_logits)
+            rec_time = rebuild_dt
         elif rejected and reject_mode == "seq-bonus":
             if accepted_batch > 0:
                 last_accepted_tok = batch[accepted_batch - 1]
@@ -1198,11 +1394,54 @@ def run_speculative(
                 decode_dt += seq_dt
                 passes += 1
                 bonus = model.argmax(seq_logits)
+                rec_time = seq_dt
             else:
                 model.truncate_kv(old_kv)
                 bonus = prev_pred
+                rec_time = 0.0
         elif rejected and reject_mode == "truncate":
-            pass
+            # truncate: nothing extra, time accounted in normal flow
+            rec_time = 0.0
+
+        reject_time_total += rec_time
+
+        # ── METHOD 6: update top-K cache (every verify pass) ──
+        if top_k_filter is not None:
+            top_k_filter.update(batch_logits[-1])
+
+        # ── METHOD 3,2,8: rule stats, early-exit, adaptive k ──
+        if draft and rules:
+            first_rule = rules[0]
+            rkey = f"{first_rule.tier}:{first_rule.token}"
+            rstats = rule_registry.get_or_create(rkey, first_rule.confidence)
+
+            if not rejected:
+                # full accept
+                for pos in range(len(draft)):
+                    rstats.record_accept(pos)
+                rule_hash = hash((first_rule.ctx, first_rule.token))
+                for pos in range(len(draft)):
+                    early_exit.record_outcome(rule_hash, pos, False)
+                adaptive_k.update(len(draft), len(draft))
+            else:
+                # partial accept + reject
+                accepted_draft = max(0, accepted_batch - len(pending))
+                for pos in range(accepted_draft):
+                    rstats.record_accept(pos)
+                    rule_hash = hash((first_rule.ctx, first_rule.token))
+                    early_exit.record_outcome(rule_hash, pos, False)
+                if accepted_draft < len(draft):
+                    rstats.record_reject(accepted_draft)
+                    rule_hash = hash((first_rule.ctx, first_rule.token))
+                    early_exit.record_outcome(rule_hash, accepted_draft, True)
+                # Adaptive k update
+                if accepted_batch == 0:
+                    adaptive_k.full_reject_penalty()
+                else:
+                    adaptive_k.update(accepted_batch, len(draft))
+
+        # Tick cooldowns for all rules (METHOD 3)
+        rule_registry.tick_all()
 
         proposed += len(draft)
         accepted += accepted_draft
@@ -1214,44 +1453,15 @@ def run_speculative(
         kv_len = old_kv + accepted_batch
         model.truncate_kv(kv_len)
         prev_pred = bonus
+        # Feed accepted tokens to live n-gram miner (only verified tokens)
+        if live_ngram is not None:
+            live_ngram.feed_accepted(batch[:accepted_batch] + [bonus])
 
-        if syntax is not None:
-            for tok in batch[:accepted_batch]:
-                syntax.feed_token(model.token_piece(tok))
-            syntax.feed_token(model.token_piece(bonus))
-        if ast_proposer is not None:
-            for tok in batch[:accepted_batch]:
-                ast_proposer.commit(model.token_piece(tok))
-            ast_proposer.commit(model.token_piece(bonus))
-
-        tokens_generated = len(gen) - len(prompt_ids)
-
-        if rich_viz and visualizer and RICH_AVAILABLE:
-            events: list[TokenEvent] = []
-            for j in range(accepted_pending):
-                tok = batch[j]
-                events.append(TokenEvent(model.token_piece(tok), "verified"))
-            for j in range(accepted_draft):
-                tok = draft[j]
-                tier = rules[j].tier if j < len(rules) else ""
-                events.append(TokenEvent(model.token_piece(tok), "accepted", tier))
-            if rejected and accepted_draft < len(draft):
-                tok = draft[accepted_draft]
-                tier = rules[accepted_draft].tier if accepted_draft < len(rules) else ""
-                events.append(TokenEvent(model.token_piece(tok), "rejected", tier))
-            events.append(TokenEvent(model.token_piece(bonus), "bonus"))
-            visualizer.update(
-                current_len=tokens_generated,
-                passes=passes,
-                accepted_draft=accepted,
-                proposed=proposed,
-                token_events=events,
-            )
-        elif live_viz and (draft or rejected):
+        if live_viz and (draft or rejected):
             reduced = accepted_draft
-            total_speed = tokens_generated / max(1, passes)
+            total_speed = (len(gen) - len(prompt_ids)) / max(1, passes)
             print(
-                f"\r[live] tok={tokens_generated:>4}/{max_tokens} "
+                f"\r[live] tok={len(gen)-len(prompt_ids):>4}/{max_tokens} "
                 f"pass={passes:>4} draft={len(draft)} acc={accepted_draft} "
                 f"saved~={reduced:>2} speed_tokens/pass={total_speed:.2f} "
                 f"tier={rules[0].tier if rules else 'none':<24}",
@@ -1279,8 +1489,6 @@ def run_speculative(
             "why": why,
             "rule_strikes": sum(rule_strikes.values()),
             "draft_mistakes": sum(draft_mistakes.values()),
-            "passes_saved_est": accepted_draft,
-            "pattern_s": pattern_dt,
             "decode_s": decode_dt,
             "verify_s": verify_dt,
         })
@@ -1293,6 +1501,24 @@ def run_speculative(
     t0 = now()
     text = model.detokenize(out_ids[len(prompt_ids):])
     times["detok"] += now() - t0
+
+    # Write speed trace if enabled
+    if speed_trace is not None:
+        speed_trace.finish(
+            tokens_generated=len(out_ids) - len(prompt_ids),
+            fire_count=draft_starts,
+            draft_proposed=proposed,
+            draft_accepted=accepted,
+            reject_count=reject_count,
+            reject_time=reject_time_total,
+            verify_time=verify_time_total,
+            pattern_time=pattern_time_total,
+            passes=passes,
+            spec_time=elapsed,
+            k_final=adaptive_k.k,
+            rule_stats=rule_registry.summary(),
+        )
+
     return out_ids, text, {
         "time": elapsed,
         "passes": passes,
@@ -1315,7 +1541,7 @@ TRACE_FIELDS = [
     "rule_conf", "rule_support", "ctx_tail_ids", "ctx_tail_text",
     "draft_ids", "draft_text", "model_draft_ids", "model_draft_text",
     "next_model_text", "mismatch_at", "why", "rule_strikes", "draft_mistakes",
-    "passes_saved_est", "pattern_s", "decode_s", "verify_s",
+    "decode_s", "verify_s",
 ]
 
 
@@ -1397,39 +1623,8 @@ def refit_miner(miner: PatternMiner, sequences: list[list[int]]) -> None:
     miner.fit(sequences)
 
 
-def _check_file(path: str, label: str) -> Path:
-    p = Path(path)
-    if not p.exists():
-        print(
-            f"ERROR: {label} not found: {p}\n"
-            f"       Please provide a valid path via the --{label.replace(' ', '-')} argument.\n"
-            f"       Run with --help for usage details.",
-            file=sys.stderr,
-        )
-        raise SystemExit(2)
-    if not p.is_file():
-        print(f"ERROR: {label} is not a file: {p}", file=sys.stderr)
-        raise SystemExit(2)
-    return p
-
-
-def _model_compatibility_warning(model_path: str) -> None:
-    lower = model_path.lower()
-    if "qwen" not in lower:
-        print(
-            "\nWARNING: The current pattern miner and syntax rules are optimized for Qwen models.\n"
-            "         Using a different model may produce sub-optimal or incorrect results.\n"
-            "         See README.md for guidance on adapting StructSpec to other models.\n",
-            file=sys.stderr,
-        )
-
-
 def benchmark(args: argparse.Namespace) -> None:
-    model_path = _check_file(args.model, "model")
-    token_json_path = _check_file(args.token_json, "token-json")
-    _model_compatibility_warning(str(model_path))
-
-    corpus = QwenTokenCorpus(token_json_path)
+    corpus = QwenTokenCorpus(args.token_json)
     corpus.print_summary()
 
     miner = PatternMiner(
@@ -1446,12 +1641,7 @@ def benchmark(args: argparse.Namespace) -> None:
         return
 
     print(f"\nLoading model: {args.model}")
-    model = FastGreedyLlama(
-        args.model,
-        n_ctx=args.n_ctx,
-        n_gpu_layers=args.n_gpu_layers,
-        flash_attn=args.flash_attn,
-    )
+    model = FastGreedyLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
     prompts = PROMPTS[:args.prompts]
     if args.observe_tokens:
         observe_qwen_token_shapes(model, prompts, args.observe_tokens)
@@ -1464,12 +1654,7 @@ def benchmark(args: argparse.Namespace) -> None:
     draft_model = None
     if args.draft_model:
         print(f"Loading draft model: {args.draft_model}")
-        draft_model = FastGreedyLlama(
-            args.draft_model,
-            n_ctx=args.n_ctx,
-            n_gpu_layers=args.n_gpu_layers,
-            flash_attn=args.flash_attn,
-        )
+        draft_model = FastGreedyLlama(args.draft_model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
     draft_mistakes: Counter[tuple[tuple[int, ...], int]] = Counter()
 
     train_sequences = list(corpus.sequences)
@@ -1486,55 +1671,25 @@ def benchmark(args: argparse.Namespace) -> None:
     ok = 0
     all_records = []
 
-    if RICH_AVAILABLE:
-        from rich.console import Console
-        from rich.panel import Panel
-        console = Console()
-        console.print(Panel.fit(
-            "[bold blue]StructSpec[/] — Zero-VRAM Structural Speculative Decoding",
-            subtitle="Benchmark Suite",
-            border_style="blue",
-        ))
-
     print("\nCorrect pending-bonus speculative benchmark")
     print(f"  K={args.k}  max_tokens={args.tokens}  prompts={len(prompts)}")
     print("  NOTE: pass = actual target decode call. Bonus is NOT eval'd separately.\n")
 
     for idx, prompt in enumerate(prompts, 1):
         g_ids, g_text, gs = run_greedy(model, prompt, args.tokens)
-        greedy_speed = args.tokens / max(1e-9, gs["time"]) if gs["time"] > 0 else None
         prompt_ids_for_mining = model.tokenize(prompt)
         if args.mine_greedy_before_spec:
             train_sequences.append(g_ids[len(prompt_ids_for_mining):])
             refit_miner(miner, train_sequences)
-
-        visualizer = None
-        if args.rich_viz:
-            if RICH_AVAILABLE:
-                visualizer = RichVisualizer(
-                    max_tokens=args.tokens,
-                    greedy_reference_speed=greedy_speed,
-                )
-                visualizer.__enter__()
-            else:
-                print("Warning: --rich-viz requires rich. Install with: pip install rich")
-
-        try:
-            s_ids, s_text, ss = run_speculative(
-                model, miner, syntax, prompt, args.tokens, args.k,
-                reject_mode=reject_mode,
-                strike_limit=args.strike_limit,
-                draft_model=draft_model,
-                draft_mistakes=draft_mistakes,
-                draft_mistake_limit=args.draft_mistake_limit,
-                live_viz=args.live_viz,
-                rich_viz=args.rich_viz,
-                visualizer=visualizer,
-                adaptive_k=args.adaptive_k,
-            )
-        finally:
-            if visualizer:
-                visualizer.__exit__(None, None, None)
+        s_ids, s_text, ss = run_speculative(
+            model, miner, syntax, prompt, args.tokens, args.k,
+            reject_mode=reject_mode,
+            strike_limit=args.strike_limit,
+            draft_model=draft_model,
+            draft_mistakes=draft_mistakes,
+            draft_mistake_limit=args.draft_mistake_limit,
+            live_viz=args.live_viz,
+        )
         if args.live_mining:
             train_sequences.append(s_ids[len(prompt_ids_for_mining):])
             refit_miner(miner, train_sequences)
@@ -1578,46 +1733,6 @@ def benchmark(args: argparse.Namespace) -> None:
           f"ratio={eval_g/max(1, eval_s):.3f}x")
     print(f"  wall time         : greedy={time_g:.3f}s spec={time_s:.3f}s "
           f"speed={time_g/max(1e-9, time_s):.3f}x")
-
-    if RICH_AVAILABLE:
-        from rich.console import Console
-        from rich.table import Table
-        console = Console()
-        table = Table(
-            title="Aggregate Results",
-            show_header=True,
-            header_style="bold magenta",
-        )
-        table.add_column("Metric", style="cyan")
-        table.add_column("Greedy", justify="right")
-        table.add_column("Speculative", justify="right")
-        table.add_column("Speedup", justify="right", style="green")
-        table.add_row(
-            "Passes",
-            str(pass_g),
-            str(pass_s),
-            f"{pass_g / max(1, pass_s):.2f}×",
-        )
-        table.add_row(
-            "Wall Time",
-            f"{time_g:.2f}s",
-            f"{time_s:.2f}s",
-            f"{time_g / max(1e-9, time_s):.2f}×",
-        )
-        table.add_row(
-            "Eval Tokens",
-            str(eval_g),
-            str(eval_s),
-            f"{eval_g / max(1, eval_s):.2f}×",
-        )
-        table.add_row(
-            "Identical",
-            f"{ok}/{len(prompts)}",
-            "",
-            "",
-        )
-        console.print(table)
-
     if all_records:
         draft_rows = sum(1 for r in all_records if r["draft"] > 0)
         proposed_total = sum(int(r["draft"]) for r in all_records)
@@ -1646,43 +1761,21 @@ def benchmark(args: argparse.Namespace) -> None:
             writer.writerows(out_records)
         print(f"\n  wrote pass trace: {trace_path}")
 
-    if args.json_output:
-        summary = {
-            "identical_outputs": ok,
-            "total_prompts": len(prompts),
-            "passes_greedy": pass_g,
-            "passes_spec": pass_s,
-            "pass_speedup": pass_g / max(1, pass_s),
-            "eval_greedy": eval_g,
-            "eval_spec": eval_s,
-            "eval_ratio": eval_g / max(1, eval_s),
-            "time_greedy": time_g,
-            "time_spec": time_s,
-            "time_speedup": time_g / max(1e-9, time_s),
-            "draft_accepted": accepted_total if all_records else 0,
-            "draft_proposed": proposed_total if all_records else 0,
-            "draft_rejected": reject_total if all_records else 0,
-            "no_rule_passes": no_rule_total if all_records else 0,
-        }
-        print(f"STRUCTSPEC_JSON:{json.dumps(summary)}")
-
 
 def parse_args() -> argparse.Namespace:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--model", required=True, help="Path to target model GGUF file.")
-    ap.add_argument("--token-json", required=True, help="Path to token corpus JSON file.")
+    ap.add_argument("--model", default=DEFAULT_MODEL)
+    ap.add_argument("--token-json", default=DEFAULT_JSON)
     ap.add_argument("--tokens", type=int, default=100)
     ap.add_argument("--prompts", type=int, default=20)
     ap.add_argument("--k", type=int, default=6)
     ap.add_argument("--max-ctx", type=int, default=8)
-    ap.add_argument("--min-support", type=int, default=1, help="Minimum rule support (default: 1)")
-    ap.add_argument("--min-conf", type=float, default=0.85, help="Minimum rule confidence (default: 0.85)")
+    ap.add_argument("--min-support", type=int, default=2)
+    ap.add_argument("--min-conf", type=float, default=0.96)
     ap.add_argument("--det-conf", type=float, default=0.96)
-    ap.add_argument("--min-rule-ctx", type=int, default=4, help="Minimum rule context length (default: 4)")
+    ap.add_argument("--min-rule-ctx", type=int, default=4)
     ap.add_argument("--n-ctx", type=int, default=2048)
     ap.add_argument("--n-gpu-layers", type=int, default=-1)
-    ap.add_argument("--flash-attn", action="store_true",
-                    help="Enable llama.cpp flash attention. Needed by some GGUF architectures for batched decode.")
     ap.add_argument("--offline-only", action="store_true")
     ap.add_argument("--no-syntax-patterns", action="store_true",
                     help="Disable Python syntax backoff rules such as for->in and colon->indent.")
@@ -1699,10 +1792,6 @@ def parse_args() -> argparse.Namespace:
                     help="Oracle/warmup mode: mine each greedy baseline before speculative run for ceiling tests.")
     ap.add_argument("--live-viz", action="store_true",
                     help="Stream accept/reject and approximate pass savings while decoding.")
-    ap.add_argument("--rich-viz", action="store_true",
-                    help="Enable Rich live terminal visualization with token colors and metrics.")
-    ap.add_argument("--adaptive-k", action="store_true",
-                    help="Cap draft chain length by rule trust to avoid verifying long weak drafts.")
     ap.add_argument("--draft-model", default="",
                     help="Optional draft model GGUF path. Rules fire first; draft model fills only no-rule gaps.")
     ap.add_argument("--draft-mistake-limit", type=int, default=1,
@@ -1713,10 +1802,7 @@ def parse_args() -> argparse.Namespace:
                     help="seq-bonus cheaply recomputes bonus after rejection; rebuild replays KV after rejection.")
     ap.add_argument("--unsafe-fast-reject", action="store_true",
                     help="Deprecated alias for --reject-mode truncate.")
-    ap.add_argument("--trace-csv", default="qwen_spec_trace.csv",
-                    help="Path for the output CSV trace file (default: qwen_spec_trace.csv in cwd).")
-    ap.add_argument("--json-output", action="store_true",
-                    help="Emit a final JSON summary line prefixed with 'STRUCTSPEC_JSON:' for programmatic consumption.")
+    ap.add_argument("--trace-csv", default=r"C:\Users\neera\OneDrive\Desktop\sep\qwen_spec_trace.csv")
     return ap.parse_args()
 
 
