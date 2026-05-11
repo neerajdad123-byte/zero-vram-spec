@@ -25,10 +25,18 @@ import time
 from collections import Counter, defaultdict
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Callable, Iterable, Optional
 
 import numpy as np
 from llama_cpp import Llama, LlamaCache
+
+try:
+    from structspec.ast_proposer import Confidence, PythonAstProposer
+    AST_PROPOSER_AVAILABLE = True
+except ImportError:
+    Confidence = None  # type: ignore[assignment]
+    PythonAstProposer = None  # type: ignore[assignment]
+    AST_PROPOSER_AVAILABLE = False
 
 try:
     from .viz import RichVisualizer, TokenEvent, RICH_AVAILABLE
@@ -706,11 +714,35 @@ def propose_draft(
     max_k: int,
     banned: set[tuple[tuple[int, ...], int, str]] | dict | None = None,
     adaptive_k: bool = False,
+    ast_proposer: "PythonAstProposer | None" = None,
+    tokenize_fn: "Callable[[str], list[int]] | None" = None,
 ) -> tuple[list[int], list[Rule]]:
     draft: list[int] = []
     used: list[Rule] = []
     tmp = list(tokens)
+    ctx_tail = tuple(tmp[-8:])
     chain_limit = max_k
+
+    # Try AST proposer first for HARD/MEDIUM grammar-guaranteed tokens
+    if ast_proposer is not None and tokenize_fn is not None:
+        ast_proposal = ast_proposer.propose(max_k=max_k)
+        for pred in ast_proposal.tokens:
+            if len(draft) >= max_k:
+                break
+            tok_ids = tokenize_fn(pred.text)
+            if not tok_ids:
+                continue
+            for tid in tok_ids:
+                if len(draft) >= max_k:
+                    break
+                draft.append(tid)
+                used.append(Rule(ctx_tail, tid, 0.99, 999, 1000, "ast_" + pred.reason))
+            # MEDIUM predictions stop the chain after one token
+            if pred.confidence == Confidence.MEDIUM:
+                break
+        if draft:
+            return draft, used
+
     for step in range(max_k):
         mined = miner.find_rule(tmp, banned=banned)
         syntactic = syntax.find_rule(tmp, banned=banned) if syntax is not None else None
@@ -981,6 +1013,13 @@ def run_speculative(
     if syntax is not None:
         syntax.reset_cache()
         syntax.feed_token(prompt)
+
+    # Initialize AST proposer for grammar-based predictions
+    ast_proposer = None
+    if AST_PROPOSER_AVAILABLE and PythonAstProposer is not None:
+        ast_proposer = PythonAstProposer(max_chain=k)
+        ast_proposer.observe_prompt(prompt)
+        ast_proposer.commit(prompt)
     start = now()
 
     while len(gen) < target:
@@ -1028,6 +1067,8 @@ def run_speculative(
             max_draft,
             banned=banned_rules,
             adaptive_k=adaptive_k,
+            ast_proposer=ast_proposer,
+            tokenize_fn=model.tokenize,
         )
         if not draft and draft_model is not None and max_draft > 0:
             draft, rules = propose_from_draft_model(
@@ -1041,6 +1082,8 @@ def run_speculative(
             greedy_emitted += 1
             if syntax is not None:
                 syntax.feed_token(model.token_piece(prev_pred))
+            if ast_proposer is not None:
+                ast_proposer.commit(model.token_piece(prev_pred))
             if prev_pred == model.eos or len(gen) >= target:
                 break
             continue
@@ -1051,6 +1094,8 @@ def run_speculative(
             greedy_emitted += 1
             if syntax is not None:
                 syntax.feed_token(model.token_piece(prev_pred))
+            if ast_proposer is not None:
+                ast_proposer.commit(model.token_piece(prev_pred))
             continue
 
         old_kv = kv_len
@@ -1114,6 +1159,12 @@ def run_speculative(
                 syntax.feed_token(prompt)
                 for tok in clean_prefix[len(prompt_ids):]:
                     syntax.feed_token(model.token_piece(tok))
+            if ast_proposer is not None:
+                ast_proposer = PythonAstProposer(max_chain=k)
+                ast_proposer.observe_prompt(prompt)
+                ast_proposer.commit(prompt)
+                for tok in clean_prefix[len(prompt_ids):]:
+                    ast_proposer.commit(model.token_piece(tok))
             t1 = now()
             clean_logits = model.decode_logits(prompt_ids, logits_all=False)[0]
             rebuild_passes = 1
@@ -1157,6 +1208,10 @@ def run_speculative(
             for tok in batch[:accepted_batch]:
                 syntax.feed_token(model.token_piece(tok))
             syntax.feed_token(model.token_piece(bonus))
+        if ast_proposer is not None:
+            for tok in batch[:accepted_batch]:
+                ast_proposer.commit(model.token_piece(tok))
+            ast_proposer.commit(model.token_piece(bonus))
 
         tokens_generated = len(gen) - len(prompt_ids)
 

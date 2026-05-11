@@ -78,53 +78,58 @@ def create_app(
         metrics.inc("requests_total")
         metrics.inc("requests_active")
         metrics.inc("bytes_in", len(body))
-        started = time.time()
         headers = _headers(request, api_key)
         url = f"{target}{path}"
-        is_stream = b'"stream":true' in body.replace(b" ", b"").lower()
+        try:
+            is_stream = bool(json.loads(body).get("stream", False))
+        except (json.JSONDecodeError, UnicodeDecodeError):
+            is_stream = False
         domain = detect_domain(_request_prompt_text(body))
         request.state.structspec_domain = domain
 
-        client = httpx.AsyncClient(timeout=None)
-        try:
-            if is_stream:
+        if is_stream:
+            client = httpx.AsyncClient(timeout=None)
+            try:
                 req = client.build_request(request.method, url, headers=headers, content=body)
                 upstream = await client.send(req, stream=True)
+            except Exception as exc:
+                metrics.inc("requests_failed")
+                metrics.inc("requests_active", -1)
+                await client.aclose()
+                return JSONResponse({"error": {"message": str(exc), "type": "structspec_proxy_error"}}, status_code=502)
 
-                async def chunks() -> AsyncIterator[bytes]:
-                    try:
-                        async for chunk in upstream.aiter_bytes():
-                            metrics.inc("streamed_chunks")
-                            metrics.inc("bytes_out", len(chunk))
-                            yield chunk
-                    finally:
-                        await upstream.aclose()
-                        await client.aclose()
-                        metrics.inc("requests_active", -1)
+            async def chunks() -> AsyncIterator[bytes]:
+                try:
+                    async for chunk in upstream.aiter_bytes():
+                        metrics.inc("streamed_chunks")
+                        metrics.inc("bytes_out", len(chunk))
+                        yield chunk
+                finally:
+                    await upstream.aclose()
+                    await client.aclose()
+                    metrics.inc("requests_active", -1)
 
-                return StreamingResponse(
-                    chunks(),
-                    status_code=upstream.status_code,
-                    media_type=upstream.headers.get("content-type", "text/event-stream"),
-                )
-
-            upstream = await client.request(request.method, url, headers=headers, content=body)
-            metrics.inc("bytes_out", len(upstream.content))
-            metrics.inc("target_tokens", _count_output_tokens_rough(upstream.content))
-            metrics.inc("requests_active", -1)
-            await client.aclose()
-            return Response(
-                content=upstream.content,
+            return StreamingResponse(
+                chunks(),
                 status_code=upstream.status_code,
-                media_type=upstream.headers.get("content-type", "application/json"),
+                media_type=upstream.headers.get("content-type", "text/event-stream"),
             )
-        except Exception as exc:
-            metrics.inc("requests_failed")
-            metrics.inc("requests_active", -1)
-            await client.aclose()
-            return JSONResponse({"error": {"message": str(exc), "type": "structspec_proxy_error"}}, status_code=502)
-        finally:
-            _ = started
+
+        async with httpx.AsyncClient(timeout=None) as client:
+            try:
+                upstream = await client.request(request.method, url, headers=headers, content=body)
+                metrics.inc("bytes_out", len(upstream.content))
+                metrics.inc("target_tokens", _count_output_tokens_rough(upstream.content))
+                metrics.inc("requests_active", -1)
+                return Response(
+                    content=upstream.content,
+                    status_code=upstream.status_code,
+                    media_type=upstream.headers.get("content-type", "application/json"),
+                )
+            except Exception as exc:
+                metrics.inc("requests_failed")
+                metrics.inc("requests_active", -1)
+                return JSONResponse({"error": {"message": str(exc), "type": "structspec_proxy_error"}}, status_code=502)
 
     @app.get("/health")
     async def health() -> dict:
