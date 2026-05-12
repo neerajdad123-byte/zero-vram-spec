@@ -1,9 +1,7 @@
 from __future__ import annotations
 
-import pytest
 from structspec.detect import (
     DetectionReport,
-    detect_all,
     find_env_files,
     format_report,
     load_env_keys,

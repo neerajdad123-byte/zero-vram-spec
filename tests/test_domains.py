@@ -1,6 +1,5 @@
 from __future__ import annotations
 
-import pytest
 from structspec.domains import detect_domain, rules_for_domain
 
 

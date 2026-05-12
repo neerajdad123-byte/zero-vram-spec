@@ -5,8 +5,8 @@ from __future__ import annotations
 from structspec.ast_proposer import (
     Confidence,
     PythonAstProposer,
-    predict_once,
     iter_prediction_events,
+    predict_once,
 )
 
 

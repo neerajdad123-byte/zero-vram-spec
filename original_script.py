@@ -37,42 +37,32 @@ if hasattr(sys.stderr, "reconfigure"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 
-import os
-
-DEFAULT_MODEL = os.environ.get(
-    "STRUCTSPEC_MODEL",
+DEFAULT_MODEL = (
     r"C:\Users\neera\.lmstudio\models\Qwen\Qwen2.5-7B-Instruct-GGUF"
     r"\qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
 )
-DEFAULT_JSON = os.environ.get(
-    "STRUCTSPEC_TOKEN_JSON",
-    r"C:\Users\neera\OneDrive\Desktop\sep\engineering_dsa_tokens.json"
-)
-DEFAULT_TRACE = os.environ.get(
-    "STRUCTSPEC_TRACE_CSV",
-    r"C:\Users\neera\OneDrive\Desktop\sep\qwen_spec_trace.csv"
-)
+DEFAULT_JSON = r"C:\Users\neera\OneDrive\Desktop\sep\engineering_dsa_tokens.json"
 
 
 PROMPTS = [
-    "implement linked list in python only code no comments",
-    "implement fibonacci in python, no comments, only code:",
+    "implement linked lsit in python only code no comments",
+    "implement fibbanoci in python, no comments, only code:",
     "implement BST in python ,only code,no comments ",
     "reverse a list in python,only code,no comments",
-    "reverse linked list in python ,no comments ,only code",
-    "write function in python to check given number prime or not only code no comments",
+    "reverse linked list in python ,no coemmnts ,only code",
+    "write function in python to check given number primr or not only code no comments",
     "implement merge sort in python only code no comments ",
     "implement quick sort in python only code no comments",
-    "write function to check given string palindrome or not in python only code no comments",
+    "write fun to check given string palindrome or not in python only code no comments",
     "implement deletion at end in linked list in python only code no comments",
-    "implement insertion at beginning in linked list in python only code no comments ",
-    "implement deletion of node at beginning in linked list in python only code no comments",
+    "impleemnt insertion at begining in linked list in python only code no comments ",
+    "implement deletion of node at begining in linked list in python only code no comments",
     "implement Min heap in python only code no comments",
     "implement max heap in python only code no comments ",
-    "implement binary tree in python only code no comments",
+    "implement Binart Tree in python only code no comments",
     "implement BST in python only code no comments",
     "write function for reversing linked list in python only code no comments",
-    "write function for checking whether given number is prime or not only code no comments",
+    "write function for checking wheather given number is prime or not only code no comments",
     "implement stack using list in python only code no comments",
     "implement queue using list in python only code no comments",
 ]
@@ -544,7 +534,7 @@ class PatternMiner:
     def rule_key(rule: Rule) -> tuple[tuple[int, ...], int, str]:
         return (rule.ctx, rule.token, rule.tier)
 
-    def find_rule(self, tokens: list[int], banned: set | dict | None = None) -> Rule | None:
+    def find_rule(self, tokens: list[int], banned: set[tuple[tuple[int, ...], int, str]] | None = None) -> Rule | None:
         upto = min(self.max_ctx, len(tokens))
         tail = tokens[-self.max_ctx:] if len(tokens) >= self.max_ctx else tokens
         tail_len = len(tail)
@@ -574,7 +564,7 @@ class PatternMiner:
         self,
         tokens: list[int],
         max_k: int,
-        banned: set | dict | None = None,
+        banned: set[tuple[tuple[int, ...], int, str]] | None = None,
     ) -> tuple[list[int], list[Rule]]:
         draft: list[int] = []
         used: list[Rule] = []
@@ -852,7 +842,7 @@ class PythonSyntaxProposer:
     def find_rule(
         self,
         tokens: list[int],
-        banned: set | dict | None = None,
+        banned: set[tuple[tuple[int, ...], int, str]] | None = None,
     ) -> Rule | None:
         if not tokens:
             return None
@@ -996,7 +986,7 @@ def propose_draft(
     syntax: PythonSyntaxProposer | None,
     tokens: list[int],
     max_k: int,
-    banned: set | dict | None = None,
+    banned: set[tuple[tuple[int, ...], int, str]] | None = None,
     early_exit: EarlyExitDraftController | None = None,
     rule_registry: RuleStatsRegistry | None = None,
     live_ngram: LiveNgramMiner | None = None,
@@ -1228,10 +1218,9 @@ def run_speculative(
     pattern_time_total = 0.0
     verify_time_total = 0.0
     accept_hist = Counter()
-    banned_rules: dict[tuple[tuple[int, ...], int, str], int] = {}
+    banned_rules: set[tuple[tuple[int, ...], int, str]] = set()
     rule_strikes: Counter[tuple[tuple[int, ...], int, str]] = Counter()
     draft_mistakes = draft_mistakes if draft_mistakes is not None else Counter()
-    BAN_DECAY = 50
 
     # Optimization components (create if not provided)
     rule_registry = rule_registry or RuleStatsRegistry()
@@ -1254,20 +1243,7 @@ def run_speculative(
 
         pending = gen[kv_len:]
         if len(pending) > 1:
-            print(
-                f"\n[warn] pending={pending} > 1 at position {len(gen)}, "
-                f"falling back to greedy for this step",
-                file=sys.stderr,
-                flush=True,
-            )
-            gen = gen[:kv_len]
-            pending = []
-            model.truncate_kv(kv_len)
-            if gen:
-                recover_logits = model.decode_logits(gen[-1:], logits_all=False)[0]
-                times["decode"] += now() - (now() - 0)
-                passes += 1
-                prev_pred = model.argmax(recover_logits)
+            raise RuntimeError(f"internal error: pending={pending}")
 
         # If there is no pending token and no useful draft, emit the model's
         # already-known greedy token as pending. Next loop can draft after it.
@@ -1276,12 +1252,6 @@ def run_speculative(
         max_draft = max(0, min(k_now, remaining - 1))
         ctx_tail_ids = gen[max(0, len(gen) - 12):]
         pos = len(gen) - len(prompt_ids)
-
-        # Decay banned rules
-        expired = [key for key, ban_pos in banned_rules.items() if pos - ban_pos > BAN_DECAY]
-        for key in expired:
-            del banned_rules[key]
-
         t0 = now()
         draft, rules = propose_draft(
             miner, syntax, gen, max_draft, banned=banned_rules,
@@ -1366,7 +1336,7 @@ def run_speculative(
                         key = PatternMiner.rule_key(rules[j])
                         rule_strikes[key] += 1
                         if rule_strikes[key] >= strike_limit:
-                            banned_rules[key] = pos
+                            banned_rules.add(key)
                         if rules[j].tier == "draft_model":
                             draft_mistakes[(rules[j].ctx, rules[j].token)] += 1
                     break
@@ -1498,7 +1468,6 @@ def run_speculative(
             "why": why,
             "rule_strikes": sum(rule_strikes.values()),
             "draft_mistakes": sum(draft_mistakes.values()),
-            "pattern_s": pattern_dt,
             "decode_s": decode_dt,
             "verify_s": verify_dt,
         })
@@ -1551,7 +1520,7 @@ TRACE_FIELDS = [
     "rule_conf", "rule_support", "ctx_tail_ids", "ctx_tail_text",
     "draft_ids", "draft_text", "model_draft_ids", "model_draft_text",
     "next_model_text", "mismatch_at", "why", "rule_strikes", "draft_mistakes",
-    "pattern_s", "decode_s", "verify_s",
+    "decode_s", "verify_s",
 ]
 
 
@@ -1812,7 +1781,7 @@ def parse_args() -> argparse.Namespace:
                     help="seq-bonus cheaply recomputes bonus after rejection; rebuild replays KV after rejection.")
     ap.add_argument("--unsafe-fast-reject", action="store_true",
                     help="Deprecated alias for --reject-mode truncate.")
-    ap.add_argument("--trace-csv", default=DEFAULT_TRACE)
+    ap.add_argument("--trace-csv", default=r"C:\Users\neera\OneDrive\Desktop\sep\qwen_spec_trace.csv")
     return ap.parse_args()
 
 

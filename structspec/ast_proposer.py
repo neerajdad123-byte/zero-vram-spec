@@ -28,8 +28,8 @@ from typing import Iterable, Optional
 
 # --- Optional tree-sitter import. Degrades gracefully if missing. -----------
 try:
-    import tree_sitter_python as _tspython
     import tree_sitter as _ts
+    import tree_sitter_python as _tspython
 
     _TS_LANG = _ts.Language(_tspython.language())
     _TS_PARSER = _ts.Parser(_TS_LANG)

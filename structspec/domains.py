@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import re
 
-
 DOMAIN_RULES = [
     ("python", re.compile(r"^\s*(def |class |import |from |```python|async def )", re.I)),
     ("json", re.compile(r"^\s*(\{|\[|```json)", re.I)),

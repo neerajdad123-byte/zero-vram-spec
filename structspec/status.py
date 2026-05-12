@@ -38,7 +38,7 @@ def print_status_loop(base_url: str, once: bool = False, interval: float = 1.0) 
 def run_textual_status(base_url: str, interval: float = 1.0) -> None:
     try:
         from textual.app import App, ComposeResult
-        from textual.widgets import Header, Footer, Static
+        from textual.widgets import Footer, Header, Static
     except ImportError:
         print("Textual is not installed; falling back to terminal status. Install with: pip install structspec[tui]")
         print_status_loop(base_url, once=False, interval=interval)

@@ -1,7 +1,6 @@
 """stat_compare.py - Statistical side-by-side comparison of two trace CSVs."""
-import csv, sys
+import csv
 from collections import Counter, defaultdict
-from pathlib import Path
 
 OLD = r"C:\Users\neera\OneDrive\Desktop\Structspec_Artifacts\humaneval_results\humaneval_trace.csv"
 NEW = "comparison_new2.csv"
@@ -53,24 +52,24 @@ def analyze(trace, label):
     print(f"  Draft tokens rejected  : {draft_total - accepted_total}")
     print(f"  ACCEPT RATE            : {accepted_total/max(1,draft_total)*100:.1f}%")
     print(f"  No-pattern steps       : {total_steps - draft_starts}")
-    print(f"")
+    print("")
     print(f"  Pattern time TOTAL     : {sum(pattern_t):.4f}s")
     print(f"  Pattern time MEDIAN    : {pt_sorted[mid_pt]*1000 if pt_sorted else 0:.3f}ms")
     print(f"  Pattern time PER STEP  : {sum(pattern_t)/max(1,total_steps)*1000:.3f}ms")
-    print(f"")
+    print("")
     print(f"  Model decode TOTAL     : {sum(decode_t):.3f}s")
     print(f"  Model decode MEDIAN    : {dt_sorted[mid_dt]*1000 if dt_sorted else 0:.2f}ms")
     print(f"  Model decode PER STEP  : {sum(decode_t)/max(1,total_steps)*1000:.1f}ms")
-    print(f"")
+    print("")
     print(f"  Verification TOTAL     : {sum(verify_t):.4f}s")
     print(f"  Verification MEDIAN    : {vt_sorted[mid_vt]*1000 if vt_sorted else 0:.3f}ms")
     print(f"  Verification PER STEP  : {sum(verify_t)/max(1,total_steps)*1000:.3f}ms")
-    print(f"")
-    print(f"  Rejection reasons:")
+    print("")
+    print("  Rejection reasons:")
     for why, cnt in why_counts.most_common():
         print(f"    {why:<25} {cnt:>5}")
-    print(f"")
-    print(f"  Tier acceptance breakdown:")
+    print("")
+    print("  Tier acceptance breakdown:")
     for tier, (tot, acc) in sorted(tier_acc.items(), key=lambda x: -x[1][0]):
         rate = acc / max(1, tot) * 100
         bar = "#" * int(rate / 10) + "." * (10 - int(rate / 10))
@@ -96,7 +95,7 @@ def main():
     new = analyze(read_trace(NEW), "NEW TRACE (DSA 5 prompts, K=6, truncate)")
 
     print(f"\n{'='*80}")
-    print(f"  SIDE-BY-SIDE COMPARISON")
+    print("  SIDE-BY-SIDE COMPARISON")
     print(f"{'='*80}")
     FMT = "  {:<35} {:>15} {:>15} {:>15}"
     print(FMT.format("METRIC", "OLD", "NEW", "DELTA"))

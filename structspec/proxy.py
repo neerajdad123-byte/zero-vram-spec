@@ -2,7 +2,6 @@ from __future__ import annotations
 
 import json
 import os
-import time
 from typing import AsyncIterator
 
 import httpx
@@ -11,7 +10,6 @@ from fastapi.responses import JSONResponse, StreamingResponse
 
 from .domains import detect_domain, rules_for_domain
 from .metrics import metrics
-
 
 HOP_BY_HOP_HEADERS = {
     "connection",

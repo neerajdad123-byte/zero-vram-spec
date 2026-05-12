@@ -10,7 +10,6 @@ import urllib.request
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
 KEY_NAMES = ("OPENAI_API_KEY", "ANTHROPIC_API_KEY", "HF_TOKEN", "VLLM_API_KEY")
 MODEL_SUFFIXES = (".gguf", ".safetensors", ".bin")
 

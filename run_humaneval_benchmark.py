@@ -12,7 +12,6 @@ import urllib.request
 from collections import Counter, defaultdict
 from pathlib import Path
 
-
 ROOT = Path(__file__).resolve().parent
 HUMANEVAL_URL = "https://raw.githubusercontent.com/openai/human-eval/master/data/HumanEval.jsonl.gz"
 DEFAULT_MODEL = os.environ.get("STRUCTSPEC_MODEL")
@@ -189,7 +188,6 @@ def main() -> None:
     report_path = out_dir / "humaneval_report.md"
 
     all_records: list[dict] = []
-    output_rows: list[dict] = []
     per_task: list[dict] = []
     totals = Counter()
     phase_totals = Counter()

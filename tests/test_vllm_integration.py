@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import pytest
+
 from structspec.vllm_integration import build_vllm_command, shell_join, speculative_config
 
 

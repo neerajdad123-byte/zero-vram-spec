@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import time
-
 from structspec.metrics import Metrics, MetricsStore
 
 
