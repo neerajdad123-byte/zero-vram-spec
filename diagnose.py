@@ -12,7 +12,6 @@ Usage:
 from __future__ import annotations
 
 import argparse
-import json
 import sys
 import time
 from collections import Counter, defaultdict
@@ -69,7 +68,6 @@ def run_diagnostic(args: argparse.Namespace) -> None:
         PatternMiner,
         PythonSyntaxProposer,
         QwenTokenCorpus,
-        Rule,
         propose_draft,
     )
 
