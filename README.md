@@ -21,6 +21,24 @@ Structspec eliminates that cost. It works inline in the token stream, predicting
 
 **No second model. No extra VRAM. Just faster output.**
 
+## Demo
+
+**Side-by-side speedup demo** (Qwen2.5-Coder-7B on RTX 4050):
+
+https://github.com/user-attachments/assets/demo_speedup.mp4
+
+Left: Standard greedy decoding. Right: Structspec speculative decoding.
+Same prompt, same model, same hardware. 49 tok/s vs 59 tok/s.
+
+Run it yourself:
+```powershell
+# Terminal 1 - Baseline
+python demo_baseline.py
+
+# Terminal 2 - Structspec
+python demo_speculative.py
+```
+
 ## Benchmarks
 
 Qwen2.5-Coder-7B-Instruct Q4\_K\_M, RTX 4050 (6GB VRAM), 20 DSA code generation prompts:
