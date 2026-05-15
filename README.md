@@ -25,10 +25,10 @@ Structspec eliminates that cost. It works inline in the token stream, predicting
 
 **Side-by-side speedup demo** (Qwen2.5-Coder-7B on RTX 4050):
 
-https://github.com/user-attachments/assets/demo_speedup.mp4
+https://github.com/user-attachments/assets/20cc10bf-bc1b-49c5-9c19-7ed166c3b38f
 
-Left: Standard greedy decoding. Right: Structspec speculative decoding.
-Same prompt, same model, same hardware. 49 tok/s vs 59 tok/s.
+Left: Standard greedy decoding (49 tok/s). Right: Structspec speculative decoding (59 tok/s).
+Same prompt, same model, same hardware. **1.2x speedup with 100% draft acceptance.**
 
 Run it yourself:
 ```powershell
