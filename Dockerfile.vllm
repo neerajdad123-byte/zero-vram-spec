@@ -1,7 +1,0 @@
-FROM vllm/vllm-openai:latest
-
-WORKDIR /app
-COPY . /app
-RUN pip install -e .
-
-ENTRYPOINT ["python", "-m", "structspec.vllm_integration"]

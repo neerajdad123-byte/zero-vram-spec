@@ -12,4 +12,9 @@ build/
 dist/
 .venv/
 venv/
-.gstack/
+.pytest_cache/
+.ruff_cache/
+benchmark_trace.csv
+comparison_*.csv
+dsa_trace_*.csv
+stat_compare_report.csv
