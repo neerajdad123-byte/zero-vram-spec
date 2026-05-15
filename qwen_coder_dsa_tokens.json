@@ -1,0 +1,9834 @@
+{
+  "Singly Linked List with append and delete": {
+    "code": "\nclass Node:\n    def __init__(self, data):\n        self.data = data\n        self.next = None\n\nclass LinkedList:\n    def __init__(self):\n        self.head = None\n\n    def append(self, data):\n        new_node = Node(data)\n        if not self.head:\n            self.head = new_node\n            return\n        current = self.head\n        while current.next:\n            current = current.next\n        current.next = new_node\n\n    def delete(self, data):\n        if not self.head:\n            return\n        if self.head.data == data:\n            self.head = self.head.next\n            return\n        current = self.head\n        while current.next:\n            if current.next.data == data:\n                current.next = current.next.next\n                return\n            current = current.next\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2196,
+        "token": ".data"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 22917,
+        "token": " LinkedList"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 8737,
+        "token": " append"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 2592,
+        "token": "(data"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 3698,
+        "token": " delete"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 2196,
+        "token": ".data"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 2196,
+        "token": ".data"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Binary Search Tree": {
+    "code": "\nclass Node:\n    def __init__(self, key):\n        self.key = key\n        self.left = None\n        self.right = None\n\nclass BST:\n    def __init__(self):\n        self.root = None\n\n    def insert(self, key):\n        if not self.root:\n            self.root = Node(key)\n            return\n        current = self.root\n        while True:\n            if key < current.key:\n                if current.left is None:\n                    current.left = Node(key)\n                    return\n                current = current.left\n            elif key > current.key:\n                if current.right is None:\n                    current.right = Node(key)\n                    return\n                current = current.right\n            else:\n                return\n\n    def search(self, key):\n        current = self.root\n        while current:\n            if key == current.key:\n                return True\n            elif key < current.key:\n                current = current.left\n            else:\n                current = current.right\n        return False\n\n    def inorder(self, node, result=None):\n        if result is None:\n            result = []\n        if node:\n            self.inorder(node.left, result)\n            result.append(node.key)\n            self.inorder(node.right, result)\n        return result\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 43541,
+        "token": " BST"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 12576,
+        "token": ".root"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 5656,
+        "token": " insert"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 12576,
+        "token": ".root"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 12576,
+        "token": ".root"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 12576,
+        "token": ".root"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 4409,
+        "token": " elif"
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 6018,
+        "token": " Node"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 2711,
+        "token": " search"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 12576,
+        "token": ".root"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 4409,
+        "token": " elif"
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 66041,
+        "token": " inorder"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2436,
+        "token": " node"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 5856,
+        "token": "=None"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 4167,
+        "token": " []\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2436,
+        "token": " node"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1858,
+        "token": ".in"
+      },
+      {
+        "id": 1358,
+        "token": "order"
+      },
+      {
+        "id": 6958,
+        "token": "(node"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 6958,
+        "token": "(node"
+      },
+      {
+        "id": 4735,
+        "token": ".key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1858,
+        "token": ".in"
+      },
+      {
+        "id": 1358,
+        "token": "order"
+      },
+      {
+        "id": 6958,
+        "token": "(node"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Min Heap": {
+    "code": "\nclass MinHeap:\n    def __init__(self):\n        self.heap = []\n\n    def parent(self, i):\n        return (i - 1) // 2\n\n    def left(self, i):\n        return 2 * i + 1\n\n    def right(self, i):\n        return 2 * i + 2\n\n    def insert(self, key):\n        self.heap.append(key)\n        i = len(self.heap) - 1\n        while i > 0 and self.heap[self.parent(i)] > self.heap[i]:\n            self.heap[i], self.heap[self.parent(i)] = self.heap[self.parent(i)], self.heap[i]\n            i = self.parent(i)\n\n    def extract_min(self):\n        if not self.heap:\n            return None\n        if len(self.heap) == 1:\n            return self.heap.pop()\n        root = self.heap[0]\n        self.heap[0] = self.heap.pop()\n        self._heapify(0)\n        return root\n\n    def _heapify(self, i):\n        smallest = i\n        l = self.left(i)\n        r = self.right(i)\n        if l < len(self.heap) and self.heap[l] < self.heap[smallest]:\n            smallest = l\n        if r < len(self.heap) and self.heap[r] < self.heap[smallest]:\n            smallest = r\n        if smallest != i:\n            self.heap[i], self.heap[smallest] = self.heap[smallest], self.heap[i]\n            self._heapify(smallest)\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 3386,
+        "token": " Min"
+      },
+      {
+        "id": 27909,
+        "token": "Heap"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 14599,
+        "token": " []\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 2681,
+        "token": " parent"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 72,
+        "token": "i"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 442,
+        "token": " //"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 353,
+        "token": " *"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 353,
+        "token": " *"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 5656,
+        "token": " insert"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 323,
+        "token": " and"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 14327,
+        "token": "[self"
+      },
+      {
+        "id": 8659,
+        "token": ".parent"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 7252,
+        "token": ")]"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 14327,
+        "token": "[self"
+      },
+      {
+        "id": 8659,
+        "token": ".parent"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 7252,
+        "token": ")]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 14327,
+        "token": "[self"
+      },
+      {
+        "id": 8659,
+        "token": ".parent"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 25035,
+        "token": ")],"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 8659,
+        "token": ".parent"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 692,
+        "token": ")\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 8649,
+        "token": " extract"
+      },
+      {
+        "id": 7260,
+        "token": "_min"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8288,
+        "token": ".pop"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 3704,
+        "token": " root"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8288,
+        "token": ".pop"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1436,
+        "token": "._"
+      },
+      {
+        "id": 15961,
+        "token": "heap"
+      },
+      {
+        "id": 1437,
+        "token": "ify"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3704,
+        "token": " root"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 716,
+        "token": " _"
+      },
+      {
+        "id": 15961,
+        "token": "heap"
+      },
+      {
+        "id": 1437,
+        "token": "ify"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 24632,
+        "token": " smallest"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 326,
+        "token": " l"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 8272,
+        "token": ".left"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 435,
+        "token": " r"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9517,
+        "token": ".right"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 326,
+        "token": " l"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 323,
+        "token": " and"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 16871,
+        "token": "[l"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 3563,
+        "token": "sm"
+      },
+      {
+        "id": 19236,
+        "token": "allest"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 24632,
+        "token": " smallest"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 326,
+        "token": " l"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 435,
+        "token": " r"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 323,
+        "token": " and"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 16131,
+        "token": "[r"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 3563,
+        "token": "sm"
+      },
+      {
+        "id": 19236,
+        "token": "allest"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 24632,
+        "token": " smallest"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 435,
+        "token": " r"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 24632,
+        "token": " smallest"
+      },
+      {
+        "id": 961,
+        "token": " !="
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 3563,
+        "token": "sm"
+      },
+      {
+        "id": 19236,
+        "token": "allest"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 3563,
+        "token": "sm"
+      },
+      {
+        "id": 19236,
+        "token": "allest"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 77147,
+        "token": ".heap"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1436,
+        "token": "._"
+      },
+      {
+        "id": 15961,
+        "token": "heap"
+      },
+      {
+        "id": 1437,
+        "token": "ify"
+      },
+      {
+        "id": 55280,
+        "token": "(sm"
+      },
+      {
+        "id": 19236,
+        "token": "allest"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      }
+    ]
+  },
+  "Merge Sort": {
+    "code": "\ndef merge_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    mid = len(arr) // 2\n    left = merge_sort(arr[:mid])\n    right = merge_sort(arr[mid:])\n    return merge(left, right)\n\ndef merge(left, right):\n    result = []\n    i = j = 0\n    while i < len(left) and j < len(right):\n        if left[i] <= right[j]:\n            result.append(left[i])\n            i += 1\n        else:\n            result.append(right[j])\n            j += 1\n    result.extend(left[i:])\n    result.extend(right[j:])\n    return result\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 10880,
+        "token": " merge"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 5099,
+        "token": " mid"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 442,
+        "token": " //"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 10880,
+        "token": " merge"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 3447,
+        "token": "[:"
+      },
+      {
+        "id": 16106,
+        "token": "mid"
+      },
+      {
+        "id": 2546,
+        "token": "])\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 10880,
+        "token": " merge"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 39689,
+        "token": "[mid"
+      },
+      {
+        "id": 43057,
+        "token": ":])\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 10880,
+        "token": " merge"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 692,
+        "token": ")\n\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 10880,
+        "token": " merge"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 4167,
+        "token": " []\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 323,
+        "token": " and"
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 27704,
+        "token": "(right"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 2546,
+        "token": "])\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 1421,
+        "token": " +="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 27704,
+        "token": "(right"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 2546,
+        "token": "])\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 1421,
+        "token": " +="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 15831,
+        "token": ".extend"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 43057,
+        "token": ":])\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 15831,
+        "token": ".extend"
+      },
+      {
+        "id": 27704,
+        "token": "(right"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 43057,
+        "token": ":])\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 1102,
+        "token": " result"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Quick Sort": {
+    "code": "\ndef quick_sort(arr):\n    if len(arr) <= 1:\n        return arr\n    pivot = arr[len(arr) // 2]\n    left = [x for x in arr if x < pivot]\n    middle = [x for x in arr if x == pivot]\n    right = [x for x in arr if x > pivot]\n    return quick_sort(left) + middle + quick_sort(right)\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 3974,
+        "token": " quick"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 26045,
+        "token": " pivot"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 24693,
+        "token": "[len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 442,
+        "token": " //"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 508,
+        "token": " ["
+      },
+      {
+        "id": 87,
+        "token": "x"
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 26045,
+        "token": " pivot"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 6149,
+        "token": " middle"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 508,
+        "token": " ["
+      },
+      {
+        "id": 87,
+        "token": "x"
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 26045,
+        "token": " pivot"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 508,
+        "token": " ["
+      },
+      {
+        "id": 87,
+        "token": "x"
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 856,
+        "token": " x"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 26045,
+        "token": " pivot"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3974,
+        "token": " quick"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 17671,
+        "token": "(left"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 6149,
+        "token": " middle"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 3974,
+        "token": " quick"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 27704,
+        "token": "(right"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      }
+    ]
+  },
+  "Stack using list": {
+    "code": "\nclass Stack:\n    def __init__(self):\n        self.items = []\n\n    def push(self, item):\n        self.items.append(item)\n\n    def pop(self):\n        if not self.is_empty():\n            return self.items.pop()\n        return None\n\n    def peek(self):\n        if not self.is_empty():\n            return self.items[-1]\n        return None\n\n    def is_empty(self):\n        return len(self.items) == 0\n\n    def size(self):\n        return len(self.items)\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 14284,
+        "token": " Stack"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 14599,
+        "token": " []\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 4484,
+        "token": " push"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 5393,
+        "token": "(item"
+      },
+      {
+        "id": 692,
+        "token": ")\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 2420,
+        "token": " pop"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2079,
+        "token": ".is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 3932,
+        "token": "():\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 8288,
+        "token": ".pop"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 32592,
+        "token": " peek"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2079,
+        "token": ".is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 3932,
+        "token": "():\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 7609,
+        "token": "[-"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      }
+    ]
+  },
+  "Queue using list": {
+    "code": "\nclass Queue:\n    def __init__(self):\n        self.items = []\n\n    def enqueue(self, item):\n        self.items.append(item)\n\n    def dequeue(self):\n        if not self.is_empty():\n            return self.items.pop(0)\n        return None\n\n    def front(self):\n        if not self.is_empty():\n            return self.items[0]\n        return None\n\n    def is_empty(self):\n        return len(self.items) == 0\n\n    def size(self):\n        return len(self.items)\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 18745,
+        "token": " Queue"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 14599,
+        "token": " []\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 53757,
+        "token": " enqueue"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 5393,
+        "token": "(item"
+      },
+      {
+        "id": 692,
+        "token": ")\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 83873,
+        "token": " dequeue"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2079,
+        "token": ".is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 3932,
+        "token": "():\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 8288,
+        "token": ".pop"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 4065,
+        "token": " front"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2079,
+        "token": ".is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 3932,
+        "token": "():\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 58,
+        "token": "["
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 15124,
+        "token": "_empty"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 9615,
+        "token": ".items"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      }
+    ]
+  },
+  "Fibonacci iterative": {
+    "code": "\ndef fibonacci(n):\n    if n <= 1:\n        return n\n    a, b = 0, 1\n    for _ in range(2, n + 1):\n        a, b = b, a + b\n    return b\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 75698,
+        "token": " fibonacci"
+      },
+      {
+        "id": 1445,
+        "token": "(n"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 264,
+        "token": " a"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 293,
+        "token": " b"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 716,
+        "token": " _"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 264,
+        "token": " a"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 293,
+        "token": " b"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 293,
+        "token": " b"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 264,
+        "token": " a"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 293,
+        "token": " b"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 293,
+        "token": " b"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Is Prime": {
+    "code": "\ndef is_prime(n):\n    if n <= 1:\n        return False\n    if n <= 3:\n        return True\n    if n % 2 == 0 or n % 3 == 0:\n        return False\n    i = 5\n    while i * i <= n:\n        if n % i == 0 or n % (i + 2) == 0:\n            return False\n        i += 6\n    return True\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 38217,
+        "token": "_prime"
+      },
+      {
+        "id": 1445,
+        "token": "(n"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 18,
+        "token": "3"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 476,
+        "token": " or"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 18,
+        "token": "3"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 20,
+        "token": "5"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 353,
+        "token": " *"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 476,
+        "token": " or"
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 72,
+        "token": "i"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 1421,
+        "token": " +="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 21,
+        "token": "6"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Palindrome check": {
+    "code": "\ndef is_palindrome(s):\n    left, right = 0, len(s) - 1\n    while left < right:\n        if s[left] != s[right]:\n            return False\n        left += 1\n        right -= 1\n    return True\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 73310,
+        "token": "_pal"
+      },
+      {
+        "id": 36058,
+        "token": "indrome"
+      },
+      {
+        "id": 1141,
+        "token": "(s"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 1141,
+        "token": "(s"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 274,
+        "token": " s"
+      },
+      {
+        "id": 46502,
+        "token": "[left"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 961,
+        "token": " !="
+      },
+      {
+        "id": 274,
+        "token": " s"
+      },
+      {
+        "id": 52918,
+        "token": "[right"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 1421,
+        "token": " +="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 5982,
+        "token": " -="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Reverse linked list": {
+    "code": "\ndef reverse_list(head):\n    prev = None\n    current = head\n    while current:\n        next_node = current.next\n        current.next = prev\n        prev = current\n        current = next_node\n    return prev\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 9931,
+        "token": " reverse"
+      },
+      {
+        "id": 2019,
+        "token": "_list"
+      },
+      {
+        "id": 25340,
+        "token": "(head"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 7872,
+        "token": " prev"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1968,
+        "token": " head"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1790,
+        "token": " next"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 7872,
+        "token": " prev"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 7872,
+        "token": " prev"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1790,
+        "token": " next"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 7872,
+        "token": " prev"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Graph BFS": {
+    "code": "\nfrom collections import deque\n\ndef bfs(graph, start):\n    visited = set()\n    queue = deque([start])\n    visited.add(start)\n    order = []\n    while queue:\n        vertex = queue.popleft()\n        order.append(vertex)\n        for neighbor in graph[vertex]:\n            if neighbor not in visited:\n                visited.add(neighbor)\n                queue.append(neighbor)\n    return order\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1499,
+        "token": "from"
+      },
+      {
+        "id": 15302,
+        "token": " collections"
+      },
+      {
+        "id": 1159,
+        "token": " import"
+      },
+      {
+        "id": 41950,
+        "token": " deque"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 66564,
+        "token": " bfs"
+      },
+      {
+        "id": 24312,
+        "token": "(graph"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1191,
+        "token": " start"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 738,
+        "token": " set"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 7177,
+        "token": " queue"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 41950,
+        "token": " deque"
+      },
+      {
+        "id": 2561,
+        "token": "(["
+      },
+      {
+        "id": 2468,
+        "token": "start"
+      },
+      {
+        "id": 2546,
+        "token": "])\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 1364,
+        "token": ".add"
+      },
+      {
+        "id": 10639,
+        "token": "(start"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 4167,
+        "token": " []\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 7177,
+        "token": " queue"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 11936,
+        "token": " vertex"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 7177,
+        "token": " queue"
+      },
+      {
+        "id": 556,
+        "token": ".p"
+      },
+      {
+        "id": 76252,
+        "token": "opleft"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 44752,
+        "token": "(vertex"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 9565,
+        "token": " neighbor"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 4771,
+        "token": " graph"
+      },
+      {
+        "id": 93484,
+        "token": "[vertex"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 9565,
+        "token": " neighbor"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 1364,
+        "token": ".add"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 36469,
+        "token": "neighbor"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 7177,
+        "token": " queue"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 36469,
+        "token": "neighbor"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Graph DFS": {
+    "code": "\ndef dfs(graph, start, visited=None):\n    if visited is None:\n        visited = set()\n    visited.add(start)\n    order = [start]\n    for neighbor in graph[start]:\n        if neighbor not in visited:\n            order.extend(dfs(graph, neighbor, visited))\n    return order\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 25792,
+        "token": " dfs"
+      },
+      {
+        "id": 24312,
+        "token": "(graph"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1191,
+        "token": " start"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 5856,
+        "token": "=None"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 374,
+        "token": " is"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 738,
+        "token": " set"
+      },
+      {
+        "id": 741,
+        "token": "()\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 1364,
+        "token": ".add"
+      },
+      {
+        "id": 10639,
+        "token": "(start"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 508,
+        "token": " ["
+      },
+      {
+        "id": 2468,
+        "token": "start"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 9565,
+        "token": " neighbor"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 4771,
+        "token": " graph"
+      },
+      {
+        "id": 28463,
+        "token": "[start"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 9565,
+        "token": " neighbor"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 15831,
+        "token": ".extend"
+      },
+      {
+        "id": 1500,
+        "token": "(d"
+      },
+      {
+        "id": 3848,
+        "token": "fs"
+      },
+      {
+        "id": 24312,
+        "token": "(graph"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 9565,
+        "token": " neighbor"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 11994,
+        "token": " visited"
+      },
+      {
+        "id": 1171,
+        "token": "))\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 1973,
+        "token": " order"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Doubly Linked List": {
+    "code": "\nclass DNode:\n    def __init__(self, data):\n        self.data = data\n        self.next = None\n        self.prev = None\n\nclass DoublyLinkedList:\n    def __init__(self):\n        self.head = None\n\n    def append(self, data):\n        new_node = DNode(data)\n        if not self.head:\n            self.head = new_node\n            return\n        current = self.head\n        while current.next:\n            current = current.next\n        current.next = new_node\n        new_node.prev = current\n\n    def delete(self, data):\n        current = self.head\n        while current:\n            if current.data == data:\n                if current.prev:\n                    current.prev.next = current.next\n                else:\n                    self.head = current.next\n                if current.next:\n                    current.next.prev = current.prev\n                return\n            current = current.next\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 422,
+        "token": " D"
+      },
+      {
+        "id": 1955,
+        "token": "Node"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2196,
+        "token": ".data"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 54864,
+        "token": " Doub"
+      },
+      {
+        "id": 398,
+        "token": "ly"
+      },
+      {
+        "id": 33915,
+        "token": "LinkedList"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 8737,
+        "token": " append"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 422,
+        "token": " D"
+      },
+      {
+        "id": 1955,
+        "token": "Node"
+      },
+      {
+        "id": 2592,
+        "token": "(data"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 537,
+        "token": " not"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 501,
+        "token": " new"
+      },
+      {
+        "id": 5084,
+        "token": "_node"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 3698,
+        "token": " delete"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 2196,
+        "token": ".data"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 821,
+        "token": " data"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 16042,
+        "token": ".head"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 503,
+        "token": "                   "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 28991,
+        "token": ".prev"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1482,
+        "token": " current"
+      },
+      {
+        "id": 4529,
+        "token": ".next"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Binary Search": {
+    "code": "\ndef binary_search(arr, target):\n    left, right = 0, len(arr) - 1\n    while left <= right:\n        mid = (left + right) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            left = mid + 1\n        else:\n            right = mid - 1\n    return -1\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 7868,
+        "token": " binary"
+      },
+      {
+        "id": 10716,
+        "token": "_search"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2169,
+        "token": " target"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 2651,
+        "token": " <="
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 5099,
+        "token": " mid"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 2359,
+        "token": "left"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 442,
+        "token": " //"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 17,
+        "token": "2"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 39689,
+        "token": "[mid"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 2169,
+        "token": " target"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 5099,
+        "token": " mid"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 4409,
+        "token": " elif"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 39689,
+        "token": "[mid"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2169,
+        "token": " target"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 2115,
+        "token": " left"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 5099,
+        "token": " mid"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 1290,
+        "token": " right"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 5099,
+        "token": " mid"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Insertion Sort": {
+    "code": "\ndef insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 35927,
+        "token": " insertion"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 9957,
+        "token": ")):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1393,
+        "token": " while"
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 2604,
+        "token": " >="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 323,
+        "token": " and"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 5982,
+        "token": " -="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Selection Sort": {
+    "code": "\ndef selection_sort(arr):\n    for i in range(len(arr)):\n        min_idx = i\n        for j in range(i + 1, len(arr)):\n            if arr[j] < arr[min_idx]:\n                min_idx = j\n        arr[i], arr[min_idx] = arr[min_idx], arr[i]\n    return arr\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 6589,
+        "token": " selection"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 6901,
+        "token": "(len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 9957,
+        "token": ")):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1308,
+        "token": " min"
+      },
+      {
+        "id": 7258,
+        "token": "_idx"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 9957,
+        "token": ")):\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 366,
+        "token": " <"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 61274,
+        "token": "[min"
+      },
+      {
+        "id": 7258,
+        "token": "_idx"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 1308,
+        "token": " min"
+      },
+      {
+        "id": 7258,
+        "token": "_idx"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 61274,
+        "token": "[min"
+      },
+      {
+        "id": 7258,
+        "token": "_idx"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 61274,
+        "token": "[min"
+      },
+      {
+        "id": 7258,
+        "token": "_idx"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Bubble Sort": {
+    "code": "\ndef bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n - i - 1):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n    return arr\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 750,
+        "token": "def"
+      },
+      {
+        "id": 23611,
+        "token": " bubble"
+      },
+      {
+        "id": 18435,
+        "token": "_sort"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2422,
+        "token": " len"
+      },
+      {
+        "id": 10939,
+        "token": "(arr"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 1445,
+        "token": "(n"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 502,
+        "token": " j"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 7,
+        "token": "("
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 308,
+        "token": " n"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 861,
+        "token": " >"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 1125,
+        "token": "],"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 3809,
+        "token": "[j"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2890,
+        "token": " arr"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Circular Queue": {
+    "code": "\nclass CircularQueue:\n    def __init__(self, size):\n        self.size = size\n        self.queue = [None] * size\n        self.front = self.rear = -1\n\n    def enqueue(self, item):\n        if (self.rear + 1) % self.size == self.front:\n            return False\n        if self.front == -1:\n            self.front = 0\n        self.rear = (self.rear + 1) % self.size\n        self.queue[self.rear] = item\n        return True\n\n    def dequeue(self):\n        if self.front == -1:\n            return None\n        item = self.queue[self.front]\n        if self.front == self.rear:\n            self.front = self.rear = -1\n        else:\n            self.front = (self.front + 1) % self.size\n        return item\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 45761,
+        "token": " Circular"
+      },
+      {
+        "id": 7554,
+        "token": "Queue"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 29598,
+        "token": ".queue"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 508,
+        "token": " ["
+      },
+      {
+        "id": 4064,
+        "token": "None"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 353,
+        "token": " *"
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 53757,
+        "token": " enqueue"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 15,
+        "token": "0"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 29598,
+        "token": ".queue"
+      },
+      {
+        "id": 14327,
+        "token": "[self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 83873,
+        "token": " dequeue"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 29598,
+        "token": ".queue"
+      },
+      {
+        "id": 14327,
+        "token": "[self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1327,
+        "token": ".re"
+      },
+      {
+        "id": 277,
+        "token": "ar"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 481,
+        "token": " -"
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 770,
+        "token": " else"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 23445,
+        "token": ".front"
+      },
+      {
+        "id": 488,
+        "token": " +"
+      },
+      {
+        "id": 220,
+        "token": " "
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 1509,
+        "token": " item"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  },
+  "Hash Map": {
+    "code": "\nclass HashMap:\n    def __init__(self, size=16):\n        self.size = size\n        self.buckets = [[] for _ in range(size)]\n\n    def _hash(self, key):\n        return hash(key) % self.size\n\n    def put(self, key, value):\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                bucket[i] = (key, value)\n                return\n        bucket.append((key, value))\n\n    def get(self, key):\n        idx = self._hash(key)\n        for k, v in self.buckets[idx]:\n            if k == key:\n                return v\n        return None\n\n    def delete(self, key):\n        idx = self._hash(key)\n        bucket = self.buckets[idx]\n        for i, (k, v) in enumerate(bucket):\n            if k == key:\n                bucket.pop(i)\n                return True\n        return False\n",
+    "tokens": [
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 1040,
+        "token": "class"
+      },
+      {
+        "id": 10528,
+        "token": " HashMap"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 1304,
+        "token": " __"
+      },
+      {
+        "id": 2327,
+        "token": "init"
+      },
+      {
+        "id": 3804,
+        "token": "__("
+      },
+      {
+        "id": 721,
+        "token": "self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 28,
+        "token": "="
+      },
+      {
+        "id": 16,
+        "token": "1"
+      },
+      {
+        "id": 21,
+        "token": "6"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 1379,
+        "token": " size"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 948,
+        "token": ".b"
+      },
+      {
+        "id": 38551,
+        "token": "uckets"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 84507,
+        "token": " [[]"
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 716,
+        "token": " _"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 2088,
+        "token": " range"
+      },
+      {
+        "id": 6856,
+        "token": "(size"
+      },
+      {
+        "id": 27771,
+        "token": ")]\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 716,
+        "token": " _"
+      },
+      {
+        "id": 8296,
+        "token": "hash"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 5175,
+        "token": " hash"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 1018,
+        "token": " %"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 2486,
+        "token": ".size"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 2182,
+        "token": " put"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 897,
+        "token": " value"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 7187,
+        "token": " idx"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1436,
+        "token": "._"
+      },
+      {
+        "id": 8296,
+        "token": "hash"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 15621,
+        "token": " bucket"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 948,
+        "token": ".b"
+      },
+      {
+        "id": 38551,
+        "token": "uckets"
+      },
+      {
+        "id": 11597,
+        "token": "[idx"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 74,
+        "token": "k"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 348,
+        "token": " v"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 13252,
+        "token": " enumerate"
+      },
+      {
+        "id": 58934,
+        "token": "(bucket"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 595,
+        "token": " k"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 15621,
+        "token": " bucket"
+      },
+      {
+        "id": 989,
+        "token": "[i"
+      },
+      {
+        "id": 60,
+        "token": "]"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 792,
+        "token": "key"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 897,
+        "token": " value"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 15621,
+        "token": " bucket"
+      },
+      {
+        "id": 2057,
+        "token": ".append"
+      },
+      {
+        "id": 1188,
+        "token": "(("
+      },
+      {
+        "id": 792,
+        "token": "key"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 897,
+        "token": " value"
+      },
+      {
+        "id": 4390,
+        "token": "))\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 633,
+        "token": " get"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 7187,
+        "token": " idx"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1436,
+        "token": "._"
+      },
+      {
+        "id": 8296,
+        "token": "hash"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 595,
+        "token": " k"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 348,
+        "token": " v"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 948,
+        "token": ".b"
+      },
+      {
+        "id": 38551,
+        "token": "uckets"
+      },
+      {
+        "id": 11597,
+        "token": "[idx"
+      },
+      {
+        "id": 10343,
+        "token": "]:\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 595,
+        "token": " k"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 348,
+        "token": " v"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 2240,
+        "token": " None"
+      },
+      {
+        "id": 271,
+        "token": "\n\n"
+      },
+      {
+        "id": 262,
+        "token": "   "
+      },
+      {
+        "id": 707,
+        "token": " def"
+      },
+      {
+        "id": 3698,
+        "token": " delete"
+      },
+      {
+        "id": 1193,
+        "token": "(self"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 7187,
+        "token": " idx"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 1436,
+        "token": "._"
+      },
+      {
+        "id": 8296,
+        "token": "hash"
+      },
+      {
+        "id": 4857,
+        "token": "(key"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 15621,
+        "token": " bucket"
+      },
+      {
+        "id": 284,
+        "token": " ="
+      },
+      {
+        "id": 656,
+        "token": " self"
+      },
+      {
+        "id": 948,
+        "token": ".b"
+      },
+      {
+        "id": 38551,
+        "token": "uckets"
+      },
+      {
+        "id": 11597,
+        "token": "[idx"
+      },
+      {
+        "id": 921,
+        "token": "]\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 369,
+        "token": " for"
+      },
+      {
+        "id": 600,
+        "token": " i"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 320,
+        "token": " ("
+      },
+      {
+        "id": 74,
+        "token": "k"
+      },
+      {
+        "id": 11,
+        "token": ","
+      },
+      {
+        "id": 348,
+        "token": " v"
+      },
+      {
+        "id": 8,
+        "token": ")"
+      },
+      {
+        "id": 304,
+        "token": " in"
+      },
+      {
+        "id": 13252,
+        "token": " enumerate"
+      },
+      {
+        "id": 58934,
+        "token": "(bucket"
+      },
+      {
+        "id": 982,
+        "token": "):\n"
+      },
+      {
+        "id": 310,
+        "token": "           "
+      },
+      {
+        "id": 421,
+        "token": " if"
+      },
+      {
+        "id": 595,
+        "token": " k"
+      },
+      {
+        "id": 621,
+        "token": " =="
+      },
+      {
+        "id": 1376,
+        "token": " key"
+      },
+      {
+        "id": 510,
+        "token": ":\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 15621,
+        "token": " bucket"
+      },
+      {
+        "id": 8288,
+        "token": ".pop"
+      },
+      {
+        "id": 1956,
+        "token": "(i"
+      },
+      {
+        "id": 340,
+        "token": ")\n"
+      },
+      {
+        "id": 394,
+        "token": "               "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3007,
+        "token": " True"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      },
+      {
+        "id": 286,
+        "token": "       "
+      },
+      {
+        "id": 470,
+        "token": " return"
+      },
+      {
+        "id": 3557,
+        "token": " False"
+      },
+      {
+        "id": 198,
+        "token": "\n"
+      }
+    ]
+  }
+}

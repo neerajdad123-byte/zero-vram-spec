@@ -39,19 +39,9 @@ if hasattr(sys.stderr, "reconfigure"):
 
 import os
 
-DEFAULT_MODEL = os.environ.get(
-    "STRUCTSPEC_MODEL",
-    r"C:\Users\neera\.lmstudio\models\Qwen\Qwen2.5-7B-Instruct-GGUF"
-    r"\qwen2.5-7b-instruct-q4_k_m-00001-of-00002.gguf"
-)
-DEFAULT_JSON = os.environ.get(
-    "STRUCTSPEC_TOKEN_JSON",
-    r"C:\Users\neera\OneDrive\Desktop\sep\engineering_dsa_tokens.json"
-)
-DEFAULT_TRACE = os.environ.get(
-    "STRUCTSPEC_TRACE_CSV",
-    r"C:\Users\neera\OneDrive\Desktop\sep\qwen_spec_trace.csv"
-)
+DEFAULT_MODEL = os.environ.get("STRUCTSPEC_MODEL", None)
+DEFAULT_JSON = os.environ.get("STRUCTSPEC_TOKEN_JSON", None)
+DEFAULT_TRACE = os.environ.get("STRUCTSPEC_TRACE_CSV", None)
 
 
 PROMPTS = [

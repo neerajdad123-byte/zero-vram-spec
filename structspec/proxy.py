@@ -84,6 +84,7 @@ def create_app(
             is_stream = False
         domain = detect_domain(_request_prompt_text(body))
         request.state.structspec_domain = domain
+        metrics.inc_domain(domain)
 
         if is_stream:
             client = httpx.AsyncClient(timeout=None)

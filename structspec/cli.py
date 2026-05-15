@@ -88,6 +88,53 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     return subprocess.call(cmd)
 
 
+def cmd_generate(args: argparse.Namespace) -> int:
+    try:
+        from .engine import PatternMiner, PythonSyntaxProposer, QwenTokenCorpus
+        from .llama_backend import FastGreedyLlama, run_greedy, run_speculative
+    except ImportError as exc:
+        print(f"Missing dependency for generation: {exc}", file=sys.stderr)
+        print("Install with: pip install structspec[research]", file=sys.stderr)
+        return 2
+
+    if not os.path.exists(args.model):
+        print(f"Model not found: {args.model}", file=sys.stderr)
+        return 2
+    if not os.path.exists(args.token_json):
+        print(f"Token JSON not found: {args.token_json}", file=sys.stderr)
+        return 2
+
+    corpus = QwenTokenCorpus(args.token_json)
+    miner = PatternMiner(
+        corpus.token_text,
+        max_ctx=args.max_ctx,
+        min_support=args.min_support,
+        min_conf=args.min_conf,
+        det_conf=args.det_conf,
+        min_rule_ctx=args.min_rule_ctx,
+    ).fit(corpus.sequences)
+
+    print(f"Loading model: {args.model}")
+    model = FastGreedyLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
+
+    syntax = None if args.no_syntax_patterns else PythonSyntaxProposer(model, mode=args.syntax_mode)
+
+    if args.greedy:
+        ids, text, stats = run_greedy(model, args.prompt, args.max_tokens)
+    else:
+        ids, text, stats = run_speculative(
+            model, miner, syntax, args.prompt, args.max_tokens,
+            k=args.k, reject_mode=args.reject_mode,
+            strike_limit=args.strike_limit,
+            live_viz=args.live_viz,
+        )
+
+    print(text)
+    if args.verbose:
+        print(f"\npasses={stats['passes']} time={stats['time']:.3f}s", file=sys.stderr)
+    return 0
+
+
 def cmd_config(_: argparse.Namespace) -> int:
     print("Structspec config wizard")
     print("1. Start your backend, for example vLLM on :8000.")
@@ -137,6 +184,28 @@ def build_parser() -> argparse.ArgumentParser:
 
     config = sub.add_parser("config", help="Print setup wizard.")
     config.set_defaults(func=cmd_config)
+
+    gen = sub.add_parser("generate", help="Generate text with zero-VRAM speculative decoding (local model).")
+    gen.add_argument("--model", required=True, help="Path to GGUF model.")
+    gen.add_argument("--token-json", required=True, help="Path to token corpus JSON.")
+    gen.add_argument("--prompt", required=True, help="Generation prompt.")
+    gen.add_argument("--max-tokens", type=int, default=128, help="Max tokens to generate.")
+    gen.add_argument("--k", type=int, default=6, help="Max draft length.")
+    gen.add_argument("--max-ctx", type=int, default=8)
+    gen.add_argument("--min-support", type=int, default=2)
+    gen.add_argument("--min-conf", type=float, default=0.96)
+    gen.add_argument("--det-conf", type=float, default=0.96)
+    gen.add_argument("--min-rule-ctx", type=int, default=4)
+    gen.add_argument("--n-ctx", type=int, default=2048)
+    gen.add_argument("--n-gpu-layers", type=int, default=-1)
+    gen.add_argument("--reject-mode", choices=["truncate", "seq-bonus", "rebuild"], default="truncate")
+    gen.add_argument("--strike-limit", type=int, default=3)
+    gen.add_argument("--no-syntax-patterns", action="store_true")
+    gen.add_argument("--syntax-mode", choices=["off", "basic", "cluster"], default="cluster")
+    gen.add_argument("--live-viz", action="store_true")
+    gen.add_argument("--greedy", action="store_true", help="Run greedy baseline instead of speculative.")
+    gen.add_argument("--verbose", action="store_true")
+    gen.set_defaults(func=cmd_generate)
 
     vllm_cmd = sub.add_parser("vllm-command", help="Print a vLLM speculative decoding launch command.")
     vllm_cmd.add_argument("--model", required=True)

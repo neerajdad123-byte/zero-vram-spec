@@ -21,6 +21,7 @@ class Metrics:
     kv_repair_ops: int = 0
     last_backend: str = "unknown"
     last_model: str = "unknown"
+    domain_counts: dict[str, int] = field(default_factory=dict)
 
     @property
     def uptime_s(self) -> float:
@@ -57,6 +58,10 @@ class MetricsStore:
         with self._lock:
             setattr(self._metrics, field, getattr(self._metrics, field) + amount)
 
+    def inc_domain(self, domain: str) -> None:
+        with self._lock:
+            self._metrics.domain_counts[domain] = self._metrics.domain_counts.get(domain, 0) + 1
+
     def set_backend(self, backend: str, model: str = "unknown") -> None:
         with self._lock:
             self._metrics.last_backend = backend
@@ -66,8 +71,12 @@ class MetricsStore:
         snap = self.snapshot()
         lines = []
         for key, value in snap.items():
+            if key == "domain_counts":
+                continue
             if isinstance(value, (int, float)):
                 lines.append(f"structspec_{key} {value}")
+        for domain, count in snap.get("domain_counts", {}).items():
+            lines.append(f'structspec_domain_requests{{domain="{domain}"}} {count}')
         return "\n".join(lines) + "\n"
 
 
