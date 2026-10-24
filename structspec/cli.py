@@ -118,6 +118,35 @@ def cmd_generate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_verify(args: argparse.Namespace) -> int:
+    from .llama_backend import chat_prompt_ids
+    from .proposer import default_proposer
+    from .verify import DEFAULT_PROMPTS, verify_prompt
+
+    prompts = DEFAULT_PROMPTS
+    if args.prompts:
+        with open(args.prompts, encoding="utf-8") as f:
+            prompts = [json.loads(line)["prompt"] for line in f if line.strip()]
+    model = _load_model(args)
+    proposer = default_proposer(model, args.index)
+    results = []
+    for i, prompt in enumerate(prompts):
+        ids = chat_prompt_ids(model, [{"role": "user", "content": prompt}])
+        r = verify_prompt(model, proposer, ids, args.max_tokens, k=args.k)
+        results.append(r)
+        print(
+            f"[{i}] {r['classification']:<9} tokens={r['tokens']} accepted={r['accepted']}/{r['proposed']} "
+            f"first_mismatch={r['first_mismatch']} greedy_margin={r['greedy_margin']}",
+            flush=True,
+        )
+    same = sum(r["identical"] for r in results)
+    print(f"identical: {same}/{len(results)}")
+    if args.json_out:
+        with open(args.json_out, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2)
+    return 0 if same == len(results) else 1
+
+
 def cmd_index(args: argparse.Namespace) -> int:
     from pathlib import Path
 
@@ -200,6 +229,15 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--greedy", action="store_true", help="Run greedy baseline instead of speculative.")
     gen.add_argument("--verbose", action="store_true")
     gen.set_defaults(func=cmd_generate)
+
+    ver = sub.add_parser("verify", help="Check speculative output is identical to greedy on a local model.")
+    _model_args(ver)
+    ver.add_argument("--prompts", help="JSONL file with a 'prompt' field per line (default: built-in set).")
+    ver.add_argument("--max-tokens", type=int, default=128)
+    ver.add_argument("--k", type=int, default=4)
+    ver.add_argument("--index")
+    ver.add_argument("--json-out")
+    ver.set_defaults(func=cmd_verify)
 
     index = sub.add_parser("index", help="Mine an n-gram draft index from source files with a model's tokenizer.")
     index.add_argument("paths", nargs="+", help="Files or directories to mine.")

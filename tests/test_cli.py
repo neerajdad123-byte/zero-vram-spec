@@ -38,3 +38,13 @@ def test_parser_run_requires_prompt():
     parser = build_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["run"])
+
+
+def test_parser_verify():
+    args = build_parser().parse_args(["verify", "--model", "m.gguf", "--max-tokens", "32", "--cpu-moe"])
+    assert args.command == "verify" and args.max_tokens == 32 and args.cpu_moe and args.k == 4
+
+
+def test_parser_index():
+    args = build_parser().parse_args(["index", "src", "lib", "--model", "m.gguf"])
+    assert args.paths == ["src", "lib"]
