@@ -155,3 +155,106 @@ def test_metrics_reflect_real_counts():
 def test_models_endpoint():
     client, _ = _client()
     assert client.get("/v1/models").json()["data"][0]["id"] == "fake"
+
+
+class SlowModel(FakeModel):
+    def decode_logits(self, tokens, logits_all):
+        import time
+
+        time.sleep(0.01)
+        return super().decode_logits(tokens, logits_all)
+
+
+def _live_server(model):
+    import socket
+
+    import uvicorn
+
+    sock = socket.socket()
+    sock.bind(("127.0.0.1", 0))
+    port = sock.getsockname()[1]
+    sock.close()
+    app = create_spec_app(model, PromptLookupProposer(), k=4, model_name="fake")
+    server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="error"))
+    threading.Thread(target=server.run, daemon=True).start()
+    import time
+
+    for _ in range(200):
+        if server.started:
+            break
+        time.sleep(0.02)
+    return server, f"http://127.0.0.1:{port}"
+
+
+def test_stream_and_nonstream_concurrently_do_not_deadlock():
+    import httpx
+
+    server, url = _live_server(SlowModel())
+    try:
+        first_chunk = threading.Event()
+        done = {}
+
+        def streamer():
+            with httpx.stream("POST", url + "/v1/completions", timeout=30,
+                              json={"prompt": "x1 = foo(", "max_tokens": 200, "stream": True}) as r:
+                for line in r.iter_lines():
+                    first_chunk.set()
+                done["stream"] = True
+
+        def plain():
+            first_chunk.wait(10)
+            r = httpx.post(url + "/v1/completions", json={"prompt": "x2 = foo(", "max_tokens": 20}, timeout=30)
+            done["plain"] = r.status_code
+
+        ts = [threading.Thread(target=streamer, daemon=True), threading.Thread(target=plain, daemon=True)]
+        for t in ts:
+            t.start()
+        for t in ts:
+            t.join(40)
+        assert done == {"stream": True, "plain": 200}
+    finally:
+        server.should_exit = True
+
+
+def test_client_disconnect_releases_model():
+    import time
+
+    import httpx
+
+    server, url = _live_server(SlowModel())
+    try:
+        with httpx.stream("POST", url + "/v1/completions", timeout=30,
+                          json={"prompt": "x1 = foo(", "max_tokens": 4000, "stream": True}) as r:
+            next(r.iter_lines())
+        start = time.monotonic()
+        r = httpx.post(url + "/v1/completions", json={"prompt": "x2 = foo(", "max_tokens": 5}, timeout=30)
+        assert r.status_code == 200
+        assert time.monotonic() - start < 5
+    finally:
+        server.should_exit = True
+
+
+def test_chat_content_parts_are_joined():
+    client, _ = _client()
+    as_str = client.post("/v1/chat/completions", json={
+        "messages": [{"role": "user", "content": "hello there"}], "max_tokens": 20}).json()
+    as_parts = client.post("/v1/chat/completions", json={
+        "messages": [{"role": "user", "content": [{"type": "text", "text": "hello "}, {"type": "text", "text": "there"}]}],
+        "max_tokens": 20}).json()
+    assert as_parts["choices"][0]["message"]["content"] == as_str["choices"][0]["message"]["content"]
+    bad = client.post("/v1/chat/completions", json={"messages": [{"role": "user", "content": 5}]})
+    assert bad.status_code == 400
+    image = client.post("/v1/chat/completions", json={
+        "messages": [{"role": "user", "content": [{"type": "image_url", "image_url": {"url": "x"}}]}]})
+    assert image.status_code == 400
+
+
+def test_k_beyond_rollback_rejected_on_hybrid():
+    from structspec.llama_backend import check_k
+
+    model = FakeModel()
+    check_k(model, 30)  # non-hybrid: any k
+    model.is_hybrid, model.max_rollback = True, 8
+    check_k(model, 6)
+    with pytest.raises(ValueError, match="max_rollback"):
+        check_k(model, 8)

@@ -7,10 +7,11 @@ import json
 import threading
 import time
 import uuid
-from typing import Iterator
+from typing import AsyncIterator, Iterator
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse, Response, StreamingResponse
+from starlette.concurrency import run_in_threadpool
 
 from .llama_backend import SpecStats, chat_prompt_ids, speculate
 from .metrics import MetricsStore
@@ -32,6 +33,26 @@ def _stops(body: dict) -> list[str]:
     if not isinstance(stops, list) or not all(isinstance(s, str) for s in stops):
         raise BadRequest("'stop' must be a string or a list of strings")
     return [s for s in stops if s]
+
+
+def _messages(messages) -> list[dict]:
+    """Validate chat messages; content may be a string or a list of text parts (OpenAI style)."""
+    if not isinstance(messages, list) or not messages or not all(isinstance(m, dict) for m in messages):
+        raise BadRequest("'messages' must be a non-empty list of objects")
+    out = []
+    for m in messages:
+        content = m.get("content")
+        if content is None:
+            content = ""
+        elif isinstance(content, list):
+            if not all(isinstance(p, dict) and p.get("type") == "text" and isinstance(p.get("text"), str)
+                       for p in content):
+                raise BadRequest("only text content parts are supported")
+            content = "".join(p["text"] for p in content)
+        elif not isinstance(content, str):
+            raise BadRequest("message 'content' must be a string or a list of text parts")
+        out.append({"role": str(m.get("role", "user")), "content": content})
+    return out
 
 
 def _held_back(text: str, stops: list[str]) -> int:
@@ -105,7 +126,7 @@ def create_spec_app(model, proposer, k: int = 4, model_name: str = "structspec",
             "total_tokens": out["prompt_tokens"] + out["completion_tokens"],
         }
 
-    def respond(body: dict, prompt_ids: list[int], chat: bool) -> Response:
+    async def respond(body: dict, prompt_ids: list[int], chat: bool) -> Response:
         stops = _stops(body)
         max_tokens = prepare(body, prompt_ids)
         out: dict = {}
@@ -114,7 +135,8 @@ def create_spec_app(model, proposer, k: int = 4, model_name: str = "structspec",
         obj = "chat.completion" if chat else "text_completion"
 
         if not body.get("stream"):
-            text = "".join(generate(prompt_ids, max_tokens, stops, out))
+            # off the event loop: the model lock may be held by a running stream
+            text = await run_in_threadpool(lambda: "".join(generate(prompt_ids, max_tokens, stops, out)))
             choice = {"index": 0, "finish_reason": out["finish_reason"]}
             if chat:
                 choice["message"] = {"role": "assistant", "content": text}
@@ -136,13 +158,17 @@ def create_spec_app(model, proposer, k: int = 4, model_name: str = "structspec",
                 chunk["usage"] = usage(out)
             return f"data: {json.dumps(chunk)}\n\n"
 
-        def sse() -> Iterator[str]:
-            if chat:
-                yield event({"role": "assistant"}, None)
-            for piece in generate(prompt_ids, max_tokens, stops, out):
-                yield event({"content": piece} if chat else piece, None)
-            yield event(None, out["finish_reason"])
-            yield "data: [DONE]\n\n"
+        async def sse() -> AsyncIterator[str]:
+            gen = generate(prompt_ids, max_tokens, stops, out)
+            try:
+                if chat:
+                    yield event({"role": "assistant"}, None)
+                while (piece := await run_in_threadpool(next, gen, None)) is not None:
+                    yield event({"content": piece} if chat else piece, None)
+                yield event(None, out["finish_reason"])
+                yield "data: [DONE]\n\n"
+            finally:
+                gen.close()  # client gone or done: stop decoding and release the model lock
 
         return StreamingResponse(sse(), media_type="text/event-stream")
 
@@ -153,9 +179,7 @@ def create_spec_app(model, proposer, k: int = 4, model_name: str = "structspec",
                 raise BadRequest("request body must be a JSON object")
             if chat:
                 messages = body.get("messages")
-                if not isinstance(messages, list) or not messages or not all(isinstance(m, dict) for m in messages):
-                    raise BadRequest("'messages' must be a non-empty list of objects")
-                prompt_ids = chat_prompt_ids(model, messages, thinking=thinking)
+                prompt_ids = chat_prompt_ids(model, _messages(messages), thinking=thinking)
             else:
                 prompt = body.get("prompt")
                 if isinstance(prompt, list) and len(prompt) == 1:
@@ -165,7 +189,7 @@ def create_spec_app(model, proposer, k: int = 4, model_name: str = "structspec",
                 prompt_ids = model.encode(prompt, special=True)
             if body.get("n", 1) != 1:
                 raise BadRequest("only n=1 is supported")
-            return respond(body, prompt_ids, chat)
+            return await respond(body, prompt_ids, chat)
         except (BadRequest, json.JSONDecodeError) as exc:
             return _error(str(exc))
 

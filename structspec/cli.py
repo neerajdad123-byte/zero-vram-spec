@@ -95,9 +95,16 @@ def _load_model(args: argparse.Namespace, vocab_only: bool = False):
         raise SystemExit(f"Model not found: {args.model}")
     if vocab_only:
         return NativeLlama(args.model, vocab_only=True)
-    return NativeLlama(
+    from .llama_backend import check_k
+
+    model = NativeLlama(
         args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers, cpu_moe=args.cpu_moe, n_threads=args.threads
     )
+    try:
+        check_k(model, args.k)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    return model
 
 
 def cmd_generate(args: argparse.Namespace) -> int:

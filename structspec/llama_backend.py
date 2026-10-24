@@ -24,6 +24,12 @@ class SpecStats:
     draft_starts: int = 0
 
 
+def check_k(model, k: int) -> None:
+    """Hybrid/recurrent models can only roll back `max_rollback` tokens; a draft pass may undo k + 1."""
+    if getattr(model, "is_hybrid", False) and k + 1 > model.max_rollback:
+        raise ValueError(f"k={k} needs {k + 1} rollback snapshots but the model has max_rollback={model.max_rollback}")
+
+
 def _prompt_ids(model, prompt: str | list[int]) -> list[int]:
     return list(prompt) if isinstance(prompt, list) else model.encode(prompt)
 
