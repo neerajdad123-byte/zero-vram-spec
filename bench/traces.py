@@ -30,19 +30,19 @@ def load_traces(split: str) -> list[dict]:
     return [json.loads(line) for line in p.read_text(encoding="utf-8").splitlines()] if p.exists() else []
 
 
-def pick(tasks: list[dict], per_lang: int) -> list[dict]:
-    """All edit tasks + a stable hash-ordered sample of per_lang fresh tasks per language."""
-    fresh: dict[str, list[dict]] = {}
+def pick(tasks: list[dict], per_lang: int, edit_per_lang: int = 99) -> list[dict]:
+    """Stable hash-ordered sample: per_lang fresh and edit_per_lang edit tasks per language."""
+    groups: dict[tuple, list[dict]] = {}
     for t in sorted(tasks, key=lambda t: hashlib.sha1(t["id"].encode()).hexdigest()):
-        if t["kind"] == "fresh":
-            fresh.setdefault(t["lang"], []).append(t)
-    return [t for t in tasks if t["kind"] == "edit"] + [t for ts in fresh.values() for t in ts[:per_lang]]
+        groups.setdefault((t["kind"], t["lang"]), []).append(t)
+    cap = {"fresh": per_lang, "edit": edit_per_lang}
+    return [t for (kind, _), ts in sorted(groups.items()) for t in ts[:cap[kind]]]
 
 
-def record(client: httpx.Client, task: dict, think_id: int) -> dict:
+def record(client: httpx.Client, task: dict, think_id: int, max_new: dict = MAX_NEW) -> dict:
     text = client.post("/apply-template", json={"messages": [{"role": "user", "content": task["prompt"]}]}).json()["prompt"]
     prompt_ids = client.post("/tokenize", json={"content": text}).json()["tokens"]
-    r = client.post("/completion", json={"prompt": prompt_ids, "n_predict": MAX_NEW[task["kind"]], "temperature": 0,
+    r = client.post("/completion", json={"prompt": prompt_ids, "n_predict": max_new[task["kind"]], "temperature": 0,
                                          "top_k": 1, "return_tokens": True, "cache_prompt": False}).json()
     out_ids = r["tokens"]
     # content omits the final EOS token (<|im_end|>) that tokens includes
@@ -58,16 +58,18 @@ def main() -> None:
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", required=True, choices=["tune", "test"])
     ap.add_argument("--per-lang", type=int, default=60)
+    ap.add_argument("--edit-per-lang", type=int, default=99)
+    ap.add_argument("--edit-max", type=int, default=MAX_NEW["edit"])
     ap.add_argument("--url", default="http://127.0.0.1:8090")
     a = ap.parse_args()
     out = trace_path(a.split)
     out.parent.mkdir(parents=True, exist_ok=True)
     done = {t["id"] for t in load_traces(a.split)}
-    todo = [t for t in pick(load_tasks(a.split), a.per_lang) if t["id"] not in done]
+    todo = [t for t in pick(load_tasks(a.split), a.per_lang, a.edit_per_lang) if t["id"] not in done]
     with httpx.Client(base_url=a.url, timeout=600) as c, out.open("a", encoding="utf-8") as f:
         think_id = c.post("/tokenize", json={"content": THINK_OPEN}).json()["tokens"][0]
         for i, task in enumerate(todo):
-            rec = record(c, task, think_id)
+            rec = record(c, task, think_id, {"fresh": MAX_NEW["fresh"], "edit": a.edit_max})
             f.write(json.dumps(rec) + "\n")
             f.flush()
             print(f"{i + 1}/{len(todo)} {task['id']} n={rec['n_out']} {rec['n_out'] / rec['decode_ms'] * 1e3:.1f} tok/s",

@@ -1,0 +1,2 @@
+{"label": "ngram-mod", "id": "HumanEval/14", "lang": "py", "n": 79, "tok_s": 14.286851033355275, "greedy_tok_s": 33.58056849777114, "draft_n": 55, "draft_accepted": 37, "identical": true}
+{"label": "ngram-simple", "id": "HumanEval/14", "lang": "py", "n": 79, "tok_s": 13.20998440720195, "greedy_tok_s": 33.58056849777114, "draft_n": 66, "draft_accepted": 48, "identical": true}
