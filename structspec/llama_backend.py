@@ -3,18 +3,8 @@ from __future__ import annotations
 import sys
 import time
 from collections import Counter
-from typing import TYPE_CHECKING
 
 import numpy as np
-
-try:
-    from llama_cpp import Llama, LlamaCache
-except ImportError as _imp_err:  # pragma: no cover
-    Llama = None  # type: ignore[misc,assignment]
-    LlamaCache = None  # type: ignore[misc,assignment]
-    _LLAMA_CPP_MISSING = _imp_err
-else:
-    _LLAMA_CPP_MISSING = None
 
 from .engine import (
     AdaptiveKController,
@@ -27,86 +17,18 @@ from .engine import (
     SpeedTraceCollector,
     propose_draft,
 )
-
-if TYPE_CHECKING:
-    pass
+from .llama_native import NativeLlama
 
 
 def now() -> float:
     return time.perf_counter()
 
 
-class FastGreedyLlama:
-    """Thin, fast wrapper around llama-cpp-python for greedy speculative decoding."""
-
-    def __init__(self, model_path: str, n_ctx: int = 2048, n_gpu_layers: int = -1):
-        if Llama is None:
-            raise _LLAMA_CPP_MISSING  # type: ignore[truthy-function]
-        self.llm = Llama(
-            model_path=model_path,
-            n_gpu_layers=n_gpu_layers,
-            n_ctx=n_ctx,
-            logits_all=False,
-            verbose=False,
-        )
-        self.llm.set_cache(LlamaCache())
-        self.n_vocab = self.llm.n_vocab()
-        self.eos = self.llm.token_eos()
-        self._piece_cache: dict[int, str] = {}
-
-    def encode(self, text: str) -> list[int]:
-        return list(self.llm.tokenize(text.encode("utf-8"), add_bos=False, special=False))
-
-    def decode(self, toks: list[int]) -> str:
-        if not toks:
-            return ""
-        return self.llm.detokenize(toks).decode("utf-8", errors="ignore")
-
-    def piece(self, tok: int) -> str:
-        tok = int(tok)
-        piece = self._piece_cache.get(tok)
-        if piece is None:
-            piece = self.decode([tok])
-            self._piece_cache[tok] = piece
-        return piece
-
-    def reset(self) -> None:
-        self.llm.reset()
-
-    def truncate_kv(self, n_tokens: int) -> None:
-        self.llm.n_tokens = n_tokens
-        self.llm._ctx.kv_cache_seq_rm(-1, n_tokens, -1)
-
-    def decode_logits(self, tokens: list[int], logits_all: bool) -> np.ndarray:
-        if not tokens:
-            raise ValueError("decode_logits requires at least one token")
-        self.llm._ctx.kv_cache_seq_rm(-1, self.llm.n_tokens, -1)
-        out = None
-        for i in range(0, len(tokens), self.llm.n_batch):
-            batch = tokens[i : min(len(tokens), i + self.llm.n_batch)]
-            n_past = self.llm.n_tokens
-            self.llm._batch.set_batch(batch=batch, n_past=n_past, logits_all=logits_all)
-            self.llm._ctx.decode(self.llm._batch)
-            self.llm.input_ids[n_past : n_past + len(batch)] = batch
-            rows = len(batch) if logits_all else 1
-            ptr = self.llm._ctx.get_logits()
-            out = np.ctypeslib.as_array(ptr, shape=(rows * self.n_vocab,)).reshape(
-                rows, self.n_vocab
-            )
-            self.llm.n_tokens += len(batch)
-        assert out is not None
-        return out
-
-    @staticmethod
-    def argmax(row: np.ndarray) -> int:
-        return int(np.argmax(row))
-
-
 def blank_times() -> dict[str, float]:
     return {"prompt": 0.0, "pattern": 0.0, "decode": 0.0, "verify": 0.0, "detok": 0.0}
 
 
-def run_greedy(model: FastGreedyLlama, prompt: str, max_tokens: int) -> tuple[list[int], str, dict]:
+def run_greedy(model: NativeLlama, prompt: str, max_tokens: int) -> tuple[list[int], str, dict]:
     times = blank_times()
     records = []
     model.reset()
@@ -150,7 +72,7 @@ def run_greedy(model: FastGreedyLlama, prompt: str, max_tokens: int) -> tuple[li
 
 
 def run_speculative(
-    model: FastGreedyLlama,
+    model: NativeLlama,
     miner: PatternMiner,
     syntax: PythonSyntaxProposer | None,
     prompt: str,
@@ -158,7 +80,7 @@ def run_speculative(
     k: int = 6,
     reject_mode: str = "truncate",
     strike_limit: int = 3,
-    draft_model: FastGreedyLlama | None = None,
+    draft_model: NativeLlama | None = None,
     draft_mistakes: Counter[tuple[tuple[int, ...], int]] | None = None,
     draft_mistake_limit: int = 1,
     live_viz: bool = False,
@@ -492,7 +414,7 @@ def run_speculative(
 
 
 def _propose_from_draft_model(
-    draft_model: FastGreedyLlama,
+    draft_model: NativeLlama,
     tokens: list[int],
     max_k: int,
     mistakes: Counter[tuple[tuple[int, ...], int]],
@@ -522,7 +444,7 @@ def _propose_from_draft_model(
     return draft, rules
 
 
-def observe_qwen_token_shapes(model: FastGreedyLlama, prompts: list[str], tokens: int) -> None:
+def observe_qwen_token_shapes(model: NativeLlama, prompts: list[str], tokens: int) -> None:
     print(f"\nQwen live token observation: first {tokens} generated tokens per prompt")
     ngram_counts = Counter()
     for idx, prompt in enumerate(prompts, 1):

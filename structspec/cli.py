@@ -91,10 +91,10 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
 def cmd_generate(args: argparse.Namespace) -> int:
     try:
         from .engine import PatternMiner, PythonSyntaxProposer, QwenTokenCorpus
-        from .llama_backend import FastGreedyLlama, run_greedy, run_speculative
+        from .llama_backend import run_greedy, run_speculative
+        from .llama_native import NativeLlama
     except ImportError as exc:
         print(f"Missing dependency for generation: {exc}", file=sys.stderr)
-        print("Install with: pip install structspec[research]", file=sys.stderr)
         return 2
 
     if not os.path.exists(args.model):
@@ -115,7 +115,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
     ).fit(corpus.sequences)
 
     print(f"Loading model: {args.model}")
-    model = FastGreedyLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
+    model = NativeLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
 
     syntax = None if args.no_syntax_patterns else PythonSyntaxProposer(model, mode=args.syntax_mode)
 
