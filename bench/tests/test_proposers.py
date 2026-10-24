@@ -1,7 +1,12 @@
 import pytest
 
-from structspec.proposers import (ComboProposer, ContextNgramProposer, LineStartProposer, NgramModelProposer,
-                                  SuffixCopyProposer)
+from structspec.proposers import (
+    ComboProposer,
+    ContextNgramProposer,
+    LineStartProposer,
+    NgramModelProposer,
+    SuffixCopyProposer,
+)
 
 CORPUS = [[1, 2, 3, 4, 5, 6] * 3, [7, 8, 9, 1, 2, 3, 4]]
 

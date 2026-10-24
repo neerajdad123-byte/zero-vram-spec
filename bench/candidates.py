@@ -13,11 +13,15 @@ import sys
 from functools import lru_cache
 from pathlib import Path
 
-from bench.corpus import mining_tokens
+from bench.corpus import mining_tokens, vocab_pieces
 from bench.traces import load_traces
-from bench.corpus import vocab_pieces
-from structspec.proposers import (ComboProposer, ContextNgramProposer, LineStartProposer, NgramModelProposer,
-                                  SuffixCopyProposer)
+from structspec.proposers import (
+    ComboProposer,
+    ContextNgramProposer,
+    LineStartProposer,
+    NgramModelProposer,
+    SuffixCopyProposer,
+)
 
 V2CORE_REF = "5c022a8"  # v2-core commit whose proposers are the in-repo baseline
 # tuned on the tune split by bench/tune.py (results in bench/results/tune_*.json)
