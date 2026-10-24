@@ -1,13 +1,14 @@
 import pytest
 
-from structspec.proposers import ComboProposer, NgramModelProposer, SuffixCopyProposer
+from structspec.proposers import (ComboProposer, ContextNgramProposer, LineStartProposer, NgramModelProposer,
+                                  SuffixCopyProposer)
 
 CORPUS = [[1, 2, 3, 4, 5, 6] * 3, [7, 8, 9, 1, 2, 3, 4]]
 
 
 def make_all():
-    return [SuffixCopyProposer(), NgramModelProposer(CORPUS),
-            ComboProposer(SuffixCopyProposer(), NgramModelProposer(CORPUS))]
+    return [SuffixCopyProposer(), NgramModelProposer(CORPUS), ContextNgramProposer(),
+            ComboProposer(SuffixCopyProposer(), [ContextNgramProposer(), NgramModelProposer(CORPUS)])]
 
 
 @pytest.mark.parametrize("p", make_all(), ids=lambda p: p.name)
@@ -73,7 +74,51 @@ def test_ngram_model_ignores_rare_contexts():
 
 def test_combo_uses_copy_on_long_match_else_model():
     model = NgramModelProposer([[40, 41, 42, 43]] * 3)
-    c = ComboProposer(SuffixCopyProposer(min_match=3), model, copy_min=4)
+    c = ComboProposer(SuffixCopyProposer(min_match=3, len_base=8), [ContextNgramProposer(min_count=9), model], copy_min=4)
     long_ctx = [1, 2, 3, 4, 5, 6, 0, 1, 2, 3, 4]
     assert c.propose(long_ctx, 2) == [5, 6]
     assert c.propose([9, 40, 41], 2) == [42, 43]
+
+
+def test_ngram_model_smoothing_penalizes_small_counts():
+    corpus = [[1, 2, 3]] * 2 + [[4, 5, 6]] * 20
+    m = NgramModelProposer(corpus, max_order=2, min_order=2, p_min=0.8, alpha=2.0)
+    assert m.propose([1, 2], 1) == []  # 2/(2+2) = 0.5
+    assert m.propose([4, 5], 1) == [6]  # 20/22 = 0.91
+
+
+def test_context_ngram_completes_identifier_seen_before():
+    # "result" = [70, 71]; seen twice in context with the same continuation
+    p = ContextNgramProposer(min_count=2, min_order=1)
+    toks = [5, 70, 71, 6, 8, 70, 71, 9, 3, 70]
+    assert p.propose(toks, 1) == [71]
+
+
+def test_context_ngram_needs_agreement():
+    p = ContextNgramProposer(min_count=2, min_order=1, p_min=0.9)
+    toks = [70, 71, 70, 72, 70, 71, 70]  # 70 -> 71 twice, 72 once: 2/3 < 0.9
+    assert p.propose(toks, 1) == []
+
+
+def test_context_ngram_resets_on_new_request():
+    p = ContextNgramProposer(min_count=1, min_order=1)
+    assert p.propose([1, 2, 1], 1) == [2]
+    assert p.propose([3, 4, 3], 1) == [4]
+
+
+PIECES = ["\n", "    ", "    return", " x", "}", "{", "if", ":", "\n\n", "def f()", " y"]
+
+
+def test_line_start_predicts_token_after_newline_from_line_features():
+    # "def f():\n    return x\n" -> after a line ending ':' the next line starts with token 2
+    seq = [9, 7, 0, 2, 3, 0]
+    p = LineStartProposer(PIECES, [seq, seq], min_count=2, p_min=0.6)
+    assert p.propose([9, 7, 0], 3) == [2]
+    assert p.propose([9, 7], 3) == []  # not at a line start
+
+
+def test_line_start_extends_with_follow_up_proposer():
+    seq = [9, 7, 0, 2, 3, 0]
+    ext = NgramModelProposer([[0, 2, 3]] * 3, max_order=2, min_order=2)
+    p = LineStartProposer(PIECES, [seq, seq], min_count=2, p_min=0.6, extend=ext)
+    assert p.propose([9, 7, 0], 3) == [2, 3]

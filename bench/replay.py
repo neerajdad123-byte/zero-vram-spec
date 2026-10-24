@@ -84,7 +84,7 @@ def fmt_table(res: dict, name: str) -> str:
 def main() -> None:
     from bench.traces import load_traces
     from bench.verify_cost import load_cost
-    from structspec.proposers import REGISTRY
+    from bench.candidates import REGISTRY
 
     ap = argparse.ArgumentParser()
     ap.add_argument("--split", required=True, choices=["tune", "test"])

@@ -13,9 +13,11 @@ class NgramModelProposer:
     name = "ngram_model"
 
     def __init__(self, corpus: Iterable[list[int]] = (), max_order: int = 6, min_order: int = 2,
-                 min_count: int = 2, p_min: float = 0.5, cum_min: float = 0.2):
+                 min_count: int = 2, p_min: float = 0.5, cum_min: float = 0.2, alpha: float = 0.0):
+        """alpha: additive penalty on the context total, P = count / (total + alpha); raw counts
+        from small samples are overconfident (measured: claimed 0.5 is right ~0.25 of the time)."""
         self.max_order, self.min_order = max_order, min_order
-        self.min_count, self.p_min, self.cum_min = min_count, p_min, cum_min
+        self.min_count, self.p_min, self.cum_min, self.alpha = min_count, p_min, cum_min, alpha
         self.table: dict[tuple, dict[int, int]] = {}
         for seq in corpus:
             self.add(seq)
@@ -42,7 +44,7 @@ class NgramModelProposer:
             hit = self.table.get(tuple(ctx[-n:]))
             if hit:
                 tok, cnt, total = hit
-                return tok, cnt / total
+                return tok, cnt / (total + self.alpha)
         return None
 
     def propose(self, tokens: list[int], max_k: int) -> list[int]:
