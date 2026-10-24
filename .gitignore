@@ -19,3 +19,4 @@ comparison_*.csv
 dsa_trace_*.csv
 stat_compare_report.csv
 .superpowers/
+*.mp4

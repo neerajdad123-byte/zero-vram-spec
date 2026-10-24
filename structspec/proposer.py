@@ -124,7 +124,7 @@ def build_index(
             seqs.append(model.encode(f.read_text(encoding="utf-8")))
         except UnicodeDecodeError:
             continue
-    miner = PatternMiner({}, max_ctx=max_ctx, min_support=min_support, min_conf=min_conf,
+    miner = PatternMiner(max_ctx=max_ctx, min_support=min_support, min_conf=min_conf,
                          min_rule_ctx=min_rule_ctx).fit(seqs)
     return {
         "version": INDEX_VERSION,
@@ -152,7 +152,7 @@ def load_index(path: Path, tokenizer_hash: str) -> PatternMiner:
             f"{tokenizer_hash}; rebuild it with `structspec index --model <this model>`"
         )
     rules = {tuple(c): Rule(tuple(c), t, conf, sup, tot, tier) for c, t, conf, sup, tot, tier in data["rules"]}
-    return PatternMiner({}, max_ctx=data["max_ctx"]).set_rules(rules)
+    return PatternMiner(max_ctx=data["max_ctx"]).set_rules(rules)
 
 
 def default_index_path(tokenizer_hash: str) -> Path:
@@ -166,5 +166,5 @@ def default_proposer(model, index: str | None = None, syntax: bool = False) -> C
     if index or path.exists():
         proposers.append(NgramIndexProposer(load_index(path, model.tokenizer_hash())))
     if syntax:
-        proposers.append(RuleProposer(PatternMiner({}), PythonSyntaxProposer(model)))
+        proposers.append(RuleProposer(PatternMiner(), PythonSyntaxProposer(model)))
     return ChainProposer(proposers)

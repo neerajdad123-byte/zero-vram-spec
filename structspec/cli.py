@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import subprocess
 import sys
 
 from .detect import detect_all, format_report
@@ -89,17 +88,6 @@ def cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_benchmark(args: argparse.Namespace) -> int:
-    script = "run_humaneval_benchmark.py" if args.dataset == "humaneval" else None
-    if script is None or not os.path.exists(script):
-        print("Benchmark runner not found for dataset:", args.dataset, file=sys.stderr)
-        return 2
-    cmd = [sys.executable, script]
-    if args.extra_args:
-        cmd.extend(args.extra_args)
-    return subprocess.call(cmd)
-
-
 def _load_model(args: argparse.Namespace, vocab_only: bool = False):
     from .llama_native import NativeLlama
 
@@ -175,7 +163,7 @@ def cmd_index(args: argparse.Namespace) -> int:
 def cmd_config(_: argparse.Namespace) -> int:
     print("Structspec config wizard")
     print("1. Start your backend, for example vLLM on :8000.")
-    print("2. Run: structspec serve --backend vllm --target-base-url http://localhost:8000/v1")
+    print("2. Run: structspec serve --model path/to/model.gguf  (or --passthrough --target-base-url ...)")
     print("3. Point tools at: OPENAI_BASE_URL=http://localhost:8080/v1")
     return 0
 
@@ -221,11 +209,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default="default")
     run.add_argument("--prompt", required=True)
     run.set_defaults(func=cmd_run)
-
-    bench = sub.add_parser("benchmark", help="Run benchmark helper.")
-    bench.add_argument("--dataset", default="humaneval", choices=["humaneval"])
-    bench.add_argument("extra_args", nargs=argparse.REMAINDER)
-    bench.set_defaults(func=cmd_benchmark)
 
     status = sub.add_parser("status", help="Attach to live status view.")
     status.add_argument("--base-url", default="http://localhost:8080")

@@ -64,7 +64,7 @@ def run_textual_status(base_url: str, interval: float = 1.0) -> None:
             try:
                 data = fetch_status(base_url.rstrip("/") + "/health")
                 text = (
-                    f"Structspec 0.1.0 | Proxy {base_url} | Backend {data.get('backend')}\n\n"
+                    f"Structspec 0.2.0 | Server {base_url} | Backend {data.get('backend')}\n\n"
                     f"Generated tokens:   {data.get('generated_tokens')}\n"
                     f"Target passes:      {data.get('target_passes')}\n"
                     f"Tokens per pass:    {float(data.get('estimated_multiplier', 1.0)):.2f}\n"

@@ -159,3 +159,15 @@ def test_chain_proposer_first_non_empty():
     assert chain.propose([9], 4) == [1, 2]
     chain.observe([7])
     assert [c[0] for c in calls] == ["a", "b", "c"]
+
+
+def test_default_proposer_with_syntax_rules_is_lossless(tmp_path, monkeypatch):
+    from structspec.proposer import default_proposer
+
+    monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
+    model = FakeModel()
+    proposer = default_proposer(model, syntax=True)
+    assert [p.name for p in proposer.proposers] == ["prompt_lookup", "rules"]
+    prompt = model.encode("for i in range(10):\n    if x:\n        pass\n")
+    got = run_speculative(FakeModel(), proposer, prompt, 64)[0]
+    assert got == run_greedy(FakeModel(), prompt, 64)[0]

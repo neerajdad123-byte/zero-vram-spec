@@ -68,19 +68,6 @@ def shell_join(cmd: list[str]) -> str:
     return " ".join(shlex.quote(part) for part in cmd)
 
 
-class StructSpecDraftWorker:
-    """Extension point for future in-process vLLM rule drafting.
-
-    vLLM exposes stable user-facing speculative decoding through
-    --speculative-config. A pure Python rule-draft worker needs a stable
-    internal draft-runner hook from vLLM before it can be reliable across
-    releases, so this class deliberately remains a narrow protocol boundary.
-    """
-
-    def propose(self, token_ids: list[int], max_tokens: int) -> list[int]:
-        raise NotImplementedError("Use vLLM ngram/suffix/draft_model configs until the plugin hook is stable.")
-
-
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Build a vLLM command with speculative decoding enabled.")
     parser.add_argument("--model", required=True)

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "structspec"
-version = "0.1.0"
-description = "Zero-VRAM speculative decoding proxy and tooling for local LLM backends."
+version = "0.2.0"
+description = "Lossless zero-VRAM speculative decoding server for local GGUF models (llama.cpp)."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "Structspec contributors" }]
@@ -26,8 +26,8 @@ dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.4"]
 structspec = "structspec.cli:main"
 
 [project.urls]
-Repository = "https://github.com/neerajcodes8888/Zero_vram_spec"
-Issues = "https://github.com/neerajcodes8888/Zero_vram_spec/issues"
+Repository = "https://github.com/neerajdad123-byte/zero-vram-spec"
+Issues = "https://github.com/neerajdad123-byte/zero-vram-spec/issues"
 
 [tool.setuptools.packages.find]
 include = ["structspec*"]
