@@ -15,7 +15,7 @@ def test_parser_serve_defaults():
     args = build_parser().parse_args(["serve", "--model", "m.gguf"])
     assert args.command == "serve"
     assert args.port == 8080
-    assert args.k == 4 and not args.passthrough and not args.thinking
+    assert args.k == 15 and not args.passthrough and not args.thinking
 
 
 def test_parser_serve_passthrough():
@@ -52,7 +52,7 @@ def test_parser_run_requires_prompt():
 
 def test_parser_verify():
     args = build_parser().parse_args(["verify", "--model", "m.gguf", "--max-tokens", "32", "--cpu-moe"])
-    assert args.command == "verify" and args.max_tokens == 32 and args.cpu_moe and args.k == 4
+    assert args.command == "verify" and args.max_tokens == 32 and args.cpu_moe and args.k == 15
 
 
 def test_parser_index():

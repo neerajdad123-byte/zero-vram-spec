@@ -167,7 +167,7 @@ def test_default_proposer_with_syntax_rules_is_lossless(tmp_path, monkeypatch):
     monkeypatch.setattr("pathlib.Path.home", lambda: tmp_path)
     model = FakeModel()
     proposer = default_proposer(model, syntax=True)
-    assert [p.name for p in proposer.proposers] == ["prompt_lookup", "rules"]
+    assert [p.name for p in proposer.proposers] == ["suffix_copy", "rules"]
     prompt = model.encode("for i in range(10):\n    if x:\n        pass\n")
     got = run_speculative(FakeModel(), proposer, prompt, 64)[0]
     assert got == run_greedy(FakeModel(), prompt, 64)[0]

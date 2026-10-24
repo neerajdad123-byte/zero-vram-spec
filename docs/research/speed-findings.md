@@ -99,3 +99,18 @@ Tune-split results (cross-fold) agree: recommended chain 1.69× and 73.5% accept
 - Speedups are **predicted**: exact acceptance, combined with a cost curve with ±15% run-to-run noise. Prompt processing time is not included: these are decode-phase speedups.
 - The llama.cpp bar is a single run of a single task per mode, not the median of 3.
 - Proposer CPU time is included, measured in Python (μs per token). A C++ path would only be faster.
+
+## 10. Measured end-to-end: Qwen2.5-Coder-3B-Instruct Q4_K_M (dense, fully on GPU)
+
+`python -m bench.e2e --budget 600` (results in `bench/results/e2e.jsonl`): same in-process model through `structspec.llama_native`. Each held-out test task runs greedy, then each proposer, at K=16. 64 tasks in 10 minutes, interleaved across language and task kind.
+
+| group | tasks | tokens | greedy tok/s | old prompt lookup | **suffix_copy (new default)** | copy + context n-gram |
+|---|---|---|---|---|---|---|
+| all | 64 | 25779 | 82.0 | 3.12× (median 2.00×, 53% acc) | **3.25×** (median 2.07×, 93% acc) | 3.25× |
+| fresh | 38 | 6630 | 84.4 | 1.38× (median 1.13×, 24% acc) | **1.41×** (median 1.10×, 77% acc) | 1.41× |
+| edit | 26 | 19149 | 81.2 | 5.40× (median 6.16×, 68% acc) | **5.72×** (median 7.32×, 96% acc) | 5.73× |
+
+- Byte-identical to greedy: suffix_copy 61/64, old prompt lookup 57/64. `structspec.verify` classifies all 3 suffix_copy divergences as **numerics**: the greedy top-1/top-2 margin is 0.011–0.065 logits, and the batched kernel's argmax differs from the single-token kernel's. That is not a drafting bug.
+- On a dense model that fits in VRAM, verifying K tokens costs almost the same as 1, so even low-acceptance drafting barely hurts. That is why the old prompt lookup comes close here, while on the MoE (§4) it falls to 1.11× and slows fresh code down.
+- Fresh-code totals are pulled up by a few long, repetitive answers. The per-task median (1.10×) is the typical experience.
+- Change made from these results: `default_proposer` now uses `SuffixCopyProposer(min_match=2, len_slope=0.5, len_base=1)`, and the CLI's default `--k` is 15.

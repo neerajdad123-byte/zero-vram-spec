@@ -160,8 +160,13 @@ def default_index_path(tokenizer_hash: str) -> Path:
 
 
 def default_proposer(model, index: str | None = None, syntax: bool = False) -> ChainProposer:
-    """Prompt lookup first, then the tokenizer's n-gram index (explicit path or the default cache file)."""
-    proposers: list[Proposer] = [PromptLookupProposer()]
+    """Longest-suffix copy first, then the tokenizer's n-gram index (explicit path or the default cache file).
+
+    Suffix copy replaced prompt lookup as the default: held-out acceptance 80% vs 25% (docs/research/speed-findings.md).
+    """
+    from .proposers import SuffixCopyProposer
+
+    proposers: list[Proposer] = [SuffixCopyProposer(min_match=2, len_slope=0.5, len_base=1)]
     path = Path(index) if index else default_index_path(model.tokenizer_hash())
     if index or path.exists():
         proposers.append(NgramIndexProposer(load_index(path, model.tokenizer_hash())))
