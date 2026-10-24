@@ -24,15 +24,27 @@ def cmd_detect(args: argparse.Namespace) -> int:
 def cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
-    backend = args.backend
-    if backend == "auto":
-        report = detect_all(args.model_path)
-        backend = report.selected_backend or "vllm"
-    target = infer_target_base_url(backend, args.target_base_url)
-    api_key = args.target_api_key or os.environ.get("STRUCTSPEC_TARGET_API_KEY")
-    app = create_app(target_base_url=target, backend=backend, api_key=api_key, safety=args.safety)
-    print(f"Structspec proxy listening on http://{args.host}:{args.port}/v1")
-    print(f"Forwarding to {target} | backend={backend} | safety={args.safety}")
+    if args.passthrough:
+        backend = args.backend
+        if backend == "auto":
+            report = detect_all(args.model_path)
+            backend = report.selected_backend or "vllm"
+        target = infer_target_base_url(backend, args.target_base_url)
+        api_key = args.target_api_key or os.environ.get("STRUCTSPEC_TARGET_API_KEY")
+        app = create_app(target_base_url=target, backend=backend, api_key=api_key, safety=args.safety)
+        print(f"Structspec passthrough proxy on http://{args.host}:{args.port}/v1 -> {target} (no speculation)")
+    else:
+        if not args.model:
+            print("serve needs --model PATH.gguf (or --passthrough to proxy another server)", file=sys.stderr)
+            return 2
+        from .proposer import default_proposer
+        from .server import create_spec_app
+
+        model = _load_model(args)
+        proposer = default_proposer(model, args.index, syntax=args.syntax)
+        name = os.path.splitext(os.path.basename(args.model))[0]
+        app = create_spec_app(model, proposer, k=args.k, model_name=name, thinking=args.thinking)
+        print(f"Structspec serving {name} on http://{args.host}:{args.port}/v1 (greedy, speculative k={args.k})")
     uvicorn.run(app, host=args.host, port=args.port, log_level=args.log_level)
     return 0
 
@@ -168,8 +180,8 @@ def cmd_config(_: argparse.Namespace) -> int:
     return 0
 
 
-def _model_args(p: argparse.ArgumentParser) -> None:
-    p.add_argument("--model", required=True, help="Path to GGUF model.")
+def _model_args(p: argparse.ArgumentParser, required: bool = True) -> None:
+    p.add_argument("--model", required=required, help="Path to GGUF model.")
     p.add_argument("--n-ctx", type=int, default=4096)
     p.add_argument("--n-gpu-layers", type=int, default=-1)
     p.add_argument("--cpu-moe", action="store_true", help="Keep MoE expert weights on the CPU.")
@@ -185,15 +197,22 @@ def build_parser() -> argparse.ArgumentParser:
     detect.add_argument("--json", action="store_true")
     detect.set_defaults(func=cmd_detect)
 
-    serve = sub.add_parser("serve", help="Start OpenAI-compatible proxy.")
+    serve = sub.add_parser("serve", help="OpenAI-compatible server with speculative decoding on a GGUF model.")
+    _model_args(serve, required=False)
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8080)
-    serve.add_argument("--backend", default="auto", choices=["auto", "vllm", "llama-cpp", "lm-studio", "ollama"])
-    serve.add_argument("--target-base-url")
-    serve.add_argument("--target-api-key")
-    serve.add_argument("--model-path", action="append")
-    serve.add_argument("--safety", default="strict", choices=["strict", "fast", "audit"])
+    serve.add_argument("--k", type=int, default=4, help="Max draft length.")
+    serve.add_argument("--index", help="N-gram index (default: cache file for this tokenizer, if present).")
+    serve.add_argument("--syntax", action="store_true", help="Also use the Python syntax rules.")
+    serve.add_argument("--thinking", action="store_true", help="Leave reasoning on for templates that support it.")
     serve.add_argument("--log-level", default="info")
+    proxy = serve.add_argument_group("passthrough (old behaviour: forward to another server, no speculation)")
+    proxy.add_argument("--passthrough", action="store_true")
+    proxy.add_argument("--backend", default="auto", choices=["auto", "vllm", "llama-cpp", "lm-studio", "ollama"])
+    proxy.add_argument("--target-base-url")
+    proxy.add_argument("--target-api-key")
+    proxy.add_argument("--model-path", action="append")
+    proxy.add_argument("--safety", default="strict", choices=["strict", "fast", "audit"])
     serve.set_defaults(func=cmd_serve)
 
     run = sub.add_parser("run", help="One-shot generation through a Structspec-compatible endpoint.")
