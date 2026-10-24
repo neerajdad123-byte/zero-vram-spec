@@ -139,3 +139,15 @@ def run_greedy(model, prompt: str | list[int], max_tokens: int) -> tuple[list[in
             passes += 1
     elapsed = now() - start
     return prompt_ids + out, model.decode(out), {"time": elapsed, "passes": passes, "generated": len(out)}
+
+
+NO_THINK_SUFFIX = "<think>\n\n</think>\n\n"
+
+
+def chat_prompt_ids(model, messages: list[dict], thinking: bool = False) -> list[int]:
+    """Chat-templated prompt. Reasoning templates get an empty think block (Qwen's enable_thinking=False)."""
+    text = model.apply_chat_template(messages)
+    template = model.chat_template() if hasattr(model, "chat_template") else ""
+    if not thinking and "<think>" in template:
+        text += NO_THINK_SUFFIX
+    return model.encode(text, special=True)

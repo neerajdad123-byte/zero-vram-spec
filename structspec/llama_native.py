@@ -354,6 +354,10 @@ class NativeLlama:
             h.update(b"\x00")
         return h.hexdigest()
 
+    def chat_template(self) -> str:
+        tmpl = self._lib.llama_model_chat_template(self._model, None)
+        return tmpl.decode("utf-8", errors="replace") if tmpl else ""
+
     def apply_chat_template(self, messages: list[dict]) -> str:
         tmpl = self._lib.llama_model_chat_template(self._model, None)
         enc = [(str(m.get("role", "user")).encode(), str(m.get("content") or "").encode()) for m in messages]
