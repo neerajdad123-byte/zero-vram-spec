@@ -20,8 +20,8 @@ def test_metrics_acceptance_rate():
 
 def test_metrics_multiplier():
     m = Metrics()
-    m.target_tokens = 100
-    m.accepted_draft_tokens = 50
+    m.generated_tokens = 150
+    m.target_passes = 100
     assert m.estimated_multiplier == 1.5
 
 
