@@ -93,6 +93,7 @@ def cmd_generate(args: argparse.Namespace) -> int:
         from .engine import PatternMiner, PythonSyntaxProposer, QwenTokenCorpus
         from .llama_backend import run_greedy, run_speculative
         from .llama_native import NativeLlama
+        from .proposer import RuleProposer
     except ImportError as exc:
         print(f"Missing dependency for generation: {exc}", file=sys.stderr)
         return 2
@@ -123,10 +124,8 @@ def cmd_generate(args: argparse.Namespace) -> int:
         ids, text, stats = run_greedy(model, args.prompt, args.max_tokens)
     else:
         ids, text, stats = run_speculative(
-            model, miner, syntax, args.prompt, args.max_tokens,
+            model, RuleProposer(miner, syntax), args.prompt, args.max_tokens,
             k=args.k, reject_mode=args.reject_mode,
-            strike_limit=args.strike_limit,
-            live_viz=args.live_viz,
         )
 
     print(text)
@@ -199,10 +198,8 @@ def build_parser() -> argparse.ArgumentParser:
     gen.add_argument("--n-ctx", type=int, default=2048)
     gen.add_argument("--n-gpu-layers", type=int, default=-1)
     gen.add_argument("--reject-mode", choices=["truncate", "seq-bonus", "rebuild"], default="truncate")
-    gen.add_argument("--strike-limit", type=int, default=3)
     gen.add_argument("--no-syntax-patterns", action="store_true")
     gen.add_argument("--syntax-mode", choices=["off", "basic", "cluster"], default="cluster")
-    gen.add_argument("--live-viz", action="store_true")
     gen.add_argument("--greedy", action="store_true", help="Run greedy baseline instead of speculative.")
     gen.add_argument("--verbose", action="store_true")
     gen.set_defaults(func=cmd_generate)
