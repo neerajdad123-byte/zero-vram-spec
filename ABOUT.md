@@ -33,3 +33,4 @@ On a large MoE model with experts partly on the CPU (Qwen3.6-35B-A3B), the predi
 - [Speed findings](docs/research/speed-findings.md): full method and results
 - [Changelog](CHANGELOG.md)
 - [Contributing](CONTRIBUTING.md)
+- [Code of conduct](CODE_OF_CONDUCT.md) · [Security policy](SECURITY.md) · [Accessibility](ACCESSIBILITY.md)

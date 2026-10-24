@@ -1,0 +1,40 @@
+name: Bug report
+description: Something doesn't work or the output differs from greedy
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you ran, what you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        structspec serve --model ... --k 15
+        curl ...
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: qwen2.5-coder-3b-instruct-q4_k_m.gguf
+    validations:
+      required: true
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      description: OS, GPU and VRAM, llama.cpp build, Python version, Structspec version
+      placeholder: Windows 11, RTX 4050 6 GB, llama.cpp b11756, Python 3.11, structspec 0.2.0
+    validations:
+      required: true
+  - type: textarea
+    id: verify
+    attributes:
+      label: Output of `structspec verify` (if output differs from greedy)
+      render: text

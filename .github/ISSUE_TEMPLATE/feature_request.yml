@@ -1,0 +1,22 @@
+name: Feature request
+description: Suggest a new drafter, model support or other improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What problem does it solve
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposed idea
+      description: For a new drafter, say what it predicts and on which kind of code you expect it to help.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence (optional)
+      description: Replay or benchmark numbers, e.g. from `python -m bench.replay --split tune ...`

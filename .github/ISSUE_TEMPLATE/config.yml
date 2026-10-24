@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/neerajdad123-byte/zero-vram-spec/security/advisories/new
+    about: Please report security problems privately, not as an issue.
