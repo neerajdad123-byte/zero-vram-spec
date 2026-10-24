@@ -1,0 +1,1942 @@
+{
+ "split": "test",
+ "max_k": 16,
+ "results": {
+  "v2core_prompt_lookup": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.6856368563685636,
+    "acceptance": 0.47987773815588386,
+    "mean_accept_when_drafted": 7.446640316205533,
+    "tokens_per_pass": 6.102981029810298,
+    "pred_speedup": 2.1377087780241637,
+    "proposer_us_per_tok": 16.413765569693297
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.5208333333333334,
+    "acceptance": 0.4264126149802891,
+    "mean_accept_when_drafted": 6.49,
+    "tokens_per_pass": 4.369791666666667,
+    "pred_speedup": 1.7442182496704841,
+    "proposer_us_per_tok": 13.500029796515427
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.7614138438880707,
+    "acceptance": 0.5751051719871318,
+    "mean_accept_when_drafted": 8.990328820116055,
+    "tokens_per_pass": 7.840942562592047,
+    "pred_speedup": 2.5011885868846147,
+    "proposer_us_per_tok": 10.599474090913393
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.3563925185754548,
+    "acceptance": 0.25279912998344,
+    "mean_accept_when_drafted": 3.676491732566499,
+    "tokens_per_pass": 2.3025877530105046,
+    "pred_speedup": 1.1083552967619097,
+    "proposer_us_per_tok": 15.208879494826364
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9767441860465116,
+    "acceptance": 0.7293934681181959,
+    "mean_accept_when_drafted": 11.166666666666666,
+    "tokens_per_pass": 11.906976744186046,
+    "pred_speedup": 3.2591746964793,
+    "proposer_us_per_tok": 4.817187480909979
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.35339943342776203,
+    "acceptance": 0.24395020282557,
+    "mean_accept_when_drafted": 3.49498997995992,
+    "tokens_per_pass": 2.228045325779037,
+    "pred_speedup": 1.0769408842526498,
+    "proposer_us_per_tok": 14.856961196819404
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.6923076923076923,
+    "acceptance": 0.6208333333333333,
+    "mean_accept_when_drafted": 9.933333333333334,
+    "tokens_per_pass": 7.876923076923077,
+    "pred_speedup": 2.5929140342206645,
+    "proposer_us_per_tok": 10.68828122896548
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.36723910171730517,
+    "acceptance": 0.24320222587580625,
+    "mean_accept_when_drafted": 3.45863309352518,
+    "tokens_per_pass": 2.2635402906208717,
+    "pred_speedup": 1.0835414756545987,
+    "proposer_us_per_tok": 15.881762489690606
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9767441860465116,
+    "acceptance": 0.7063253012048193,
+    "mean_accept_when_drafted": 11.166666666666666,
+    "tokens_per_pass": 11.906976744186046,
+    "pred_speedup": 3.098504614152653,
+    "proposer_us_per_tok": 3.8980468843874405
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.32685069008782935,
+    "acceptance": 0.17731878409976617,
+    "mean_accept_when_drafted": 2.619961612284069,
+    "tokens_per_pass": 1.8500627352572145,
+    "pred_speedup": 0.9211557128598404,
+    "proposer_us_per_tok": 18.682841634308044
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8363636363636363,
+    "acceptance": 0.632088520055325,
+    "mean_accept_when_drafted": 9.934782608695652,
+    "tokens_per_pass": 9.309090909090909,
+    "pred_speedup": 2.7233985431648575,
+    "proposer_us_per_tok": 7.949609376112221
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.2990448199853049,
+    "acceptance": 0.17215672676837726,
+    "mean_accept_when_drafted": 2.43980343980344,
+    "tokens_per_pass": 1.72226304188097,
+    "pred_speedup": 0.9077401499861039,
+    "proposer_us_per_tok": 16.769752603918416
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8360655737704918,
+    "acceptance": 0.5621890547263682,
+    "mean_accept_when_drafted": 8.862745098039216,
+    "tokens_per_pass": 8.39344262295082,
+    "pred_speedup": 2.436451645617975,
+    "proposer_us_per_tok": 6.805664092723873
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.3778705636743215,
+    "acceptance": 0.3404977375565611,
+    "mean_accept_when_drafted": 4.988950276243094,
+    "tokens_per_pass": 2.872651356993737,
+    "pred_speedup": 1.339673693828679,
+    "proposer_us_per_tok": 10.461409908393128
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8837209302325582,
+    "acceptance": 0.7807308970099668,
+    "mean_accept_when_drafted": 12.368421052631579,
+    "tokens_per_pass": 11.906976744186046,
+    "pred_speedup": 3.189176494584266,
+    "proposer_us_per_tok": 3.8642578061853783
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.3215339233038348,
+    "acceptance": 0.22020644354081953,
+    "mean_accept_when_drafted": 3.229357798165138,
+    "tokens_per_pass": 2.0294985250737465,
+    "pred_speedup": 1.016224259990083,
+    "proposer_us_per_tok": 13.14869182298808
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.3338203067932798,
+    "acceptance": 0.19597294804795573,
+    "mean_accept_when_drafted": 2.789934354485777,
+    "tokens_per_pass": 1.9240321402483564,
+    "pred_speedup": 0.960946969416355,
+    "proposer_us_per_tok": 16.808504151468462
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.31780552827276554,
+    "acceptance": 0.1723445655866819,
+    "mean_accept_when_drafted": 2.4635761589403975,
+    "tokens_per_pass": 1.7749403676161077,
+    "pred_speedup": 0.9084075930793598,
+    "proposer_us_per_tok": 17.148837943081908
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.3526570048309179,
+    "acceptance": 0.20537080840406288,
+    "mean_accept_when_drafted": 2.888454011741683,
+    "tokens_per_pass": 2.0117322291235333,
+    "pred_speedup": 0.9878199557462094,
+    "proposer_us_per_tok": 16.7939622857425
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.30883301096067056,
+    "acceptance": 0.12738129087290304,
+    "mean_accept_when_drafted": 1.870563674321503,
+    "tokens_per_pass": 1.571244358478401,
+    "pred_speedup": 0.8078878192105886,
+    "proposer_us_per_tok": 21.789043896088653
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.276416539050536,
+    "acceptance": 0.10624380574826561,
+    "mean_accept_when_drafted": 1.4847645429362881,
+    "tokens_per_pass": 1.4027565084226645,
+    "pred_speedup": 0.7719566276205965,
+    "proposer_us_per_tok": 19.234770798589146
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.3684210526315789,
+    "acceptance": 0.32932469935245146,
+    "mean_accept_when_drafted": 4.843537414965986,
+    "tokens_per_pass": 2.7669172932330826,
+    "pred_speedup": 1.2941137635192104,
+    "proposer_us_per_tok": 7.556431099779413
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.31100478468899523,
+    "acceptance": 0.24404761904761904,
+    "mean_accept_when_drafted": 3.4692307692307693,
+    "tokens_per_pass": 2.0669856459330145,
+    "pred_speedup": 1.0690473666087215,
+    "proposer_us_per_tok": 12.627777799160093
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.28346456692913385,
+    "acceptance": 0.09017341040462427,
+    "mean_accept_when_drafted": 1.3,
+    "tokens_per_pass": 1.3606299212598425,
+    "pred_speedup": 0.7303060048605933,
+    "proposer_us_per_tok": 18.650578647760053
+   }
+  },
+  "v2core_ngram_index": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.13063763608087092,
+    "acceptance": 0.8733153638814016,
+    "mean_accept_when_drafted": 1.2857142857142858,
+    "tokens_per_pass": 1.1674442716433384,
+    "pred_speedup": 1.132099765654152,
+    "proposer_us_per_tok": 4.260079919503874
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.11748726655348048,
+    "acceptance": 0.8380566801619433,
+    "mean_accept_when_drafted": 1.1965317919075145,
+    "tokens_per_pass": 1.1395585738539897,
+    "pred_speedup": 1.1078199411558503,
+    "proposer_us_per_tok": 3.673688888359572
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.10250865051903114,
+    "acceptance": 0.8548780487804878,
+    "mean_accept_when_drafted": 1.478902953586498,
+    "tokens_per_pass": 1.1513840830449826,
+    "pred_speedup": 1.1179914509330113,
+    "proposer_us_per_tok": 3.83553719762697
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.11645113155931361,
+    "acceptance": 0.7366020524515393,
+    "mean_accept_when_drafted": 1.0347036839295247,
+    "tokens_per_pass": 1.1175080825665258,
+    "pred_speedup": 1.0871209254336414,
+    "proposer_us_per_tok": 2.934321803397743
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.1029082774049217,
+    "acceptance": 0.7926829268292683,
+    "mean_accept_when_drafted": 1.4130434782608696,
+    "tokens_per_pass": 1.145413870246085,
+    "pred_speedup": 1.1128494609016972,
+    "proposer_us_per_tok": 3.8994140609815986
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.13657162970784936,
+    "acceptance": 0.6274900398406374,
+    "mean_accept_when_drafted": 0.8118556701030928,
+    "tokens_per_pass": 1.107356564589933,
+    "pred_speedup": 1.0759462373802327,
+    "proposer_us_per_tok": 2.968277174333206
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.08426966292134831,
+    "acceptance": 0.9512195121951219,
+    "mean_accept_when_drafted": 5.2,
+    "tokens_per_pass": 1.4382022471910112,
+    "pred_speedup": 1.3210605377392255,
+    "proposer_us_per_tok": 3.132421930729379
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.12872304005477575,
+    "acceptance": 0.7916666666666666,
+    "mean_accept_when_drafted": 1.3643617021276595,
+    "tokens_per_pass": 1.1732283464566928,
+    "pred_speedup": 1.1263907530927846,
+    "proposer_us_per_tok": 2.6581266694920975
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.16985645933014354,
+    "acceptance": 0.8623853211009175,
+    "mean_accept_when_drafted": 1.323943661971831,
+    "tokens_per_pass": 1.2248803827751196,
+    "pred_speedup": 1.1756911291674126,
+    "proposer_us_per_tok": 3.2847656328272024
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.09400146305779078,
+    "acceptance": 0.6484149855907781,
+    "mean_accept_when_drafted": 0.8754863813229572,
+    "tokens_per_pass": 1.078639356254572,
+    "pred_speedup": 1.0556888263786486,
+    "proposer_us_per_tok": 2.685486606809602
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.05070993914807302,
+    "acceptance": 0.5588235294117647,
+    "mean_accept_when_drafted": 0.76,
+    "tokens_per_pass": 1.0385395537525355,
+    "pred_speedup": 1.0270964448057471,
+    "proposer_us_per_tok": 3.7005859852001777
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.10639290713952403,
+    "acceptance": 0.7216494845360825,
+    "mean_accept_when_drafted": 0.9210526315789473,
+    "tokens_per_pass": 1.0937937470835277,
+    "pred_speedup": 1.0711327897998388,
+    "proposer_us_per_tok": 2.688054616707846
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.0861344537815126,
+    "acceptance": 0.7058823529411765,
+    "mean_accept_when_drafted": 0.8780487804878049,
+    "tokens_per_pass": 1.0756302521008403,
+    "pred_speedup": 1.0586860640018216,
+    "proposer_us_per_tok": 3.5142577630153937
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.10464201416207711,
+    "acceptance": 0.7032258064516129,
+    "mean_accept_when_drafted": 0.8195488721804511,
+    "tokens_per_pass": 1.082612116443745,
+    "pred_speedup": 1.0634355441145518,
+    "proposer_us_per_tok": 2.8330669010756537
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.01782178217821782,
+    "acceptance": 0.7777777777777778,
+    "mean_accept_when_drafted": 0.7777777777777778,
+    "tokens_per_pass": 1.0138613861386139,
+    "pred_speedup": 1.0116332883024133,
+    "proposer_us_per_tok": 3.6144531847526196
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.11798209926769732,
+    "acceptance": 0.7835051546391752,
+    "mean_accept_when_drafted": 1.0482758620689656,
+    "tokens_per_pass": 1.1196094385679414,
+    "pred_speedup": 1.0917215319930098,
+    "proposer_us_per_tok": 2.7953488497164365
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.14285714285714285,
+    "acceptance": 0.5952380952380952,
+    "mean_accept_when_drafted": 0.7309941520467836,
+    "tokens_per_pass": 1.100250626566416,
+    "pred_speedup": 1.0695522462093134,
+    "proposer_us_per_tok": 2.7872816975055765
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.12207678883071553,
+    "acceptance": 0.6830480397570403,
+    "mean_accept_when_drafted": 0.8842030021443888,
+    "tokens_per_pass": 1.1038394415357766,
+    "pred_speedup": 1.0753840606840126,
+    "proposer_us_per_tok": 2.5550276722612684
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.13489278752436648,
+    "acceptance": 0.737603305785124,
+    "mean_accept_when_drafted": 1.0317919075144508,
+    "tokens_per_pass": 1.1364522417153997,
+    "pred_speedup": 1.0994218276444525,
+    "proposer_us_per_tok": 2.574819920348534
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.08031088082901554,
+    "acceptance": 0.5504201680672269,
+    "mean_accept_when_drafted": 0.7043010752688172,
+    "tokens_per_pass": 1.052245250431779,
+    "pred_speedup": 1.0346192036774682,
+    "proposer_us_per_tok": 2.559581452389819
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.12303030303030303,
+    "acceptance": 0.7431906614785992,
+    "mean_accept_when_drafted": 0.9408866995073891,
+    "tokens_per_pass": 1.1103030303030303,
+    "pred_speedup": 1.0833878437451765,
+    "proposer_us_per_tok": 2.4050764176532207
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.09251968503937008,
+    "acceptance": 0.7317073170731707,
+    "mean_accept_when_drafted": 0.9574468085106383,
+    "tokens_per_pass": 1.0866141732283465,
+    "pred_speedup": 1.0646746981962099,
+    "proposer_us_per_tok": 2.4775361690326068
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.11572327044025157,
+    "acceptance": 0.7019230769230769,
+    "mean_accept_when_drafted": 0.7934782608695652,
+    "tokens_per_pass": 1.0867924528301887,
+    "pred_speedup": 1.066125215814245,
+    "proposer_us_per_tok": 2.4293982421484004
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.1878453038674033,
+    "acceptance": 0.7837837837837838,
+    "mean_accept_when_drafted": 1.0661764705882353,
+    "tokens_per_pass": 1.1933701657458564,
+    "pred_speedup": 1.1437501399480425,
+    "proposer_us_per_tok": 2.3099536882135134
+   }
+  },
+  "suffix_copy": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.7238095238095238,
+    "acceptance": 0.914713216957606,
+    "mean_accept_when_drafted": 6.032894736842105,
+    "tokens_per_pass": 5.3619047619047615,
+    "pred_speedup": 2.892548904498806,
+    "proposer_us_per_tok": 1.312433378382724
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.5598086124401914,
+    "acceptance": 0.8942715700141443,
+    "mean_accept_when_drafted": 5.403846153846154,
+    "tokens_per_pass": 4.014354066985646,
+    "pred_speedup": 2.436781728538396,
+    "proposer_us_per_tok": 1.2209773382813174
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.7801899592944369,
+    "acceptance": 0.9367862969004894,
+    "mean_accept_when_drafted": 7.989565217391305,
+    "tokens_per_pass": 7.223880597014926,
+    "pred_speedup": 3.2399801670114483,
+    "proposer_us_per_tok": 1.1282869967787945
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.4020471316353249,
+    "acceptance": 0.7960346964064436,
+    "mean_accept_when_drafted": 2.8525754884547068,
+    "tokens_per_pass": 2.1392525589145444,
+    "pred_speedup": 1.6600596762535478,
+    "proposer_us_per_tok": 1.4060643163295905
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9714285714285714,
+    "acceptance": 0.9958333333333333,
+    "mean_accept_when_drafted": 14.058823529411764,
+    "tokens_per_pass": 14.628571428571428,
+    "pred_speedup": 4.242924155857477,
+    "proposer_us_per_tok": 0.932226576821904
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.3997370151216305,
+    "acceptance": 0.7876745305729418,
+    "mean_accept_when_drafted": 2.6907894736842106,
+    "tokens_per_pass": 2.0683760683760686,
+    "pred_speedup": 1.6209348179341567,
+    "proposer_us_per_tok": 1.4170375019838846
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.726027397260274,
+    "acceptance": 0.946236559139785,
+    "mean_accept_when_drafted": 8.30188679245283,
+    "tokens_per_pass": 7.013698630136986,
+    "pred_speedup": 3.161447900815736,
+    "proposer_us_per_tok": 1.0183593701640348
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.41514041514041516,
+    "acceptance": 0.779558250324816,
+    "mean_accept_when_drafted": 2.6470588235294117,
+    "tokens_per_pass": 2.0921855921855923,
+    "pred_speedup": 1.6303637434906426,
+    "proposer_us_per_tok": 1.356901103992239
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.975,
+    "acceptance": 0.9613821138211383,
+    "mean_accept_when_drafted": 12.128205128205128,
+    "tokens_per_pass": 12.8,
+    "pred_speedup": 3.8883595807916027,
+    "proposer_us_per_tok": 0.9394531588213795
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.36583924349881797,
+    "acceptance": 0.7415204678362574,
+    "mean_accept_when_drafted": 2.048465266558966,
+    "tokens_per_pass": 1.7429078014184398,
+    "pred_speedup": 1.4557586671104235,
+    "proposer_us_per_tok": 1.5727026386687197
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8732394366197183,
+    "acceptance": 0.8873239436619719,
+    "mean_accept_when_drafted": 7.112903225806452,
+    "tokens_per_pass": 7.211267605633803,
+    "pred_speedup": 3.0534443244669047,
+    "proposer_us_per_tok": 1.1281249712169483
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.3614457831325301,
+    "acceptance": 0.6595092024539877,
+    "mean_accept_when_drafted": 1.5925925925925926,
+    "tokens_per_pass": 1.568942436412316,
+    "pred_speedup": 1.3329789669813072,
+    "proposer_us_per_tok": 1.5973975876868312
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8148148148148148,
+    "acceptance": 0.9542619542619543,
+    "mean_accept_when_drafted": 10.431818181818182,
+    "tokens_per_pass": 9.481481481481481,
+    "pred_speedup": 3.530369449859248,
+    "proposer_us_per_tok": 0.966796847023943
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.405189620758483,
+    "acceptance": 0.8586744639376218,
+    "mean_accept_when_drafted": 4.3399014778325125,
+    "tokens_per_pass": 2.7465069860279443,
+    "pred_speedup": 1.9411641567382085,
+    "proposer_us_per_tok": 1.2617732372111574
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8863636363636364,
+    "acceptance": 0.96900826446281,
+    "mean_accept_when_drafted": 12.025641025641026,
+    "tokens_per_pass": 11.636363636363637,
+    "pred_speedup": 3.676890725633685,
+    "proposer_us_per_tok": 0.9748047062885234
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.3611111111111111,
+    "acceptance": 0.7779083431257344,
+    "mean_accept_when_drafted": 2.546153846153846,
+    "tokens_per_pass": 1.9111111111111112,
+    "pred_speedup": 1.5481569782087692,
+    "proposer_us_per_tok": 1.4160610526444142
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.38627187079407804,
+    "acceptance": 0.7251095804633688,
+    "mean_accept_when_drafted": 2.0174216027874565,
+    "tokens_per_pass": 1.7725437415881562,
+    "pred_speedup": 1.458454526445411,
+    "proposer_us_per_tok": 1.511275616518028
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.36568819308545336,
+    "acceptance": 0.7001805304818776,
+    "mean_accept_when_drafted": 1.798787013913664,
+    "tokens_per_pass": 1.650358773646445,
+    "pred_speedup": 1.391801408054345,
+    "proposer_us_per_tok": 1.5229723360361862
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.40063897763578277,
+    "acceptance": 0.737527114967462,
+    "mean_accept_when_drafted": 2.1690590111642742,
+    "tokens_per_pass": 1.8626198083067094,
+    "pred_speedup": 1.5087315692342231,
+    "proposer_us_per_tok": 1.4163636658172958
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.35108958837772397,
+    "acceptance": 0.6527093596059114,
+    "mean_accept_when_drafted": 1.3706896551724137,
+    "tokens_per_pass": 1.475181598062954,
+    "pred_speedup": 1.2942147281589982,
+    "proposer_us_per_tok": 1.7057447944675863
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.3359100491918482,
+    "acceptance": 0.5192069392812887,
+    "mean_accept_when_drafted": 0.8765690376569037,
+    "tokens_per_pass": 1.2874209416725229,
+    "pred_speedup": 1.1604667495531147,
+    "proposer_us_per_tok": 1.7285480132504665
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.3942307692307692,
+    "acceptance": 0.8444714459295262,
+    "mean_accept_when_drafted": 4.237804878048781,
+    "tokens_per_pass": 2.6538461538461537,
+    "pred_speedup": 1.8777313615925602,
+    "proposer_us_per_tok": 1.0344202709730135
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.35570469798657717,
+    "acceptance": 0.7743119266055046,
+    "mean_accept_when_drafted": 2.6540880503144653,
+    "tokens_per_pass": 1.9328859060402686,
+    "pred_speedup": 1.5490320295541034,
+    "proposer_us_per_tok": 1.4365740610258029
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.3269230769230769,
+    "acceptance": 0.5258855585831063,
+    "mean_accept_when_drafted": 0.8733031674208145,
+    "tokens_per_pass": 1.2781065088757397,
+    "pred_speedup": 1.1617007708352354,
+    "proposer_us_per_tok": 1.6775462949293865
+   }
+  },
+  "ngram_model": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.16819221967963388,
+    "acceptance": 0.5505984766050055,
+    "mean_accept_when_drafted": 1.7210884353741496,
+    "tokens_per_pass": 1.2883295194508009,
+    "pred_speedup": 1.1734514015112611,
+    "proposer_us_per_tok": 1.8118561315960227
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.1582045621780721,
+    "acceptance": 0.5,
+    "mean_accept_when_drafted": 1.5046511627906978,
+    "tokens_per_pass": 1.2347314201618838,
+    "pred_speedup": 1.127899957040406,
+    "proposer_us_per_tok": 1.7069725607000392
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.14152265296590377,
+    "acceptance": 0.48134500230308613,
+    "mean_accept_when_drafted": 1.7244224422442245,
+    "tokens_per_pass": 1.243344231667445,
+    "pred_speedup": 1.1321419877663232,
+    "proposer_us_per_tok": 1.70371900913484
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.16785044224068615,
+    "acceptance": 0.39524535977625225,
+    "mean_accept_when_drafted": 1.2411177644710578,
+    "tokens_per_pass": 1.2043688019297776,
+    "pred_speedup": 1.081076951735489,
+    "proposer_us_per_tok": 1.5753310438113226
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.15421686746987953,
+    "acceptance": 0.47342995169082125,
+    "mean_accept_when_drafted": 1.53125,
+    "tokens_per_pass": 1.2337349397590363,
+    "pred_speedup": 1.1270975047643228,
+    "proposer_us_per_tok": 1.6634765387379957
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.200076074553062,
+    "acceptance": 0.3080513418903151,
+    "mean_accept_when_drafted": 1.0038022813688212,
+    "tokens_per_pass": 1.1966527196652719,
+    "pred_speedup": 1.0449987961249556,
+    "proposer_us_per_tok": 1.6263827478998765
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.14114114114114115,
+    "acceptance": 0.6415770609318996,
+    "mean_accept_when_drafted": 3.8085106382978724,
+    "tokens_per_pass": 1.5375375375375375,
+    "pred_speedup": 1.319179715782606,
+    "proposer_us_per_tok": 1.4416016185236913
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.17882265827471308,
+    "acceptance": 0.4217765042979943,
+    "mean_accept_when_drafted": 1.5238095238095237,
+    "tokens_per_pass": 1.2687893372824879,
+    "pred_speedup": 1.1078053475617933,
+    "proposer_us_per_tok": 1.4983659512929994
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.15789473684210525,
+    "acceptance": 0.4934640522875817,
+    "mean_accept_when_drafted": 2.6491228070175437,
+    "tokens_per_pass": 1.4182825484764543,
+    "pred_speedup": 1.212483684653419,
+    "proposer_us_per_tok": 1.5435546387720933
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.1369117075068067,
+    "acceptance": 0.3104,
+    "mean_accept_when_drafted": 1.1022727272727273,
+    "tokens_per_pass": 1.147024504084014,
+    "pred_speedup": 1.0370042901935566,
+    "proposer_us_per_tok": 1.52268567053712
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.08577405857740586,
+    "acceptance": 0.18681318681318682,
+    "mean_accept_when_drafted": 0.8292682926829268,
+    "tokens_per_pass": 1.0711297071129706,
+    "pred_speedup": 0.9957473290976054,
+    "proposer_us_per_tok": 1.6546875016842932
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.1590909090909091,
+    "acceptance": 0.44563918757467147,
+    "mean_accept_when_drafted": 1.1841269841269841,
+    "tokens_per_pass": 1.183838383838384,
+    "pred_speedup": 1.0875646074404925,
+    "proposer_us_per_tok": 1.532807165902142
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.15077605321507762,
+    "acceptance": 0.35260115606936415,
+    "mean_accept_when_drafted": 0.8970588235294118,
+    "tokens_per_pass": 1.1352549889135255,
+    "pred_speedup": 1.0556377706821534,
+    "proposer_us_per_tok": 1.7976562745047886
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.17911714770797962,
+    "acceptance": 0.4142857142857143,
+    "mean_accept_when_drafted": 0.9620853080568721,
+    "tokens_per_pass": 1.1680814940577249,
+    "pred_speedup": 1.0758583127591277,
+    "proposer_us_per_tok": 1.5989098729669633
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.07056451612903226,
+    "acceptance": 0.1523809523809524,
+    "mean_accept_when_drafted": 0.45714285714285713,
+    "tokens_per_pass": 1.032258064516129,
+    "pred_speedup": 0.9907339444104708,
+    "proposer_us_per_tok": 1.6457031080108209
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.16390584132519617,
+    "acceptance": 0.43656716417910446,
+    "mean_accept_when_drafted": 1.2446808510638299,
+    "tokens_per_pass": 1.199651264167393,
+    "pred_speedup": 1.0888305110749419,
+    "proposer_us_per_tok": 1.4909157000655013
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.2086720867208672,
+    "acceptance": 0.285335102853351,
+    "mean_accept_when_drafted": 0.9307359307359307,
+    "tokens_per_pass": 1.1897018970189701,
+    "pred_speedup": 1.0314541731960465,
+    "proposer_us_per_tok": 1.6191724134620948
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.17844390152227024,
+    "acceptance": 0.3624231782265145,
+    "mean_accept_when_drafted": 1.0868878357030016,
+    "tokens_per_pass": 1.18868633715467,
+    "pred_speedup": 1.062140968047036,
+    "proposer_us_per_tok": 1.5212964566664682
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.18412162162162163,
+    "acceptance": 0.37994542974079126,
+    "mean_accept_when_drafted": 1.2775229357798166,
+    "tokens_per_pass": 1.2309966216216217,
+    "pred_speedup": 1.0790245294915872,
+    "proposer_us_per_tok": 1.5083362217485348
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.1334841628959276,
+    "acceptance": 0.2510593220338983,
+    "mean_accept_when_drafted": 0.8033898305084746,
+    "tokens_per_pass": 1.102714932126697,
+    "pred_speedup": 1.0079006160503925,
+    "proposer_us_per_tok": 1.518301217629321
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.18242343541944075,
+    "acceptance": 0.517557251908397,
+    "mean_accept_when_drafted": 1.2372262773722629,
+    "tokens_per_pass": 1.2197070572569906,
+    "pred_speedup": 1.1146826114746688,
+    "proposer_us_per_tok": 1.4987445393080039
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.1402061855670103,
+    "acceptance": 0.376,
+    "mean_accept_when_drafted": 1.036764705882353,
+    "tokens_per_pass": 1.1381443298969072,
+    "pred_speedup": 1.0508234633724813,
+    "proposer_us_per_tok": 1.493025276589754
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.19669876203576342,
+    "acceptance": 0.4479495268138801,
+    "mean_accept_when_drafted": 0.993006993006993,
+    "tokens_per_pass": 1.188445667125172,
+    "pred_speedup": 1.0875734846425709,
+    "proposer_us_per_tok": 1.4811342276112152
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.2350230414746544,
+    "acceptance": 0.505800464037123,
+    "mean_accept_when_drafted": 1.4248366013071896,
+    "tokens_per_pass": 1.327188940092166,
+    "pred_speedup": 1.1545148247417523,
+    "proposer_us_per_tok": 1.3991898286904971
+   }
+  },
+  "context_ngram": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.603448275862069,
+    "acceptance": 0.7969723953695459,
+    "mean_accept_when_drafted": 6.392857142857143,
+    "tokens_per_pass": 4.853448275862069,
+    "pred_speedup": 2.5320426509726097,
+    "proposer_us_per_tok": 3.16873885683205
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.47163515016685204,
+    "acceptance": 0.6715686274509803,
+    "mean_accept_when_drafted": 5.816037735849057,
+    "tokens_per_pass": 3.733036707452725,
+    "pred_speedup": 2.0358905032953434,
+    "proposer_us_per_tok": 3.1448152466237693
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.6819708846584547,
+    "acceptance": 0.864406779661017,
+    "mean_accept_when_drafted": 7.285714285714286,
+    "tokens_per_pass": 5.961926091825308,
+    "pred_speedup": 2.811093164210793,
+    "proposer_us_per_tok": 3.3673365724125737
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.300071530758226,
+    "acceptance": 0.3986531151875723,
+    "mean_accept_when_drafted": 3.833531982518872,
+    "tokens_per_pass": 2.142823080591321,
+    "pred_speedup": 1.3182974758121915,
+    "proposer_us_per_tok": 3.6687993737185782
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9032258064516129,
+    "acceptance": 1.0,
+    "mean_accept_when_drafted": 8.053571428571429,
+    "tokens_per_pass": 8.258064516129032,
+    "pred_speedup": 3.3741735835559914,
+    "proposer_us_per_tok": 3.507031252070192
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.30165016501650166,
+    "acceptance": 0.38283982280251805,
+    "mean_accept_when_drafted": 3.5929978118161925,
+    "tokens_per_pass": 2.076567656765677,
+    "pred_speedup": 1.2862774447379712,
+    "proposer_us_per_tok": 3.7284488365298656
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.6708860759493671,
+    "acceptance": 0.7948717948717948,
+    "mean_accept_when_drafted": 8.18867924528302,
+    "tokens_per_pass": 6.481012658227848,
+    "pred_speedup": 2.752224294452514,
+    "proposer_us_per_tok": 3.29999998882613
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.299265605875153,
+    "acceptance": 0.3835034013605442,
+    "mean_accept_when_drafted": 3.689161554192229,
+    "tokens_per_pass": 2.0973072215422275,
+    "pred_speedup": 1.2949290986789828,
+    "proposer_us_per_tok": 3.427400044992722
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.75,
+    "acceptance": 0.9977528089887641,
+    "mean_accept_when_drafted": 8.705882352941176,
+    "tokens_per_pass": 7.529411764705882,
+    "pred_speedup": 3.2959273756439122,
+    "proposer_us_per_tok": 3.366015640438036
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.26284701712935615,
+    "acceptance": 0.2977422389463782,
+    "mean_accept_when_drafted": 2.844943820224719,
+    "tokens_per_pass": 1.74187832250443,
+    "pred_speedup": 1.1248816087435927,
+    "proposer_us_per_tok": 3.9881993882052056
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.7674418604651163,
+    "acceptance": 0.8747433264887063,
+    "mean_accept_when_drafted": 6.454545454545454,
+    "tokens_per_pass": 5.953488372093023,
+    "pred_speedup": 2.777720552411178,
+    "proposer_us_per_tok": 3.886914093698124
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.24528301886792453,
+    "acceptance": 0.26,
+    "mean_accept_when_drafted": 2.6296296296296298,
+    "tokens_per_pass": 1.6380153738644305,
+    "pred_speedup": 1.0612893123784282,
+    "proposer_us_per_tok": 4.184087011543954
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.7297297297297297,
+    "acceptance": 0.9400428265524625,
+    "mean_accept_when_drafted": 8.12962962962963,
+    "tokens_per_pass": 6.918918918918919,
+    "pred_speedup": 3.0394031970605195,
+    "proposer_us_per_tok": 3.8380859237463483
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.32086614173228345,
+    "acceptance": 0.5153301886792453,
+    "mean_accept_when_drafted": 5.361963190184049,
+    "tokens_per_pass": 2.7086614173228347,
+    "pred_speedup": 1.5681028348164825,
+    "proposer_us_per_tok": 3.66686044058994
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8166666666666667,
+    "acceptance": 0.9226069246435845,
+    "mean_accept_when_drafted": 9.244897959183673,
+    "tokens_per_pass": 8.533333333333333,
+    "pred_speedup": 3.1899023730431426,
+    "proposer_us_per_tok": 3.17949217532032
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.2655367231638418,
+    "acceptance": 0.33023027927486526,
+    "mean_accept_when_drafted": 3.5851063829787235,
+    "tokens_per_pass": 1.9435028248587571,
+    "pred_speedup": 1.1961857844846622,
+    "proposer_us_per_tok": 3.8512355119966615
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.2759807295251204,
+    "acceptance": 0.3103178738926524,
+    "mean_accept_when_drafted": 2.970074812967581,
+    "tokens_per_pass": 1.8128011011699932,
+    "pred_speedup": 1.157188854929505,
+    "proposer_us_per_tok": 3.7714882455060814
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.25456971314209476,
+    "acceptance": 0.27329453096324263,
+    "mean_accept_when_drafted": 2.7316561844863734,
+    "tokens_per_pass": 1.6877918612408271,
+    "pred_speedup": 1.0895939842773357,
+    "proposer_us_per_tok": 3.7956758918334534
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.28038585209003214,
+    "acceptance": 0.3294853294853295,
+    "mean_accept_when_drafted": 3.1422018348623855,
+    "tokens_per_pass": 1.8745980707395498,
+    "pred_speedup": 1.190035921826052,
+    "proposer_us_per_tok": 3.4497770016847618
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.24246153846153845,
+    "acceptance": 0.21591804570527975,
+    "mean_accept_when_drafted": 2.0862944162436547,
+    "tokens_per_pass": 1.4996923076923077,
+    "pred_speedup": 0.9942184778586837,
+    "proposer_us_per_tok": 4.118916695901878
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.21189591078066913,
+    "acceptance": 0.1622592229840026,
+    "mean_accept_when_drafted": 1.743859649122807,
+    "tokens_per_pass": 1.362081784386617,
+    "pred_speedup": 0.9125205525910531,
+    "proposer_us_per_tok": 4.267139704741043
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.3310344827586207,
+    "acceptance": 0.4740532959326788,
+    "mean_accept_when_drafted": 4.694444444444445,
+    "tokens_per_pass": 2.537931034482759,
+    "pred_speedup": 1.4857766973514088,
+    "proposer_us_per_tok": 3.0960145489887614
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.2511520737327189,
+    "acceptance": 0.35394629780309195,
+    "mean_accept_when_drafted": 3.9908256880733943,
+    "tokens_per_pass": 1.9907834101382489,
+    "pred_speedup": 1.2325689228239058,
+    "proposer_us_per_tok": 3.565393487608364
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.21450617283950618,
+    "acceptance": 0.14258064516129032,
+    "mean_accept_when_drafted": 1.589928057553957,
+    "tokens_per_pass": 1.3333333333333333,
+    "pred_speedup": 0.8801115263068298,
+    "proposer_us_per_tok": 4.249305637434493
+   }
+  },
+  "line_start": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.05270655270655271,
+    "acceptance": 0.8295454545454546,
+    "mean_accept_when_drafted": 1.3153153153153154,
+    "tokens_per_pass": 1.0693257359924027,
+    "pred_speedup": 1.0548285340898675,
+    "proposer_us_per_tok": 9.866829452453906
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.059782608695652176,
+    "acceptance": 0.8357142857142857,
+    "mean_accept_when_drafted": 1.2513368983957218,
+    "tokens_per_pass": 1.0728900255754477,
+    "pred_speedup": 1.0566247920720562,
+    "proposer_us_per_tok": 9.281048857763324
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.0540041067761807,
+    "acceptance": 0.822463768115942,
+    "mean_accept_when_drafted": 1.726235741444867,
+    "tokens_per_pass": 1.093223819301848,
+    "pred_speedup": 1.0724183337627868,
+    "proposer_us_per_tok": 9.496581530292305
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.06711328384332187,
+    "acceptance": 0.7097715119105493,
+    "mean_accept_when_drafted": 1.3129496402877698,
+    "tokens_per_pass": 1.084796909891967,
+    "pred_speedup": 1.0598975371767425,
+    "proposer_us_per_tok": 8.913781029712789
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.06209850107066381,
+    "acceptance": 0.6521739130434783,
+    "mean_accept_when_drafted": 1.5517241379310345,
+    "tokens_per_pass": 1.0963597430406853,
+    "pred_speedup": 1.068197147909409,
+    "proposer_us_per_tok": 9.351953153213799
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.07279562542720437,
+    "acceptance": 0.5203619909502263,
+    "mean_accept_when_drafted": 1.07981220657277,
+    "tokens_per_pass": 1.0751879699248121,
+    "pred_speedup": 1.0437601539062007,
+    "proposer_us_per_tok": 8.804767978084493
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.03864734299516908,
+    "acceptance": 0.9607843137254902,
+    "mean_accept_when_drafted": 6.125,
+    "tokens_per_pass": 1.2367149758454106,
+    "pred_speedup": 1.1835992786518297,
+    "proposer_us_per_tok": 8.496679718916766
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.06080418437397842,
+    "acceptance": 0.756,
+    "mean_accept_when_drafted": 2.032258064516129,
+    "tokens_per_pass": 1.1203007518796992,
+    "pred_speedup": 1.0836726816122504,
+    "proposer_us_per_tok": 8.658330909483736
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.06971153846153846,
+    "acceptance": 0.9504950495049505,
+    "mean_accept_when_drafted": 3.310344827586207,
+    "tokens_per_pass": 1.2307692307692308,
+    "pred_speedup": 1.1782193017548725,
+    "proposer_us_per_tok": 8.39101561211919
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.06770255271920089,
+    "acceptance": 0.6881720430107527,
+    "mean_accept_when_drafted": 1.3989071038251366,
+    "tokens_per_pass": 1.0910099889012208,
+    "pred_speedup": 1.0629511024705547,
+    "proposer_us_per_tok": 9.017497457753127
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.09787234042553192,
+    "acceptance": 0.6666666666666666,
+    "mean_accept_when_drafted": 0.9130434782608695,
+    "tokens_per_pass": 1.0893617021276596,
+    "pred_speedup": 1.067005476184361,
+    "proposer_us_per_tok": 9.686914175688344
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.08788159111933395,
+    "acceptance": 0.74609375,
+    "mean_accept_when_drafted": 1.0052631578947369,
+    "tokens_per_pass": 1.0841813135985199,
+    "pred_speedup": 1.0631777654718884,
+    "proposer_us_per_tok": 8.877218459100492
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.05122950819672131,
+    "acceptance": 0.7272727272727273,
+    "mean_accept_when_drafted": 0.96,
+    "tokens_per_pass": 1.0491803278688525,
+    "pred_speedup": 1.038429738596551,
+    "proposer_us_per_tok": 9.910546971525491
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.07215686274509804,
+    "acceptance": 0.828125,
+    "mean_accept_when_drafted": 1.1521739130434783,
+    "tokens_per_pass": 1.0792156862745097,
+    "pred_speedup": 1.0601674379951092,
+    "proposer_us_per_tok": 8.743822713027882
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.0137524557956778,
+    "acceptance": 0.375,
+    "mean_accept_when_drafted": 0.42857142857142855,
+    "tokens_per_pass": 1.005893909626719,
+    "pred_speedup": 1.003469161087114,
+    "proposer_us_per_tok": 9.513867205157567
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.04635258358662614,
+    "acceptance": 0.8227848101265823,
+    "mean_accept_when_drafted": 1.0655737704918034,
+    "tokens_per_pass": 1.0455927051671732,
+    "pred_speedup": 1.0351966697245791,
+    "proposer_us_per_tok": 8.913444804780147
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.07482716551443676,
+    "acceptance": 0.4959785522788204,
+    "mean_accept_when_drafted": 1.0054347826086956,
+    "tokens_per_pass": 1.071167141114274,
+    "pred_speedup": 1.039473170556794,
+    "proposer_us_per_tok": 8.69840548390598
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.0725703051542867,
+    "acceptance": 0.6684385382059801,
+    "mean_accept_when_drafted": 1.1849234393404005,
+    "tokens_per_pass": 1.0812889990597487,
+    "pred_speedup": 1.0550288147402946,
+    "proposer_us_per_tok": 8.66849803642541
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.06427221172022685,
+    "acceptance": 0.7035175879396985,
+    "mean_accept_when_drafted": 1.6470588235294117,
+    "tokens_per_pass": 1.1020793950850662,
+    "pred_speedup": 1.0686538236859533,
+    "proposer_us_per_tok": 8.686723845871485
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.06733712286838653,
+    "acceptance": 0.5904059040590406,
+    "mean_accept_when_drafted": 1.0389610389610389,
+    "tokens_per_pass": 1.0655881066899868,
+    "pred_speedup": 1.0426003199011182,
+    "proposer_us_per_tok": 9.149117771649136
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.0851063829787234,
+    "acceptance": 0.772020725388601,
+    "mean_accept_when_drafted": 1.0347222222222223,
+    "tokens_per_pass": 1.08274231678487,
+    "pred_speedup": 1.0621724584292236,
+    "proposer_us_per_tok": 8.650927953154543
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.07436399217221135,
+    "acceptance": 0.8461538461538461,
+    "mean_accept_when_drafted": 1.1578947368421053,
+    "tokens_per_pass": 1.0802348336594911,
+    "pred_speedup": 1.060035640747914,
+    "proposer_us_per_tok": 8.0861413403329
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.08513341804320203,
+    "acceptance": 0.8631578947368421,
+    "mean_accept_when_drafted": 1.2238805970149254,
+    "tokens_per_pass": 1.0978398983481577,
+    "pred_speedup": 1.0727963497851578,
+    "proposer_us_per_tok": 8.052430559844113
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.06691449814126393,
+    "acceptance": 0.8732394366197183,
+    "mean_accept_when_drafted": 1.1481481481481481,
+    "tokens_per_pass": 1.070631970260223,
+    "pred_speedup": 1.0543516994881508,
+    "proposer_us_per_tok": 8.557638937889822
+   }
+  },
+  "combo": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.750599520383693,
+    "acceptance": 0.9098563645368994,
+    "mean_accept_when_drafted": 5.8690095846645365,
+    "tokens_per_pass": 5.400479616306955,
+    "pred_speedup": 2.895101673503595,
+    "proposer_us_per_tok": 3.2015985724720717
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.6162361623616236,
+    "acceptance": 0.8724786324786324,
+    "mean_accept_when_drafted": 5.093812375249501,
+    "tokens_per_pass": 4.127921279212792,
+    "pred_speedup": 2.442925865714229,
+    "proposer_us_per_tok": 3.132628117350063
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.7970027247956403,
+    "acceptance": 0.9343495934959349,
+    "mean_accept_when_drafted": 7.858119658119658,
+    "tokens_per_pass": 7.253405994550409,
+    "pred_speedup": 3.240151649590692,
+    "proposer_us_per_tok": 3.1159466520940784
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.5162963948383664,
+    "acceptance": 0.7410720574769317,
+    "mean_accept_when_drafted": 2.7108992527699045,
+    "tokens_per_pass": 2.391113476120793,
+    "pred_speedup": 1.7228440449981208,
+    "proposer_us_per_tok": 3.845476803687938
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9714285714285714,
+    "acceptance": 0.9958333333333333,
+    "mean_accept_when_drafted": 14.058823529411764,
+    "tokens_per_pass": 14.628571428571428,
+    "pred_speedup": 4.242130169995083,
+    "proposer_us_per_tok": 2.7968750160312084
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.5416348357524828,
+    "acceptance": 0.7252747252747253,
+    "mean_accept_when_drafted": 2.606488011283498,
+    "tokens_per_pass": 2.403361344537815,
+    "pred_speedup": 1.707354466687135,
+    "proposer_us_per_tok": 3.9417037579066814
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.7397260273972602,
+    "acceptance": 0.9421841541755889,
+    "mean_accept_when_drafted": 8.148148148148149,
+    "tokens_per_pass": 7.013698630136986,
+    "pred_speedup": 3.1524587944646885,
+    "proposer_us_per_tok": 2.94960938163058
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.5329218106995884,
+    "acceptance": 0.7306273062730627,
+    "mean_accept_when_drafted": 2.548262548262548,
+    "tokens_per_pass": 2.350480109739369,
+    "pred_speedup": 1.7003010144590305,
+    "proposer_us_per_tok": 3.666413779168229
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.975,
+    "acceptance": 0.9613821138211383,
+    "mean_accept_when_drafted": 12.128205128205128,
+    "tokens_per_pass": 12.8,
+    "pred_speedup": 3.8875241529985027,
+    "proposer_us_per_tok": 3.3289062315589035
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.4584654407102093,
+    "acceptance": 0.6393897364771152,
+    "mean_accept_when_drafted": 1.9128630705394192,
+    "tokens_per_pass": 1.8700063411540901,
+    "pred_speedup": 1.4615713467717044,
+    "proposer_us_per_tok": 4.562563573557564
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8732394366197183,
+    "acceptance": 0.8873239436619719,
+    "mean_accept_when_drafted": 7.112903225806452,
+    "tokens_per_pass": 7.211267605633803,
+    "pred_speedup": 3.052858789772205,
+    "proposer_us_per_tok": 3.8291015371783033
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.4820473644003056,
+    "acceptance": 0.6375838926174496,
+    "mean_accept_when_drafted": 1.6561014263074485,
+    "tokens_per_pass": 1.790679908326967,
+    "pred_speedup": 1.419919531442161,
+    "proposer_us_per_tok": 4.480716749854305
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8148148148148148,
+    "acceptance": 0.9542619542619543,
+    "mean_accept_when_drafted": 10.431818181818182,
+    "tokens_per_pass": 9.481481481481481,
+    "pred_speedup": 3.529835391956898,
+    "proposer_us_per_tok": 2.8212890725853867
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.5241228070175439,
+    "acceptance": 0.8151408450704225,
+    "mean_accept_when_drafted": 3.8744769874476988,
+    "tokens_per_pass": 3.017543859649123,
+    "pred_speedup": 1.9941456335635517,
+    "proposer_us_per_tok": 3.303633709334082
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8863636363636364,
+    "acceptance": 0.96900826446281,
+    "mean_accept_when_drafted": 12.025641025641026,
+    "tokens_per_pass": 11.636363636363637,
+    "pred_speedup": 3.676395944109093,
+    "proposer_us_per_tok": 2.5931640550425072
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.5058823529411764,
+    "acceptance": 0.7314126394052045,
+    "mean_accept_when_drafted": 2.6146179401993357,
+    "tokens_per_pass": 2.312605042016807,
+    "pred_speedup": 1.6789226710183864,
+    "proposer_us_per_tok": 3.7329215406633773
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.5298273155416012,
+    "acceptance": 0.6624758220502901,
+    "mean_accept_when_drafted": 2.0296296296296297,
+    "tokens_per_pass": 2.0675039246467817,
+    "pred_speedup": 1.5413226742965769,
+    "proposer_us_per_tok": 4.164236907428413
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.4859206840630989,
+    "acceptance": 0.6385685027487334,
+    "mean_accept_when_drafted": 1.7973300970873787,
+    "tokens_per_pass": 1.8649565089193572,
+    "pred_speedup": 1.453762075552065,
+    "proposer_us_per_tok": 4.152513841402223
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.5220216606498195,
+    "acceptance": 0.6865804725813642,
+    "mean_accept_when_drafted": 2.1300138312586445,
+    "tokens_per_pass": 2.104693140794224,
+    "pred_speedup": 1.5792059046617106,
+    "proposer_us_per_tok": 3.7923156150307595
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.4450227716330514,
+    "acceptance": 0.5445840813883902,
+    "mean_accept_when_drafted": 1.3304093567251463,
+    "tokens_per_pass": 1.5855562784645414,
+    "pred_speedup": 1.2997456435336292,
+    "proposer_us_per_tok": 4.821748045901969
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.4596122778675283,
+    "acceptance": 0.5288966725043783,
+    "mean_accept_when_drafted": 1.0615114235500878,
+    "tokens_per_pass": 1.4798061389337642,
+    "pred_speedup": 1.2443188405356502,
+    "proposer_us_per_tok": 4.662827551650218
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.47474747474747475,
+    "acceptance": 0.7891832229580574,
+    "mean_accept_when_drafted": 3.8031914893617023,
+    "tokens_per_pass": 2.787878787878788,
+    "pred_speedup": 1.8862544484490662,
+    "proposer_us_per_tok": 2.9919383846192984
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.48507462686567165,
+    "acceptance": 0.7129770992366412,
+    "mean_accept_when_drafted": 2.394871794871795,
+    "tokens_per_pass": 2.1492537313432836,
+    "pred_speedup": 1.602162211649245,
+    "proposer_us_per_tok": 3.5894675681481236
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.47549909255898365,
+    "acceptance": 0.5371621621621622,
+    "mean_accept_when_drafted": 1.213740458015267,
+    "tokens_per_pass": 1.5680580762250453,
+    "pred_speedup": 1.2794778053044957,
+    "proposer_us_per_tok": 4.408333383994263
+   }
+  },
+  "combo_line_first": {
+   "py|edit": {
+    "tasks": 2,
+    "tokens": 2252,
+    "coverage": 0.7588652482269503,
+    "acceptance": 0.9136726546906188,
+    "mean_accept_when_drafted": 5.70404984423676,
+    "tokens_per_pass": 5.32387706855792,
+    "pred_speedup": 2.8879315540485986,
+    "proposer_us_per_tok": 3.8021314509705513
+   },
+   "py": {
+    "tasks": 9,
+    "tokens": 3356,
+    "coverage": 0.6417910447761194,
+    "acceptance": 0.8834080717488789,
+    "mean_accept_when_drafted": 4.963178294573644,
+    "tokens_per_pass": 4.174129353233831,
+    "pred_speedup": 2.4732615335247488,
+    "proposer_us_per_tok": 4.203903472172921
+   },
+   "edit": {
+    "tasks": 8,
+    "tokens": 5324,
+    "coverage": 0.8034993270524899,
+    "acceptance": 0.9376660535458818,
+    "mean_accept_when_drafted": 7.685092127303182,
+    "tokens_per_pass": 7.165545087483176,
+    "pred_speedup": 3.2417596524532213,
+    "proposer_us_per_tok": 2.9520097660774294
+   },
+   "all": {
+    "tasks": 65,
+    "tokens": 17974,
+    "coverage": 0.5271966527196653,
+    "acceptance": 0.7468905909633898,
+    "mean_accept_when_drafted": 2.7211981566820276,
+    "tokens_per_pass": 2.42596841679039,
+    "pred_speedup": 1.7414127477000034,
+    "proposer_us_per_tok": 6.086825420955249
+   },
+   "cpp|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.972972972972973,
+    "acceptance": 0.9694501018329938,
+    "mean_accept_when_drafted": 13.222222222222221,
+    "tokens_per_pass": 13.837837837837839,
+    "pred_speedup": 4.1206717289044095,
+    "proposer_us_per_tok": 1.9742187191695848
+   },
+   "cpp": {
+    "tasks": 11,
+    "tokens": 3146,
+    "coverage": 0.5525709900230238,
+    "acceptance": 0.7038724373576309,
+    "mean_accept_when_drafted": 2.575,
+    "tokens_per_pass": 2.414428242517268,
+    "pred_speedup": 1.6977807254858428,
+    "proposer_us_per_tok": 6.015829615391071
+   },
+   "go|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.7397260273972602,
+    "acceptance": 0.946236559139785,
+    "mean_accept_when_drafted": 8.148148148148149,
+    "tokens_per_pass": 7.013698630136986,
+    "pred_speedup": 3.1794784671705756,
+    "proposer_us_per_tok": 2.883007766740775
+   },
+   "go": {
+    "tasks": 11,
+    "tokens": 3427,
+    "coverage": 0.5358385525400139,
+    "acceptance": 0.7370165745856354,
+    "mean_accept_when_drafted": 2.5987012987012985,
+    "tokens_per_pass": 2.384829505915101,
+    "pred_speedup": 1.7178097353613349,
+    "proposer_us_per_tok": 6.164867228684745
+   },
+   "java|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.9743589743589743,
+    "acceptance": 0.9813664596273292,
+    "mean_accept_when_drafted": 12.473684210526315,
+    "tokens_per_pass": 13.128205128205128,
+    "pred_speedup": 3.98919992723254,
+    "proposer_us_per_tok": 2.1181640761369636
+   },
+   "java": {
+    "tasks": 11,
+    "tokens": 2949,
+    "coverage": 0.46338302009073234,
+    "acceptance": 0.6545034642032332,
+    "mean_accept_when_drafted": 1.981818181818182,
+    "tokens_per_pass": 1.9112119248217758,
+    "pred_speedup": 1.4850250856230371,
+    "proposer_us_per_tok": 7.564360819303877
+   },
+   "js|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8873239436619719,
+    "acceptance": 0.8963414634146342,
+    "mean_accept_when_drafted": 7.0,
+    "tokens_per_pass": 7.211267605633803,
+    "pred_speedup": 3.0851188309651776,
+    "proposer_us_per_tok": 2.8874999955519343
+   },
+   "js": {
+    "tasks": 11,
+    "tokens": 2344,
+    "coverage": 0.4984472049689441,
+    "acceptance": 0.6507936507936508,
+    "mean_accept_when_drafted": 1.6604361370716512,
+    "tokens_per_pass": 1.8198757763975155,
+    "pred_speedup": 1.4437272241968997,
+    "proposer_us_per_tok": 7.792747465384259
+   },
+   "rs|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8214285714285714,
+    "acceptance": 0.9461697722567288,
+    "mean_accept_when_drafted": 9.934782608695652,
+    "tokens_per_pass": 9.142857142857142,
+    "pred_speedup": 3.4771104755382094,
+    "proposer_us_per_tok": 2.3433593980826117
+   },
+   "rs": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.5448430493273543,
+    "acceptance": 0.829052258635961,
+    "mean_accept_when_drafted": 3.8518518518518516,
+    "tokens_per_pass": 3.085201793721973,
+    "pred_speedup": 2.0276245864088414,
+    "proposer_us_per_tok": 4.726017460746144
+   },
+   "ts|edit": {
+    "tasks": 1,
+    "tokens": 512,
+    "coverage": 0.8863636363636364,
+    "acceptance": 0.9873684210526316,
+    "mean_accept_when_drafted": 12.025641025641026,
+    "tokens_per_pass": 11.636363636363637,
+    "pred_speedup": 3.725939791514839,
+    "proposer_us_per_tok": 1.7666015423856152
+   },
+   "ts": {
+    "tasks": 6,
+    "tokens": 1376,
+    "coverage": 0.5102040816326531,
+    "acceptance": 0.7554709800190295,
+    "mean_accept_when_drafted": 2.6466666666666665,
+    "tokens_per_pass": 2.3401360544217686,
+    "pred_speedup": 1.7072851941868699,
+    "proposer_us_per_tok": 5.935319738328385
+   },
+   "cpp|fresh": {
+    "tasks": 10,
+    "tokens": 2634,
+    "coverage": 0.5402843601895735,
+    "acceptance": 0.6430237984134392,
+    "mean_accept_when_drafted": 2.0146198830409356,
+    "tokens_per_pass": 2.080568720379147,
+    "pred_speedup": 1.5350632227783074,
+    "proposer_us_per_tok": 6.801442667352118
+   },
+   "fresh": {
+    "tasks": 57,
+    "tokens": 12650,
+    "coverage": 0.4963996399639964,
+    "acceptance": 0.6469265367316341,
+    "mean_accept_when_drafted": 1.825627077666969,
+    "tokens_per_pass": 1.8976897689768977,
+    "pred_speedup": 1.4721135029714922,
+    "proposer_us_per_tok": 7.406173922660348
+   },
+   "go|fresh": {
+    "tasks": 10,
+    "tokens": 2915,
+    "coverage": 0.5249266862170088,
+    "acceptance": 0.6937777777777778,
+    "mean_accept_when_drafted": 2.180167597765363,
+    "tokens_per_pass": 2.1370967741935485,
+    "pred_speedup": 1.595695433852828,
+    "proposer_us_per_tok": 6.741303607592228
+   },
+   "java|fresh": {
+    "tasks": 10,
+    "tokens": 2437,
+    "coverage": 0.45013297872340424,
+    "acceptance": 0.56064209274673,
+    "mean_accept_when_drafted": 1.3929098966026587,
+    "tokens_per_pass": 1.6203457446808511,
+    "pred_speedup": 1.31973545310398,
+    "proposer_us_per_tok": 8.708576138344279
+   },
+   "js|fresh": {
+    "tasks": 10,
+    "tokens": 1832,
+    "coverage": 0.47576006573541496,
+    "acceptance": 0.5453752181500873,
+    "mean_accept_when_drafted": 1.079447322970639,
+    "tokens_per_pass": 1.505341002465078,
+    "pred_speedup": 1.2660174794219248,
+    "proposer_us_per_tok": 9.16364632158194
+   },
+   "py|fresh": {
+    "tasks": 7,
+    "tokens": 1104,
+    "coverage": 0.5118110236220472,
+    "acceptance": 0.8156424581005587,
+    "mean_accept_when_drafted": 3.7435897435897436,
+    "tokens_per_pass": 2.8976377952755907,
+    "pred_speedup": 1.9454384491855257,
+    "proposer_us_per_tok": 5.023460167596594
+   },
+   "rs|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.5051282051282051,
+    "acceptance": 0.7414860681114551,
+    "mean_accept_when_drafted": 2.431472081218274,
+    "tokens_per_pass": 2.2153846153846155,
+    "pred_speedup": 1.6425633423805488,
+    "proposer_us_per_tok": 6.13796297936157
+   },
+   "ts|fresh": {
+    "tasks": 5,
+    "tokens": 864,
+    "coverage": 0.4797794117647059,
+    "acceptance": 0.5642361111111112,
+    "mean_accept_when_drafted": 1.2452107279693487,
+    "tokens_per_pass": 1.588235294117647,
+    "pred_speedup": 1.3019702397994435,
+    "proposer_us_per_tok": 8.405671261850026
+   }
+  }
+ }
+}
