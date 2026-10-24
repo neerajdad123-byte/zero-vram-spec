@@ -88,49 +88,46 @@ def cmd_benchmark(args: argparse.Namespace) -> int:
     return subprocess.call(cmd)
 
 
-def cmd_generate(args: argparse.Namespace) -> int:
-    try:
-        from .engine import PatternMiner, PythonSyntaxProposer, QwenTokenCorpus
-        from .llama_backend import run_greedy, run_speculative
-        from .llama_native import NativeLlama
-        from .proposer import RuleProposer
-    except ImportError as exc:
-        print(f"Missing dependency for generation: {exc}", file=sys.stderr)
-        return 2
+def _load_model(args: argparse.Namespace, vocab_only: bool = False):
+    from .llama_native import NativeLlama
 
     if not os.path.exists(args.model):
-        print(f"Model not found: {args.model}", file=sys.stderr)
-        return 2
-    if not os.path.exists(args.token_json):
-        print(f"Token JSON not found: {args.token_json}", file=sys.stderr)
-        return 2
+        raise SystemExit(f"Model not found: {args.model}")
+    if vocab_only:
+        return NativeLlama(args.model, vocab_only=True)
+    return NativeLlama(
+        args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers, cpu_moe=args.cpu_moe, n_threads=args.threads
+    )
 
-    corpus = QwenTokenCorpus(args.token_json)
-    miner = PatternMiner(
-        corpus.token_text,
-        max_ctx=args.max_ctx,
-        min_support=args.min_support,
-        min_conf=args.min_conf,
-        det_conf=args.det_conf,
-        min_rule_ctx=args.min_rule_ctx,
-    ).fit(corpus.sequences)
 
-    print(f"Loading model: {args.model}")
-    model = NativeLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
+def cmd_generate(args: argparse.Namespace) -> int:
+    from .llama_backend import run_greedy, run_speculative
+    from .proposer import default_proposer
 
-    syntax = None if args.no_syntax_patterns else PythonSyntaxProposer(model, mode=args.syntax_mode)
-
+    model = _load_model(args)
     if args.greedy:
         ids, text, stats = run_greedy(model, args.prompt, args.max_tokens)
     else:
+        proposer = default_proposer(model, args.index, syntax=args.syntax)
         ids, text, stats = run_speculative(
-            model, RuleProposer(miner, syntax), args.prompt, args.max_tokens,
-            k=args.k, reject_mode=args.reject_mode,
+            model, proposer, args.prompt, args.max_tokens, k=args.k, reject_mode=args.reject_mode
         )
-
     print(text)
     if args.verbose:
         print(f"\npasses={stats['passes']} time={stats['time']:.3f}s", file=sys.stderr)
+    return 0
+
+
+def cmd_index(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from .proposer import build_index, default_index_path, save_index
+
+    model = _load_model(args, vocab_only=True)
+    index = build_index(model, [Path(p) for p in args.paths])
+    out = Path(args.out) if args.out else default_index_path(index["tokenizer_hash"])
+    save_index(index, out)
+    print(f"Indexed {index['files']} files -> {len(index['rules'])} rules -> {out}")
     return 0
 
 
@@ -140,6 +137,14 @@ def cmd_config(_: argparse.Namespace) -> int:
     print("2. Run: structspec serve --backend vllm --target-base-url http://localhost:8000/v1")
     print("3. Point tools at: OPENAI_BASE_URL=http://localhost:8080/v1")
     return 0
+
+
+def _model_args(p: argparse.ArgumentParser) -> None:
+    p.add_argument("--model", required=True, help="Path to GGUF model.")
+    p.add_argument("--n-ctx", type=int, default=4096)
+    p.add_argument("--n-gpu-layers", type=int, default=-1)
+    p.add_argument("--cpu-moe", action="store_true", help="Keep MoE expert weights on the CPU.")
+    p.add_argument("--threads", type=int, default=None)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -184,25 +189,23 @@ def build_parser() -> argparse.ArgumentParser:
     config = sub.add_parser("config", help="Print setup wizard.")
     config.set_defaults(func=cmd_config)
 
-    gen = sub.add_parser("generate", help="Generate text with zero-VRAM speculative decoding (local model).")
-    gen.add_argument("--model", required=True, help="Path to GGUF model.")
-    gen.add_argument("--token-json", required=True, help="Path to token corpus JSON.")
+    gen = sub.add_parser("generate", help="Generate text with speculative decoding on a local GGUF model.")
+    _model_args(gen)
     gen.add_argument("--prompt", required=True, help="Generation prompt.")
     gen.add_argument("--max-tokens", type=int, default=128, help="Max tokens to generate.")
-    gen.add_argument("--k", type=int, default=6, help="Max draft length.")
-    gen.add_argument("--max-ctx", type=int, default=8)
-    gen.add_argument("--min-support", type=int, default=2)
-    gen.add_argument("--min-conf", type=float, default=0.96)
-    gen.add_argument("--det-conf", type=float, default=0.96)
-    gen.add_argument("--min-rule-ctx", type=int, default=4)
-    gen.add_argument("--n-ctx", type=int, default=2048)
-    gen.add_argument("--n-gpu-layers", type=int, default=-1)
+    gen.add_argument("--k", type=int, default=4, help="Max draft length.")
+    gen.add_argument("--index", help="N-gram index from `structspec index` (default: cache file for this tokenizer).")
+    gen.add_argument("--syntax", action="store_true", help="Also use the Python syntax rules.")
     gen.add_argument("--reject-mode", choices=["truncate", "seq-bonus", "rebuild"], default="truncate")
-    gen.add_argument("--no-syntax-patterns", action="store_true")
-    gen.add_argument("--syntax-mode", choices=["off", "basic", "cluster"], default="cluster")
     gen.add_argument("--greedy", action="store_true", help="Run greedy baseline instead of speculative.")
     gen.add_argument("--verbose", action="store_true")
     gen.set_defaults(func=cmd_generate)
+
+    index = sub.add_parser("index", help="Mine an n-gram draft index from source files with a model's tokenizer.")
+    index.add_argument("paths", nargs="+", help="Files or directories to mine.")
+    index.add_argument("--model", required=True, help="GGUF model whose tokenizer to use.")
+    index.add_argument("--out", help="Output path (default: ~/.cache/structspec/index-<tokenizer>.json).")
+    index.set_defaults(func=cmd_index)
 
     vllm_cmd = sub.add_parser("vllm-command", help="Print a vLLM speculative decoding launch command.")
     vllm_cmd.add_argument("--model", required=True)

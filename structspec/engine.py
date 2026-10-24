@@ -421,8 +421,11 @@ class PatternMiner:
                 continue
             tier = self._tier(ctx, conf, support)
             rules[ctx] = Rule(ctx, token, conf, support, total, tier)
+        return self.set_rules(rules)
 
+    def set_rules(self, rules: dict[tuple[int, ...], Rule]) -> "PatternMiner":
         self.rules_by_ctx = rules
+        self.rule_count_by_tier = Counter()
         by_len: dict[int, dict[tuple[int, ...], Rule]] = defaultdict(dict)
         for ctx, rule in rules.items():
             by_len[len(ctx)][ctx] = rule
