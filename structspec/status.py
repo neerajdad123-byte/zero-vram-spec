@@ -21,7 +21,7 @@ def print_status_loop(base_url: str, once: bool = False, interval: float = 1.0) 
                 f"backend={data.get('backend')} | "
                 f"active={data.get('requests_active')} | "
                 f"requests={data.get('requests_total')} | "
-                f"tok/pass={float(data.get("estimated_multiplier", 1.0)):.2f} | "
+                f"tok/pass={float(data.get('estimated_multiplier', 1.0)):.2f} | "
                 f"accept={float(data.get('acceptance_rate', 0.0))*100:.1f}%"
                 "      ",
                 end="",
