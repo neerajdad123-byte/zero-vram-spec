@@ -65,8 +65,10 @@ The remaining tokens are the model choosing *which* identifier or expression com
 ## Install
 
 ```bash
-pip install -e .
+pip install git+https://github.com/neerajdad123-byte/zero-vram-spec
 ```
+
+Or from a clone: `pip install -e .`
 
 Needs the official llama.cpp release DLLs (`llama.dll` + its CUDA DLLs). Set `STRUCTSPEC_LLAMA_DIR` to the folder that contains them.
 
@@ -95,6 +97,13 @@ Optional: `structspec index --model model.gguf <source dirs>` mines an n-gram in
 3. **Roll back.** The KV cache is truncated to the accepted length. For hybrid/recurrent models, rollback uses llama.cpp state snapshots.
 
 Drafters work on token ids only, so any GGUF model and tokenizer works. All drafters implement one small interface (`structspec/proposer.py: Proposer`), with others in `structspec/proposers/`.
+
+## Roadmap
+
+Planned, not built or measured yet:
+
+- **Learn the user's own repo.** Seed the copy drafter with the project's own files (`structspec index` already tokenizes a project), so names and boilerplate from the user's codebase can be drafted while writing new code in it.
+- **Learn across requests.** Remember what the model wrote in earlier answers in the same server session, so a user's repeated patterns get drafted from past output.
 
 ## Reproduce the benchmarks
 
