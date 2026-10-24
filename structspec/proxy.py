@@ -36,20 +36,6 @@ def _headers(request: Request, api_key: str | None) -> dict[str, str]:
     return headers
 
 
-def _count_output_tokens_rough(body: bytes) -> int:
-    try:
-        data = json.loads(body)
-    except Exception:
-        return 0
-    text = ""
-    for choice in data.get("choices", []):
-        if "message" in choice:
-            text += str(choice.get("message", {}).get("content", ""))
-        else:
-            text += str(choice.get("text", ""))
-    return max(0, len(text.split()))
-
-
 def _request_prompt_text(body: bytes) -> str:
     try:
         data = json.loads(body)
@@ -118,7 +104,6 @@ def create_app(
             try:
                 upstream = await client.request(request.method, url, headers=headers, content=body)
                 metrics.inc("bytes_out", len(upstream.content))
-                metrics.inc("target_tokens", _count_output_tokens_rough(upstream.content))
                 metrics.inc("requests_active", -1)
                 return Response(
                     content=upstream.content,

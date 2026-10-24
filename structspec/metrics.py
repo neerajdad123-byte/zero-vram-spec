@@ -14,11 +14,11 @@ class Metrics:
     streamed_chunks: int = 0
     bytes_in: int = 0
     bytes_out: int = 0
-    target_tokens: int = 0
+    generated_tokens: int = 0
+    target_passes: int = 0
     accepted_draft_tokens: int = 0
     proposed_draft_tokens: int = 0
     rejected_draft_tokens: int = 0
-    kv_repair_ops: int = 0
     last_backend: str = "unknown"
     last_model: str = "unknown"
     domain_counts: dict[str, int] = field(default_factory=dict)
@@ -35,10 +35,10 @@ class Metrics:
 
     @property
     def estimated_multiplier(self) -> float:
-        total = self.target_tokens + self.accepted_draft_tokens
-        if total <= 0 or self.target_tokens <= 0:
+        # tokens produced per target forward pass; 1.0 means speculation saved nothing
+        if self.target_passes <= 0:
             return 1.0
-        return total / self.target_tokens
+        return self.generated_tokens / self.target_passes
 
 
 class MetricsStore:

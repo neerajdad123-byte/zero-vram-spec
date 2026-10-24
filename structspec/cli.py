@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import subprocess
 import sys
 
 from .detect import detect_all, format_report
@@ -24,15 +23,27 @@ def cmd_detect(args: argparse.Namespace) -> int:
 def cmd_serve(args: argparse.Namespace) -> int:
     import uvicorn
 
-    backend = args.backend
-    if backend == "auto":
-        report = detect_all(args.model_path)
-        backend = report.selected_backend or "vllm"
-    target = infer_target_base_url(backend, args.target_base_url)
-    api_key = args.target_api_key or os.environ.get("STRUCTSPEC_TARGET_API_KEY")
-    app = create_app(target_base_url=target, backend=backend, api_key=api_key, safety=args.safety)
-    print(f"Structspec proxy listening on http://{args.host}:{args.port}/v1")
-    print(f"Forwarding to {target} | backend={backend} | safety={args.safety}")
+    if args.passthrough:
+        backend = args.backend
+        if backend == "auto":
+            report = detect_all(args.model_path)
+            backend = report.selected_backend or "vllm"
+        target = infer_target_base_url(backend, args.target_base_url)
+        api_key = args.target_api_key or os.environ.get("STRUCTSPEC_TARGET_API_KEY")
+        app = create_app(target_base_url=target, backend=backend, api_key=api_key, safety=args.safety)
+        print(f"Structspec passthrough proxy on http://{args.host}:{args.port}/v1 -> {target} (no speculation)")
+    else:
+        if not args.model:
+            print("serve needs --model PATH.gguf (or --passthrough to proxy another server)", file=sys.stderr)
+            return 2
+        from .proposer import default_proposer
+        from .server import create_spec_app
+
+        model = _load_model(args)
+        proposer = default_proposer(model, args.index, syntax=args.syntax)
+        name = os.path.splitext(os.path.basename(args.model))[0]
+        app = create_spec_app(model, proposer, k=args.k, model_name=name, thinking=args.thinking)
+        print(f"Structspec serving {name} on http://{args.host}:{args.port}/v1 (greedy, speculative k={args.k})")
     uvicorn.run(app, host=args.host, port=args.port, log_level=args.log_level)
     return 0
 
@@ -77,70 +88,99 @@ def cmd_run(args: argparse.Namespace) -> int:
     return 0
 
 
-def cmd_benchmark(args: argparse.Namespace) -> int:
-    script = "run_humaneval_benchmark.py" if args.dataset == "humaneval" else None
-    if script is None or not os.path.exists(script):
-        print("Benchmark runner not found for dataset:", args.dataset, file=sys.stderr)
-        return 2
-    cmd = [sys.executable, script]
-    if args.extra_args:
-        cmd.extend(args.extra_args)
-    return subprocess.call(cmd)
+def _load_model(args: argparse.Namespace, vocab_only: bool = False):
+    from .llama_native import NativeLlama
+
+    if not os.path.exists(args.model):
+        raise SystemExit(f"Model not found: {args.model}")
+    if vocab_only:
+        return NativeLlama(args.model, vocab_only=True)
+    from .llama_backend import check_k
+
+    model = NativeLlama(
+        args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers, cpu_moe=args.cpu_moe, n_threads=args.threads
+    )
+    try:
+        check_k(model, args.k)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
+    return model
 
 
 def cmd_generate(args: argparse.Namespace) -> int:
-    try:
-        from .engine import PatternMiner, PythonSyntaxProposer, QwenTokenCorpus
-        from .llama_backend import FastGreedyLlama, run_greedy, run_speculative
-    except ImportError as exc:
-        print(f"Missing dependency for generation: {exc}", file=sys.stderr)
-        print("Install with: pip install structspec[research]", file=sys.stderr)
-        return 2
+    from .llama_backend import run_greedy, run_speculative
+    from .proposer import default_proposer
 
-    if not os.path.exists(args.model):
-        print(f"Model not found: {args.model}", file=sys.stderr)
-        return 2
-    if not os.path.exists(args.token_json):
-        print(f"Token JSON not found: {args.token_json}", file=sys.stderr)
-        return 2
-
-    corpus = QwenTokenCorpus(args.token_json)
-    miner = PatternMiner(
-        corpus.token_text,
-        max_ctx=args.max_ctx,
-        min_support=args.min_support,
-        min_conf=args.min_conf,
-        det_conf=args.det_conf,
-        min_rule_ctx=args.min_rule_ctx,
-    ).fit(corpus.sequences)
-
-    print(f"Loading model: {args.model}")
-    model = FastGreedyLlama(args.model, n_ctx=args.n_ctx, n_gpu_layers=args.n_gpu_layers)
-
-    syntax = None if args.no_syntax_patterns else PythonSyntaxProposer(model, mode=args.syntax_mode)
-
+    model = _load_model(args)
     if args.greedy:
         ids, text, stats = run_greedy(model, args.prompt, args.max_tokens)
     else:
+        proposer = default_proposer(model, args.index, syntax=args.syntax)
         ids, text, stats = run_speculative(
-            model, miner, syntax, args.prompt, args.max_tokens,
-            k=args.k, reject_mode=args.reject_mode,
-            strike_limit=args.strike_limit,
-            live_viz=args.live_viz,
+            model, proposer, args.prompt, args.max_tokens, k=args.k, reject_mode=args.reject_mode
         )
-
     print(text)
     if args.verbose:
         print(f"\npasses={stats['passes']} time={stats['time']:.3f}s", file=sys.stderr)
     return 0
 
 
+def cmd_verify(args: argparse.Namespace) -> int:
+    from .llama_backend import chat_prompt_ids
+    from .proposer import default_proposer
+    from .verify import DEFAULT_PROMPTS, verify_prompt
+
+    prompts = DEFAULT_PROMPTS
+    if args.prompts:
+        with open(args.prompts, encoding="utf-8") as f:
+            prompts = [json.loads(line)["prompt"] for line in f if line.strip()]
+    model = _load_model(args)
+    proposer = default_proposer(model, args.index)
+    results = []
+    for i, prompt in enumerate(prompts):
+        ids = chat_prompt_ids(model, [{"role": "user", "content": prompt}])
+        r = verify_prompt(model, proposer, ids, args.max_tokens, k=args.k)
+        results.append(r)
+        print(
+            f"[{i}] {r['classification']:<9} tokens={r['tokens']} accepted={r['accepted']}/{r['proposed']} "
+            f"first_mismatch={r['first_mismatch']} greedy_margin={r['greedy_margin']}",
+            flush=True,
+        )
+    same = sum(r["identical"] for r in results)
+    print(f"identical: {same}/{len(results)}")
+    if args.json_out:
+        with open(args.json_out, "w", encoding="utf-8") as f:
+            json.dump(results, f, indent=2)
+    return 0 if same == len(results) else 1
+
+
+def cmd_index(args: argparse.Namespace) -> int:
+    from pathlib import Path
+
+    from .proposer import build_index, default_index_path, save_index
+
+    model = _load_model(args, vocab_only=True)
+    index = build_index(model, [Path(p) for p in args.paths])
+    out = Path(args.out) if args.out else default_index_path(index["tokenizer_hash"])
+    save_index(index, out)
+    print(f"Indexed {index['files']} files -> {len(index['rules'])} rules -> {out}")
+    return 0
+
+
 def cmd_config(_: argparse.Namespace) -> int:
     print("Structspec config wizard")
     print("1. Start your backend, for example vLLM on :8000.")
-    print("2. Run: structspec serve --backend vllm --target-base-url http://localhost:8000/v1")
+    print("2. Run: structspec serve --model path/to/model.gguf  (or --passthrough --target-base-url ...)")
     print("3. Point tools at: OPENAI_BASE_URL=http://localhost:8080/v1")
     return 0
+
+
+def _model_args(p: argparse.ArgumentParser, required: bool = True) -> None:
+    p.add_argument("--model", required=required, help="Path to GGUF model.")
+    p.add_argument("--n-ctx", type=int, default=4096)
+    p.add_argument("--n-gpu-layers", type=int, default=-1)
+    p.add_argument("--cpu-moe", action="store_true", help="Keep MoE expert weights on the CPU.")
+    p.add_argument("--threads", type=int, default=None)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -152,15 +192,22 @@ def build_parser() -> argparse.ArgumentParser:
     detect.add_argument("--json", action="store_true")
     detect.set_defaults(func=cmd_detect)
 
-    serve = sub.add_parser("serve", help="Start OpenAI-compatible proxy.")
+    serve = sub.add_parser("serve", help="OpenAI-compatible server with speculative decoding on a GGUF model.")
+    _model_args(serve, required=False)
     serve.add_argument("--host", default="127.0.0.1")
     serve.add_argument("--port", type=int, default=8080)
-    serve.add_argument("--backend", default="auto", choices=["auto", "vllm", "llama-cpp", "lm-studio", "ollama"])
-    serve.add_argument("--target-base-url")
-    serve.add_argument("--target-api-key")
-    serve.add_argument("--model-path", action="append")
-    serve.add_argument("--safety", default="strict", choices=["strict", "fast", "audit"])
+    serve.add_argument("--k", type=int, default=4, help="Max draft length.")
+    serve.add_argument("--index", help="N-gram index (default: cache file for this tokenizer, if present).")
+    serve.add_argument("--syntax", action="store_true", help="Also use the Python syntax rules.")
+    serve.add_argument("--thinking", action="store_true", help="Leave reasoning on for templates that support it.")
     serve.add_argument("--log-level", default="info")
+    proxy = serve.add_argument_group("passthrough (old behaviour: forward to another server, no speculation)")
+    proxy.add_argument("--passthrough", action="store_true")
+    proxy.add_argument("--backend", default="auto", choices=["auto", "vllm", "llama-cpp", "lm-studio", "ollama"])
+    proxy.add_argument("--target-base-url")
+    proxy.add_argument("--target-api-key")
+    proxy.add_argument("--model-path", action="append")
+    proxy.add_argument("--safety", default="strict", choices=["strict", "fast", "audit"])
     serve.set_defaults(func=cmd_serve)
 
     run = sub.add_parser("run", help="One-shot generation through a Structspec-compatible endpoint.")
@@ -169,11 +216,6 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--model", default="default")
     run.add_argument("--prompt", required=True)
     run.set_defaults(func=cmd_run)
-
-    bench = sub.add_parser("benchmark", help="Run benchmark helper.")
-    bench.add_argument("--dataset", default="humaneval", choices=["humaneval"])
-    bench.add_argument("extra_args", nargs=argparse.REMAINDER)
-    bench.set_defaults(func=cmd_benchmark)
 
     status = sub.add_parser("status", help="Attach to live status view.")
     status.add_argument("--base-url", default="http://localhost:8080")
@@ -185,27 +227,32 @@ def build_parser() -> argparse.ArgumentParser:
     config = sub.add_parser("config", help="Print setup wizard.")
     config.set_defaults(func=cmd_config)
 
-    gen = sub.add_parser("generate", help="Generate text with zero-VRAM speculative decoding (local model).")
-    gen.add_argument("--model", required=True, help="Path to GGUF model.")
-    gen.add_argument("--token-json", required=True, help="Path to token corpus JSON.")
+    gen = sub.add_parser("generate", help="Generate text with speculative decoding on a local GGUF model.")
+    _model_args(gen)
     gen.add_argument("--prompt", required=True, help="Generation prompt.")
     gen.add_argument("--max-tokens", type=int, default=128, help="Max tokens to generate.")
-    gen.add_argument("--k", type=int, default=6, help="Max draft length.")
-    gen.add_argument("--max-ctx", type=int, default=8)
-    gen.add_argument("--min-support", type=int, default=2)
-    gen.add_argument("--min-conf", type=float, default=0.96)
-    gen.add_argument("--det-conf", type=float, default=0.96)
-    gen.add_argument("--min-rule-ctx", type=int, default=4)
-    gen.add_argument("--n-ctx", type=int, default=2048)
-    gen.add_argument("--n-gpu-layers", type=int, default=-1)
+    gen.add_argument("--k", type=int, default=4, help="Max draft length.")
+    gen.add_argument("--index", help="N-gram index from `structspec index` (default: cache file for this tokenizer).")
+    gen.add_argument("--syntax", action="store_true", help="Also use the Python syntax rules.")
     gen.add_argument("--reject-mode", choices=["truncate", "seq-bonus", "rebuild"], default="truncate")
-    gen.add_argument("--strike-limit", type=int, default=3)
-    gen.add_argument("--no-syntax-patterns", action="store_true")
-    gen.add_argument("--syntax-mode", choices=["off", "basic", "cluster"], default="cluster")
-    gen.add_argument("--live-viz", action="store_true")
     gen.add_argument("--greedy", action="store_true", help="Run greedy baseline instead of speculative.")
     gen.add_argument("--verbose", action="store_true")
     gen.set_defaults(func=cmd_generate)
+
+    ver = sub.add_parser("verify", help="Check speculative output is identical to greedy on a local model.")
+    _model_args(ver)
+    ver.add_argument("--prompts", help="JSONL file with a 'prompt' field per line (default: built-in set).")
+    ver.add_argument("--max-tokens", type=int, default=128)
+    ver.add_argument("--k", type=int, default=4)
+    ver.add_argument("--index")
+    ver.add_argument("--json-out")
+    ver.set_defaults(func=cmd_verify)
+
+    index = sub.add_parser("index", help="Mine an n-gram draft index from source files with a model's tokenizer.")
+    index.add_argument("paths", nargs="+", help="Files or directories to mine.")
+    index.add_argument("--model", required=True, help="GGUF model whose tokenizer to use.")
+    index.add_argument("--out", help="Output path (default: ~/.cache/structspec/index-<tokenizer>.json).")
+    index.set_defaults(func=cmd_index)
 
     vllm_cmd = sub.add_parser("vllm-command", help="Print a vLLM speculative decoding launch command.")
     vllm_cmd.add_argument("--model", required=True)

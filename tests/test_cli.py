@@ -12,12 +12,22 @@ def test_parser_detect():
 
 
 def test_parser_serve_defaults():
-    parser = build_parser()
-    args = parser.parse_args(["serve"])
+    args = build_parser().parse_args(["serve", "--model", "m.gguf"])
     assert args.command == "serve"
-    assert args.backend == "auto"
     assert args.port == 8080
-    assert args.safety == "strict"
+    assert args.k == 4 and not args.passthrough and not args.thinking
+
+
+def test_parser_serve_passthrough():
+    args = build_parser().parse_args(["serve", "--passthrough"])
+    assert args.passthrough and args.backend == "auto" and args.safety == "strict"
+
+
+def test_serve_requires_model_or_passthrough(capsys):
+    from structspec.cli import main
+
+    assert main(["serve"]) == 2
+    assert "--model" in capsys.readouterr().err
 
 
 def test_parser_vllm_command():
@@ -38,3 +48,13 @@ def test_parser_run_requires_prompt():
     parser = build_parser()
     with pytest.raises(SystemExit):
         parser.parse_args(["run"])
+
+
+def test_parser_verify():
+    args = build_parser().parse_args(["verify", "--model", "m.gguf", "--max-tokens", "32", "--cpu-moe"])
+    assert args.command == "verify" and args.max_tokens == 32 and args.cpu_moe and args.k == 4
+
+
+def test_parser_index():
+    args = build_parser().parse_args(["index", "src", "lib", "--model", "m.gguf"])
+    assert args.paths == ["src", "lib"]
